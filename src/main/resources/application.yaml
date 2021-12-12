@@ -1,0 +1,6 @@
+spring.main.web-application-type: none
+
+mercado-bitcoin:
+  base-uri: https://api.mercadobitcoin.net/api/v4/
+  client-id: ${CLIENT_ID}
+  client-secret: ${CLIENT_SECRET}
