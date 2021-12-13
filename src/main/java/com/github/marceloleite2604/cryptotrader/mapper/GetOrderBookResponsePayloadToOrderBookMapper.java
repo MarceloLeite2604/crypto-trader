@@ -1,6 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.mapper;
 
-import com.github.marceloleite2604.cryptotrader.dto.orderbook.OrderBookResponsePayload;
+import com.github.marceloleite2604.cryptotrader.dto.orderbook.GetOrderBookResponsePayload;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.Order;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
@@ -15,18 +15,18 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class OrderBookResponsePayloadToOrderBookMapper
-  implements Mapper<OrderBookResponsePayload, OrderBook> {
+public class GetOrderBookResponsePayloadToOrderBookMapper
+  implements Mapper<GetOrderBookResponsePayload, OrderBook> {
 
   private final DateTimeUtil dateTimeUtil;
 
   @Override
-  public OrderBook mapTo(OrderBookResponsePayload orderBookResponsePayload) {
+  public OrderBook mapTo(GetOrderBookResponsePayload getOrderBookResponsePayload) {
 
-    final var asks = createOrders(orderBookResponsePayload.getAsks());
-    final var bids = createOrders(orderBookResponsePayload.getBids());
+    final var asks = createOrders(getOrderBookResponsePayload.getAsks());
+    final var bids = createOrders(getOrderBookResponsePayload.getBids());
     final var timestamp = dateTimeUtil.convertTimestampWithNanosToUtcOffsetDateTime(
-      orderBookResponsePayload.getTimestamp());
+      getOrderBookResponsePayload.getTimestamp());
 
     return OrderBook.builder()
       .asks(asks)

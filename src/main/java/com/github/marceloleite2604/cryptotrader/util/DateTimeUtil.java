@@ -2,6 +2,7 @@ package com.github.marceloleite2604.cryptotrader.util;
 
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;

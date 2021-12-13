@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(force = true)
 @Getter
-public class AuthorizeResponsePayload {
+public class GetAuthorizeResponsePayload {
 
     @JsonProperty("access_token")
     private final String accessToken;

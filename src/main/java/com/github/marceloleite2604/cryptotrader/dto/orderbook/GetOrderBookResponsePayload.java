@@ -7,7 +7,7 @@ import java.util.List;
 
 @NoArgsConstructor(force = true)
 @Getter
-public class OrderBookResponsePayload {
+public class GetOrderBookResponsePayload {
 
   private final List<double[]> asks;
 

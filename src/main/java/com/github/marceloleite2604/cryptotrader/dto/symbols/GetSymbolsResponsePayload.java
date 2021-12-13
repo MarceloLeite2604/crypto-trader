@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(force = true)
-public class SymbolResponsePayload {
+public class GetSymbolsResponsePayload {
 
   @JsonProperty("base-currency")
   private final List<String> baseCurrency;

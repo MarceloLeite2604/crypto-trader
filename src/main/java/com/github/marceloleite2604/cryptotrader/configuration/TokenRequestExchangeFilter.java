@@ -1,8 +1,8 @@
 package com.github.marceloleite2604.cryptotrader.configuration;
 
 import com.github.marceloleite2604.cryptotrader.dto.authorize.Authorization;
-import com.github.marceloleite2604.cryptotrader.dto.authorize.AuthorizeResponsePayload;
-import com.github.marceloleite2604.cryptotrader.mapper.AuthorizeResponsePayloadToAuthorizationMapper;
+import com.github.marceloleite2604.cryptotrader.dto.authorize.GetAuthorizeResponsePayload;
+import com.github.marceloleite2604.cryptotrader.mapper.GetAuthorizeResponsePayloadToAuthorizationMapper;
 import com.github.marceloleite2604.cryptotrader.properties.MercadoBitcoinProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -23,17 +23,17 @@ import java.time.ZoneOffset;
 public class TokenRequestExchangeFilter implements ExchangeFilterFunction {
 
   private final WebClient mbUnauthenticatedWebClient;
-  private final AuthorizeResponsePayloadToAuthorizationMapper authorizeResponsePayloadToAuthorizationMapper;
+  private final GetAuthorizeResponsePayloadToAuthorizationMapper getAuthorizeResponsePayloadToAuthorizationMapper;
   private final BodyInserters.FormInserter<String> credentialsFormInserter;
   private Authorization authorization;
 
   public TokenRequestExchangeFilter(
     WebClient mbUnauthenticatedWebClient,
-    AuthorizeResponsePayloadToAuthorizationMapper authorizeResponsePayloadToAuthorizationMapper,
+    GetAuthorizeResponsePayloadToAuthorizationMapper getAuthorizeResponsePayloadToAuthorizationMapper,
     MercadoBitcoinProperties mercadoBitcoinProperties
   ) {
     this.mbUnauthenticatedWebClient = mbUnauthenticatedWebClient;
-    this.authorizeResponsePayloadToAuthorizationMapper = authorizeResponsePayloadToAuthorizationMapper;
+    this.getAuthorizeResponsePayloadToAuthorizationMapper = getAuthorizeResponsePayloadToAuthorizationMapper;
     this.credentialsFormInserter = createCredentialsFormInserter(mercadoBitcoinProperties);
   }
 
@@ -60,9 +60,9 @@ public class TokenRequestExchangeFilter implements ExchangeFilterFunction {
       .contentType(MediaType.MULTIPART_FORM_DATA)
       .body(credentialsFormInserter)
       .retrieve()
-      .bodyToMono(AuthorizeResponsePayload.class)
+      .bodyToMono(GetAuthorizeResponsePayload.class)
       .blockOptional()
-      .map(authorizeResponsePayloadToAuthorizationMapper::mapTo)
+      .map(getAuthorizeResponsePayloadToAuthorizationMapper::mapTo)
       .orElseThrow(() -> new IllegalStateException("Error while authenticating with Mercado Bitcoin."));
   }
 
