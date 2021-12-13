@@ -25,7 +25,7 @@ public class TickersService {
 
   private final ListTickersDtoToMapTickersMapper listTickersDtoToMapTickersMapper;
 
-  public Map<String, Ticker> retrieveTickers(String... symbols) {
+  public Map<String, Ticker> retrieve(String... symbols) {
     final var tickersUri = buildTickersUri(symbols);
     final var tickerDtos = mbAuthenticatedWebClient.get()
       .uri(tickersUri)

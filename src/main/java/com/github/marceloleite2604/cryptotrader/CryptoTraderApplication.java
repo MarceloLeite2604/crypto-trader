@@ -1,7 +1,7 @@
 package com.github.marceloleite2604.cryptotrader;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
-import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
+import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
+import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
 import com.github.marceloleite2604.cryptotrader.service.MercadoBitcoinService;
 import com.github.marceloleite2604.cryptotrader.util.CurrencyUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @EnableCaching
 @SpringBootApplication
@@ -44,20 +45,29 @@ public class CryptoTraderApplication {
 //      final var tickers = mercadoBitcoinService.retrieveTickers("BTC-BRL");
 //      final var btcBrlTicker = tickers.get("BTC-BRL");
 //      log.info("Last price for \"{}\" instrument was {}", btcBrlTicker.getPair(), currencyUtil.toBrl(btcBrlTicker.getLast()));
-      final var now = OffsetDateTime.now(ZoneOffset.UTC);
-      final var candlesRequestTime = CandlesRequest.builder()
+//      final var now = OffsetDateTime.now(ZoneOffset.UTC);
+//      final var candlesRequestTime = CandlesRequest.builder()
+//        .symbol("BTC-BRL")
+//        .resolution(CandlePrecision.FIFTEEN_MINUTES)
+//        .toTime(now)
+//        .from(now.minus(1, ChronoUnit.HOURS))
+//        .build();
+//      final var candlesRequestCount = CandlesRequest.builder()
+//        .symbol("BTC-BRL")
+//        .resolution(CandlePrecision.FIFTEEN_MINUTES)
+//        .toCount(0)
+//        .countback(4)
+//        .build();
+//      final var candles = mercadoBitcoinService.retrieveCandles(candlesRequestCount);
+
+      final var to = OffsetDateTime.now(ZoneOffset.UTC);
+      final var from = to.minus(1, ChronoUnit.HOURS);
+      final var tradesRequest = TradesRequest.builder()
         .symbol("BTC-BRL")
-        .resolution(CandlePrecision.FIFTEEN_MINUTES)
-        .toTime(now)
-        .from(now.minus(1, ChronoUnit.HOURS))
+        .from(from)
+        .to(to)
         .build();
-      final var candlesRequestCount = CandlesRequest.builder()
-        .symbol("BTC-BRL")
-        .resolution(CandlePrecision.FIFTEEN_MINUTES)
-        .toCount(0)
-        .countback(4)
-        .build();
-      final var candles = mercadoBitcoinService.retrieveCandles(candlesRequestCount);
+      final var trades = mercadoBitcoinService.retrieveTrades(tradesRequest);
       log.info("Done");
     });
   }

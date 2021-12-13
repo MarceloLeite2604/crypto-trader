@@ -24,8 +24,8 @@ public class CandlesService {
   private final DateTimeUtil dateTimeUtil;
 
 
-  public List<Candle> retrieveCandles(CandlesRequest candlesRequest) {
-    final var retrieveCandlesUri = buildRetrieveCandlesUri(candlesRequest);
+  public List<Candle> retrieve(CandlesRequest candlesRequest) {
+    final var retrieveCandlesUri = buildRetrieveUri(candlesRequest);
 
     final var getCandleResponsePayloadToListCandleMapper = GetCandleResponsePayloadToListCandleMapper.builder()
       .dateTimeUtil(dateTimeUtil)
@@ -48,7 +48,7 @@ public class CandlesService {
 
   }
 
-  private String buildRetrieveCandlesUri(CandlesRequest candlesRequest) {
+  private String buildRetrieveUri(CandlesRequest candlesRequest) {
     Assert.notNull(candlesRequest, "Must inform a valid candle request.");
     Assert.isTrue(StringUtils.isNotBlank(candlesRequest.getSymbol()), "Must inform a symbol.");
     Assert.isTrue((

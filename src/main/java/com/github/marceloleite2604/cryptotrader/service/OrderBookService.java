@@ -18,7 +18,7 @@ public class OrderBookService {
 
   private final GetOrderBookResponsePayloadToOrderBookMapper getOrderBookResponsePayloadToOrderBookMapper;
 
-  public OrderBook retrieveOrderBook(String symbol, Integer limit) {
+  public OrderBook retrieve(String symbol, Integer limit) {
     final var orderBookUri = buildOrderBookUri(symbol, limit);
 
     final var orderBookResponsePayload = mbAuthenticatedWebClient.get()

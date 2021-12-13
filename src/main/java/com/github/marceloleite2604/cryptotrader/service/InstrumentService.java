@@ -17,7 +17,7 @@ class InstrumentService {
 
   private final GetSymbolsResponsePayloadToInstrumentSetMapper getSymbolsResponsePayloadToInstrumentSetMapper;
 
-  public Set<Instrument> retrieveAllInstruments() {
+  public Set<Instrument> retrieveAll() {
     final var symbolResponsePayload = mbAuthenticatedWebClient.get()
       .uri("symbols")
       .retrieve()

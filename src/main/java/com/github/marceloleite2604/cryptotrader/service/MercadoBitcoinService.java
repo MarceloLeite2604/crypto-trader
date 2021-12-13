@@ -5,6 +5,8 @@ import com.github.marceloleite2604.cryptotrader.model.Ticker;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
+import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
+import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,9 +29,11 @@ public class MercadoBitcoinService {
 
   private final CandlesService candlesService;
 
+  private final TradesService tradesService;
+
   @Cacheable("default")
   public Set<Instrument> retrieveAllInstruments() {
-    return instrumentService.retrieveAllInstruments();
+    return instrumentService.retrieveAll();
   }
 
   public OrderBook retrieveOrderBook(String symbol) {
@@ -37,14 +41,18 @@ public class MercadoBitcoinService {
   }
 
   public OrderBook retrieveOrderBook(String symbol, Integer limit) {
-    return orderBookService.retrieveOrderBook(symbol, limit);
+    return orderBookService.retrieve(symbol, limit);
   }
 
   public Map<String, Ticker> retrieveTickers(String... symbols) {
-    return tickersService.retrieveTickers(symbols);
+    return tickersService.retrieve(symbols);
   }
 
   public List<Candle> retrieveCandles(CandlesRequest candlesRequest) {
-    return candlesService.retrieveCandles(candlesRequest);
+    return candlesService.retrieve(candlesRequest);
+  }
+
+  public List<Trade> retrieveTrades(TradesRequest tradesRequest) {
+    return tradesService.retrieve(tradesRequest);
   }
 }
