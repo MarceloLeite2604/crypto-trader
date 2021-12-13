@@ -5,8 +5,8 @@ import com.github.marceloleite2604.cryptotrader.mapper.GetCandleResponsePayloadT
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
+import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -23,8 +23,13 @@ public class CandlesService {
 
   private final DateTimeUtil dateTimeUtil;
 
+  private final ValidationUtil validationUtil;
 
   public List<Candle> retrieve(CandlesRequest candlesRequest) {
+
+    Assert.notNull(candlesRequest, "Must inform a valid candle request.");
+    validationUtil.throwIllegalArgumentExceptionIfNotValid(candlesRequest, "Candles request is invalid.");
+
     final var retrieveCandlesUri = buildRetrieveUri(candlesRequest);
 
     final var getCandleResponsePayloadToListCandleMapper = GetCandleResponsePayloadToListCandleMapper.builder()
@@ -49,12 +54,6 @@ public class CandlesService {
   }
 
   private String buildRetrieveUri(CandlesRequest candlesRequest) {
-    Assert.notNull(candlesRequest, "Must inform a valid candle request.");
-    Assert.isTrue(StringUtils.isNotBlank(candlesRequest.getSymbol()), "Must inform a symbol.");
-    Assert.isTrue((
-        (candlesRequest.getFrom() != null && candlesRequest.getToTime() != null) ||
-          (candlesRequest.getCountback() != null && candlesRequest.getToCount() != null))
-      , "Must inform either a \"from\" and \"toTime\" or \"countback\" and \"toCount\" end time.");
 
     final var uriBuilder = new URIBuilder().setPathSegments("candles")
       .addParameter("symbol", candlesRequest.getSymbol())

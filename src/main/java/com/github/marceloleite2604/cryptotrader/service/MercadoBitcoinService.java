@@ -2,6 +2,9 @@ package com.github.marceloleite2604.cryptotrader.service;
 
 import com.github.marceloleite2604.cryptotrader.model.Instrument;
 import com.github.marceloleite2604.cryptotrader.model.Ticker;
+import com.github.marceloleite2604.cryptotrader.model.account.Account;
+import com.github.marceloleite2604.cryptotrader.model.account.Balance;
+import com.github.marceloleite2604.cryptotrader.model.account.Position;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
@@ -31,6 +34,12 @@ public class MercadoBitcoinService {
 
   private final TradesService tradesService;
 
+  private final AccountsService accountsService;
+
+  private final BalanceService balanceService;
+
+  private final PositionService positionService;
+
   @Cacheable("default")
   public Set<Instrument> retrieveAllInstruments() {
     return instrumentService.retrieveAll();
@@ -54,5 +63,18 @@ public class MercadoBitcoinService {
 
   public List<Trade> retrieveTrades(TradesRequest tradesRequest) {
     return tradesService.retrieve(tradesRequest);
+  }
+
+  @Cacheable("default")
+  public List<Account> retrieveAccounts() {
+    return accountsService.retrieve();
+  }
+
+  public List<Balance> retrieveBalances(String accountId, String symbol) {
+    return balanceService.retrieve(accountId, symbol);
+  }
+
+  public List<Position> retrievePositions(String accountId, String symbol) {
+    return positionService.retrieve(accountId, symbol);
   }
 }

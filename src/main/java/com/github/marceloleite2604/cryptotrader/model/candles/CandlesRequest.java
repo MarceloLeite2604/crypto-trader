@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotBlank;
 import java.time.OffsetDateTime;
 
 @Builder
@@ -12,6 +14,7 @@ import java.time.OffsetDateTime;
 @Getter
 public class CandlesRequest {
 
+  @NotBlank
   private final String symbol;
 
   private final CandlePrecision resolution;
@@ -23,4 +26,10 @@ public class CandlesRequest {
   private final OffsetDateTime from;
 
   private final Integer countback;
+
+  @AssertTrue(message = "Must inform either a \"from\" and \"toTime\" or \"countback\" and \"toCount\" end time.")
+  private boolean isValidRequest() {
+    return (from != null && toTime != null) ||
+      (countback != null && toCount != null);
+  }
 }

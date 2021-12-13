@@ -1,7 +1,7 @@
 package com.github.marceloleite2604.cryptotrader.mapper;
 
 import com.github.marceloleite2604.cryptotrader.dto.orderbook.GetOrderBookResponsePayload;
-import com.github.marceloleite2604.cryptotrader.model.orderbook.Order;
+import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBookItem;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,24 +35,24 @@ public class GetOrderBookResponsePayloadToOrderBookMapper
       .build();
   }
 
-  private List<Order> createOrders(List<double[]> rawOrders) {
+  private List<OrderBookItem> createOrders(List<double[]> rawOrders) {
     if (CollectionUtils.isEmpty(rawOrders)) {
       return Collections.emptyList();
     }
 
-    List<Order> orders = new ArrayList<>(rawOrders.size());
+    List<OrderBookItem> orderBookItems = new ArrayList<>(rawOrders.size());
 
     for (double[] rawOrder : rawOrders) {
       final var price = BigDecimal.valueOf(rawOrder[0]);
       final var volume = BigDecimal.valueOf(rawOrder[1]);
-      final var order = Order.builder()
+      final var order = OrderBookItem.builder()
         .price(price)
         .volume(volume)
         .build();
 
-      orders.add(order);
+      orderBookItems.add(order);
     }
 
-    return orders;
+    return orderBookItems;
   }
 }

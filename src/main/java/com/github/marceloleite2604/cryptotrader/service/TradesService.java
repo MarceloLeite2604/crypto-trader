@@ -1,12 +1,11 @@
 package com.github.marceloleite2604.cryptotrader.service;
 
 import com.github.marceloleite2604.cryptotrader.dto.trades.TradeDto;
-import com.github.marceloleite2604.cryptotrader.mapper.ListTradeDtoToListTradeMapper;
+import com.github.marceloleite2604.cryptotrader.mapper.TradeDtoMapper;
 import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
 import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
-import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
+import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -22,11 +21,14 @@ public class TradesService {
 
   private final WebClient mbAuthenticatedWebClient;
 
-  private final DateTimeUtil dateTimeUtil;
+  private final TradeDtoMapper tradeDtoMapper;
 
-  private final ListTradeDtoToListTradeMapper listTradeDtoToListTradeMapper;
+  private final ValidationUtil validationUtil;
 
   public List<Trade> retrieve(TradesRequest tradesRequest) {
+    Assert.notNull(tradesRequest, "Must inform a valid trades request.");
+    validationUtil.throwIllegalArgumentExceptionIfNotValid(tradesRequest, "Trades request informed is invalid.");
+
     final var getTradesUri = buildRetrieveUri(tradesRequest);
 
     final var tradeDtos = mbAuthenticatedWebClient.get()
@@ -40,16 +42,11 @@ public class TradesService {
         return new IllegalStateException(message);
       });
 
-    return listTradeDtoToListTradeMapper.mapTo(tradeDtos);
+    return tradeDtoMapper.mapAllTo(tradeDtos);
   }
 
   private String buildRetrieveUri(TradesRequest tradesRequest) {
-    Assert.notNull(tradesRequest, "Must inform a valid trades request.");
-    Assert.isTrue(StringUtils.isNotBlank(tradesRequest.getSymbol()), "Must inform a symbol.");
-    Assert.isTrue((
-        (tradesRequest.getTo() == null && tradesRequest.getFrom() == null) ||
-          (tradesRequest.getTo() != null && tradesRequest.getFrom() != null))
-      , "Must both \"from\" and \"to\" parameters.");
+
 
     final var uriBuilder = new URIBuilder().setPathSegments(tradesRequest.getSymbol(), "trades");
 

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Order {
+public class OrderBookItem {
 
   private final BigDecimal price;
 

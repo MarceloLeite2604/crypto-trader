@@ -13,9 +13,9 @@ import java.util.List;
 @Getter
 public class OrderBook {
 
-  private List<Order> asks;
+  private List<OrderBookItem> asks;
 
-  private List<Order> bids;
+  private List<OrderBookItem> bids;
 
   private OffsetDateTime timestamp;
 }
