@@ -1,7 +1,7 @@
 package com.github.marceloleite2604.cryptotrader;
 
-import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
-import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
+import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
+import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.service.MercadoBitcoinService;
 import com.github.marceloleite2604.cryptotrader.util.CurrencyUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.math.BigDecimal;
 
 @EnableCaching
 @SpringBootApplication
@@ -60,14 +57,48 @@ public class CryptoTraderApplication {
 //        .build();
 //      final var candles = mercadoBitcoinService.retrieveCandles(candlesRequestCount);
 
-      final var to = OffsetDateTime.now(ZoneOffset.UTC);
-      final var from = to.minus(1, ChronoUnit.HOURS);
-      final var tradesRequest = TradesRequest.builder()
-        .symbol("BTC-BRL")
-        .from(from)
-        .to(to)
+//      final var to = OffsetDateTime.now(ZoneOffset.UTC);
+//      final var from = to.minus(1, ChronoUnit.HOURS);
+//      final var tradesRequest = TradesRequest.builder()
+//        .symbol("BTC-BRL")
+//        .from(from)
+//        .to(to)
+//        .build();
+//      final var trades = mercadoBitcoinService.retrieveTrades(tradesRequest);
+
+      final var accounts = mercadoBitcoinService.retrieveAccounts();
+      final var account = accounts.get(0);
+//      final var balances = mercadoBitcoinService.retrieveBalances(account.getId(), "BTC-BRL");
+//      final var positions = mercadoBitcoinService.retrievePositions(account.getId(), "BTC-BRL");
+      final var retrieveOrdersRequest = RetrieveOrdersRequest.builder()
+        .accountId(account.getId())
+        .symbol("ETH-BRL")
         .build();
-      final var trades = mercadoBitcoinService.retrieveTrades(tradesRequest);
+      final var orders = mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
+      final var order = orders.get(0);
+//      final var retrievedOrder = mercadoBitcoinService.retrieveOrder(account.getId(), "BTC-BRL", order.getId());
+      final var placeOrderRequest = PlaceOrderRequest.builder()
+        .async(true)
+        .accountId(account.getId())
+        .symbol("ETH-BRL")
+        .limitPrice(BigDecimal.valueOf(21640.2236))
+        .quantity(BigDecimal.valueOf(0.0001))
+        .side("sell")
+        .type("limit")
+        .build();
+      log.info("Placing order.");
+      final var optionalOrderId = mercadoBitcoinService.placeOrder(placeOrderRequest);
+
+      if (optionalOrderId.isPresent()) {
+        log.info("Order placed.");
+        final var cancelled = mercadoBitcoinService.cancelOrder(account.getId(), "ETH-BRL", optionalOrderId.get());
+        if (!cancelled) {
+          log.error("Something went wrong while canceling order {}.", optionalOrderId.get());
+        }
+      } else {
+        log.info("Could not place order.");
+      }
+
       log.info("Done");
     });
   }

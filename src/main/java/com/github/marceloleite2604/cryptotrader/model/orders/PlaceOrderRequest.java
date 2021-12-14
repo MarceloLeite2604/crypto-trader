@@ -1,41 +1,41 @@
 package com.github.marceloleite2604.cryptotrader.model.orders;
 
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.List;
 
+@Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-public class Order {
+public class PlaceOrderRequest {
 
-  private final BigDecimal averagePrice;
+  @NotBlank
+  private final String accountId;
 
-  private final OffsetDateTime createdAt;
+  @NotBlank
+  private final String symbol;
 
-  private final List<Execution> executions;
+  @NotNull
+  private final Boolean async;
 
-  private final BigDecimal filledQuantity;
+  @Positive
+  private final BigDecimal cost;
 
-  private final String id;
-
-  private final String instrument;
-
+  @Positive
   private final BigDecimal limitPrice;
 
+  @Positive
   private final BigDecimal quantity;
 
+  @NotBlank
   private final String side;
 
-  private final String status;
-
+  @NotBlank
   private final String type;
-
-  private final OffsetDateTime updatedAt;
 }

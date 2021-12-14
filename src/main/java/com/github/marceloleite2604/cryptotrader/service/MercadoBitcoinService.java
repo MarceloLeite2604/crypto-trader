@@ -8,6 +8,9 @@ import com.github.marceloleite2604.cryptotrader.model.account.Position;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
+import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
+import com.github.marceloleite2604.cryptotrader.model.orders.Order;
+import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
 import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -39,6 +43,8 @@ public class MercadoBitcoinService {
   private final BalanceService balanceService;
 
   private final PositionService positionService;
+
+  private final OrderService orderService;
 
   @Cacheable("default")
   public Set<Instrument> retrieveAllInstruments() {
@@ -76,5 +82,21 @@ public class MercadoBitcoinService {
 
   public List<Position> retrievePositions(String accountId, String symbol) {
     return positionService.retrieve(accountId, symbol);
+  }
+
+  public List<Order> retrieveOrders(RetrieveOrdersRequest retrieveOrdersRequest) {
+    return orderService.retrieve(retrieveOrdersRequest);
+  }
+
+  public Order retrieveOrder(String accountId, String symbol, String orderId) {
+    return orderService.retrieveOrder(accountId, symbol, orderId);
+  }
+
+  public Optional<String> placeOrder(PlaceOrderRequest placeOrderRequest) {
+    return orderService.placeOrder(placeOrderRequest);
+  }
+
+  public boolean cancelOrder(String accountId, String symbol, String orderId) {
+    return orderService.cancelOrder(accountId, symbol, orderId);
   }
 }

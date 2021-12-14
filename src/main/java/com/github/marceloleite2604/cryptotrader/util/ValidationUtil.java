@@ -22,9 +22,11 @@ public class ValidationUtil {
 
     Set<ConstraintViolation<T>> violations = validator.validate(object);
 
-    if (CollectionUtils.isEmpty(violations)) {
+    if (CollectionUtils.isNotEmpty(violations)) {
       final var constraintViolationMessages = violations.stream()
-        .map(ConstraintViolation::getMessage)
+        .map(constraintViolation ->
+          constraintViolation.getPropertyPath()
+            .toString() + ": " + constraintViolation.getMessage())
         .collect(Collectors.joining("\n\t"));
 
       final var exceptionMessage = message + "\n\t" +

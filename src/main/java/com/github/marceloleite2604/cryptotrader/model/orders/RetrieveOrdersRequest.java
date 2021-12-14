@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class OrdersRequest {
+public class RetrieveOrdersRequest {
 
   @NotBlank
   private final String accountId;
