@@ -1,16 +1,24 @@
 package com.github.marceloleite2604.cryptotrader;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
+import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
+import com.github.marceloleite2604.cryptotrader.service.CandleAnalyser;
 import com.github.marceloleite2604.cryptotrader.service.MercadoBitcoinService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -19,27 +27,59 @@ public class ScheduledTask {
 
   private static final String ETHEREUM = "ETH-BRL";
 
+  private static final Duration TIME_WINDOW = Duration.of(1, ChronoUnit.HOURS);
+
   private final MercadoBitcoinService mercadoBitcoinService;
 
-  private final CandlesRequest candlesRequest = CandlesRequest.builder()
-    .symbol(ETHEREUM)
-    .resolution(CandlePrecision.FIFTEEN_MINUTES)
-    .toCount(0)
-    .countback(1)
-    .build();
+  private final CandleAnalyser candleAnalyser;
 
-  private List<Candle> candles = new ArrayList<>();
+  private List<CandleAnalysis> candleAnalyses = new ArrayList<>();
 
-  //@Scheduled(cron = "0 0/15 * ? * ?")
-  @Scheduled(cron = "0 * * ? * ?")
+  @Scheduled(cron = "0 0/15 * ? * ?")
   public void check() {
+
     log.info("Checking candles.");
-    final var retrievedCandles = mercadoBitcoinService.retrieveCandles(candlesRequest);
+    this.candleAnalyses = retrieveAndAnalyseCandles(this.candleAnalyses);
 
-    candles.addAll(retrievedCandles);
-
-    candles.forEach(System.out::println);
+    this.candleAnalyses.forEach(System.out::println);
     log.info("Done.");
   }
 
+  private List<CandleAnalysis> retrieveAndAnalyseCandles(List<CandleAnalysis> candleAnalyses) {
+    final var candlesRequest = createCandlesRequest();
+    final var retrievedCandles = mercadoBitcoinService.retrieveCandles(candlesRequest);
+
+    final var existingCandles = candleAnalyses.stream()
+      .map(CandleAnalysis::getCandle)
+      .toList();
+
+    final var newCandles = retrievedCandles.stream()
+      .filter(candle -> !existingCandles.contains(candle))
+      .collect(Collectors.toCollection(ArrayList::new));
+
+    if (CollectionUtils.isEmpty(newCandles)) {
+      return candleAnalyses;
+    }
+
+    final var newCandlesAnalysis = newCandles.stream()
+      .map(candle -> CandleAnalysis.builder()
+        .candle(candle)
+        .build())
+      .toList();
+
+    candleAnalyses.addAll(newCandlesAnalysis);
+    candleAnalyses.sort(Collections.reverseOrder());
+
+    return candleAnalyser.analyse(candleAnalyses);
+  }
+
+  private CandlesRequest createCandlesRequest() {
+    final var now = OffsetDateTime.now(ZoneOffset.UTC);
+    return CandlesRequest.builder()
+      .symbol(ETHEREUM)
+      .resolution(CandlePrecision.FIFTEEN_MINUTES)
+      .toTime(now)
+      .from(now.minus(TIME_WINDOW))
+      .build();
+  }
 }

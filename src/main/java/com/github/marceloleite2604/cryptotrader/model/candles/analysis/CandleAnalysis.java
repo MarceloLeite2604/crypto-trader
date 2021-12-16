@@ -4,8 +4,10 @@ import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -13,6 +15,8 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class CandleAnalysis implements Comparable<CandleAnalysis> {
 
   public CandleAnalysis(CandleAnalysis other) {
@@ -49,6 +53,7 @@ public class CandleAnalysis implements Comparable<CandleAnalysis> {
     this.position = other.position;
   }
 
+  @EqualsAndHashCode.Include
   @NotNull(message = "Candle cannot be null.")
   private final Candle candle;
 
@@ -88,7 +93,6 @@ public class CandleAnalysis implements Comparable<CandleAnalysis> {
 
   @Override
   public int compareTo(CandleAnalysis other) {
-    return other.candle.getTimestamp()
-      .compareTo(this.candle.getTimestamp());
+    return this.candle.compareTo(other.candle);
   }
 }

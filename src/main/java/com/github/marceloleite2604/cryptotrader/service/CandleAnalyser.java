@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,25 +32,22 @@ public class CandleAnalyser {
 
   public List<CandleAnalysis> analyse(List<CandleAnalysis> candlesAnalysis) {
 
-    final var alreadyAnalysedCandles = candlesAnalysis.stream()
+    final List<CandleAnalysis> alreadyAnalysedCandles = candlesAnalysis.stream()
       .filter(CandleAnalysis::isDone)
-      .toList();
+      .collect(Collectors.toCollection(ArrayList::new));
 
-    var analysedCandles = candlesAnalysis.stream()
+    List<CandleAnalysis> newCandleAnalysis = candlesAnalysis.stream()
       .filter(candleAnalysis -> !candleAnalysis.isDone())
       .map(this::analyse)
-      .toList();
+      .collect(Collectors.toCollection(ArrayList::new));
 
-    alreadyAnalysedCandles.addAll(analysedCandles);
+    newCandleAnalysis = fillCandleSizeCategories(newCandleAnalysis);
+    newCandleAnalysis = fillBodySizeCategories(newCandleAnalysis);
+    newCandleAnalysis = fillPosition(newCandleAnalysis);
 
-    Collections.sort(alreadyAnalysedCandles);
-
-    analysedCandles = fillCandleSizeCategories(analysedCandles);
-    analysedCandles = fillBodySizeCategories(analysedCandles);
-
-    analysedCandles = fillPosition(analysedCandles);
-
-    return analysedCandles;
+    alreadyAnalysedCandles.addAll(newCandleAnalysis);
+    alreadyAnalysedCandles.sort(Collections.reverseOrder());
+    return alreadyAnalysedCandles;
   }
 
   private List<CandleAnalysis> fillCandleSizeCategories(List<CandleAnalysis> candlesAnalysis) {
@@ -60,14 +58,17 @@ public class CandleAnalyser {
 
     for (CandleAnalysis candleAnalysis : candlesAnalysis) {
 
-      var ratio = candleAnalysis.getSize()
+      final var ratio = candleAnalysis.getSize()
         .divide(averageSize, DEFAULT_ROUNDING_MODE);
 
-      if (ratio.intValue() > CandleSizeCategory.values().length) {
-        ratio = BigDecimal.valueOf(CandleSizeCategory.values().length);
+      final var step = BigDecimal.valueOf(1.0 / (CandleSizeCategory.values().length / 2.0));
+      var index = ratio.divide(step, DEFAULT_ROUNDING_MODE);
+
+      if (index.intValue() >= CandleSizeCategory.values().length) {
+        index = BigDecimal.valueOf(CandleSizeCategory.values().length - 1);
       }
 
-      final var candleSizeCategory = CandleSizeCategory.values()[ratio.intValue()];
+      final var candleSizeCategory = CandleSizeCategory.values()[index.intValue()];
 
       final var updatedCandleAnalysis = new CandleAnalysis(candleAnalysis);
       updatedCandleAnalysis.setCandleSizeCategory(candleSizeCategory);
@@ -85,14 +86,17 @@ public class CandleAnalyser {
 
     for (CandleAnalysis candleAnalysis : candlesAnalysis) {
 
-      var ratio = candleAnalysis.getBodySize()
+      final var ratio = candleAnalysis.getBodySize()
         .divide(averageBodySize, DEFAULT_ROUNDING_MODE);
 
-      if (ratio.intValue() > CandleSizeCategory.values().length) {
-        ratio = BigDecimal.valueOf(CandleSizeCategory.values().length);
+      final var step = BigDecimal.valueOf(1.0 / (CandleSizeCategory.values().length / 2.0));
+      var index = ratio.divide(step, DEFAULT_ROUNDING_MODE);
+
+      if (index.intValue() >= CandleSizeCategory.values().length) {
+        index = BigDecimal.valueOf(CandleSizeCategory.values().length - 1);
       }
 
-      final var bodySizeCategory = CandleSizeCategory.values()[ratio.intValue()];
+      final var bodySizeCategory = CandleSizeCategory.values()[index.intValue()];
 
       final var updatedCandleAnalysis = new CandleAnalysis(candleAnalysis);
       updatedCandleAnalysis.setBodySizeCategory(bodySizeCategory);
@@ -128,7 +132,7 @@ public class CandleAnalyser {
     }
 
     final var size = candle.getHigh()
-      .min(candle.getLow());
+      .subtract(candle.getLow());
 
     final var average = candle.getLow()
       .add(size.divide(TWO, DEFAULT_ROUNDING_MODE));
@@ -152,19 +156,19 @@ public class CandleAnalyser {
     }
 
     final var upperWickSize = candle.getHigh()
-      .min(bodyTop);
+      .subtract(bodyTop);
 
-    final var lowerWickSize = bodyBottom.min(candle.getLow());
+    final var lowerWickSize = bodyBottom.subtract(candle.getLow());
 
-    final var bodySize = bodyTop.min(bodyBottom);
+    final var bodySize = bodyTop.subtract(bodyBottom);
 
     final var bodyAverage = bodyBottom.add(bodySize.divide(TWO, DEFAULT_ROUNDING_MODE));
 
-    final var upperWickPercentage = upperWickSize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var upperWickPercentage = size.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : upperWickSize.divide(size, DEFAULT_ROUNDING_MODE);
 
-    final var lowerWickPercentage = lowerWickSize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var lowerWickPercentage = size.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : lowerWickSize.divide(size, DEFAULT_ROUNDING_MODE);
 
-    final var bodyPercentage = bodySize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var bodyPercentage = size.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : bodySize.divide(size, DEFAULT_ROUNDING_MODE);
 
     final boolean bodyPresent = bodyPercentage.compareTo(CATEGORIES_THRESHOLD) > 0;
 
@@ -199,6 +203,8 @@ public class CandleAnalyser {
     CandleAnalysis current;
     final var updatedCandlesAnalysis = new ArrayList<CandleAnalysis>(candlesAnalysis.size());
 
+    Collections.sort(candlesAnalysis);
+
     for (CandleAnalysis candleAnalysis : candlesAnalysis) {
       current = new CandleAnalysis(candleAnalysis);
 
@@ -223,6 +229,7 @@ public class CandleAnalyser {
       previous = current;
     }
 
+    updatedCandlesAnalysis.sort(Collections.reverseOrder());
     return updatedCandlesAnalysis;
   }
 
