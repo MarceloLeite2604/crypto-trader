@@ -15,15 +15,15 @@ public class PlaceOrderRequestToPostOrderRequestPayloadMapper
   public PostOrderRequestPayload mapTo(PlaceOrderRequest placeOrderRequest) {
 
     final var cost = Optional.ofNullable(placeOrderRequest.getCost())
-      .map(BigDecimal::toPlainString)
+      .map(BigDecimal::doubleValue)
       .orElse(null);
 
     final var qty = Optional.ofNullable(placeOrderRequest.getQuantity())
-      .map(BigDecimal::toPlainString)
+      .map(BigDecimal::doubleValue)
       .orElse(null);
 
     final var limitPrice = Optional.ofNullable(placeOrderRequest.getLimitPrice())
-      .map(BigDecimal::toPlainString)
+      .map(BigDecimal::doubleValue)
       .orElse(null);
 
     return PostOrderRequestPayload.builder()

@@ -16,11 +16,11 @@ public class PostOrderRequestPayload {
 
   private final Boolean async;
 
-  private final String cost;
+  private final Double cost;
 
-  private final String limitPrice;
+  private final Double limitPrice;
 
-  private final String qty;
+  private final Double qty;
 
   private final String side;
 

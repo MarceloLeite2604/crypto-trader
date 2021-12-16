@@ -22,6 +22,8 @@ import java.time.ZoneOffset;
 @Slf4j
 public class TokenRequestExchangeFilter implements ExchangeFilterFunction {
 
+  public static final String HTTP_HEADER_AUTHORIZATION_NAME = "Authorization";
+
   private final WebClient mbUnauthenticatedWebClient;
   private final GetAuthorizeResponsePayloadToAuthorizationMapper getAuthorizeResponsePayloadToAuthorizationMapper;
   private final BodyInserters.FormInserter<String> credentialsFormInserter;
@@ -50,7 +52,7 @@ public class TokenRequestExchangeFilter implements ExchangeFilterFunction {
     }
 
     final var clientRequest = ClientRequest.from(request)
-      .header("Authorization", authorization.getToken())
+      .header(HTTP_HEADER_AUTHORIZATION_NAME, authorization.getToken())
       .build();
     return next.exchange(clientRequest);
   }

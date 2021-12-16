@@ -10,11 +10,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.math.BigDecimal;
 
 @EnableCaching
 @SpringBootApplication
+@EnableScheduling
 @Slf4j
 public class CryptoTraderApplication {
 
@@ -22,7 +24,6 @@ public class CryptoTraderApplication {
     SpringApplication.run(CryptoTraderApplication.class, args);
   }
 
-  @Bean
   public CommandLineRunner createCommandLineRunner(MercadoBitcoinService mercadoBitcoinService, CurrencyUtil currencyUtil) {
     return (args -> {
 //      final var instruments = mercadoBitcoinService.retrieveAllInstruments();
@@ -77,14 +78,23 @@ public class CryptoTraderApplication {
       final var orders = mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
       final var order = orders.get(0);
 //      final var retrievedOrder = mercadoBitcoinService.retrieveOrder(account.getId(), "BTC-BRL", order.getId());
+//      final var placeOrderRequest = PlaceOrderRequest.builder()
+//        .async(true)
+//        .accountId(account.getId())
+//        .symbol("ETH-BRL")
+//        .limitPrice(BigDecimal.valueOf(21640.2236))
+//        .quantity(BigDecimal.valueOf(0.0001))
+//        .side("sell")
+//        .type("limit")
+//        .build();
+
       final var placeOrderRequest = PlaceOrderRequest.builder()
         .async(true)
         .accountId(account.getId())
         .symbol("ETH-BRL")
-        .limitPrice(BigDecimal.valueOf(21640.2236))
-        .quantity(BigDecimal.valueOf(0.0001))
-        .side("sell")
-        .type("limit")
+        .cost(BigDecimal.valueOf(9.99))
+        .side("buy")
+        .type("market")
         .build();
       log.info("Placing order.");
       final var optionalOrderId = mercadoBitcoinService.placeOrder(placeOrderRequest);

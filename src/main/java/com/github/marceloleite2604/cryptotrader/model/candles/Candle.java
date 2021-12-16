@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -11,7 +12,26 @@ import java.time.OffsetDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@ToString
 public class Candle {
+
+  public Candle(Candle other) {
+    this.close = other.close;
+
+    this.high = other.high;
+
+    this.low =other.low;
+
+    this.open = other.open;
+
+    this.precision = other.precision;
+
+    this.symbol = other.symbol;
+
+    this.timestamp = other.timestamp;
+
+    this.volume = other.volume;
+  }
 
   private final BigDecimal close;
 

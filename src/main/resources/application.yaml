@@ -1,4 +1,6 @@
 spring.main.web-application-type: none
+logging.level:
+    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
 
 mercado-bitcoin:
   base-uri: https://api.mercadobitcoin.net/api/v4/
