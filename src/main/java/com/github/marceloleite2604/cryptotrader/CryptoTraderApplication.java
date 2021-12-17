@@ -24,7 +24,7 @@ public class CryptoTraderApplication {
     SpringApplication.run(CryptoTraderApplication.class, args);
   }
 
-  @Bean
+//  @Bean
   public CommandLineRunner createCommandLineRunner(MercadoBitcoinService mercadoBitcoinService, CurrencyUtil currencyUtil) {
     return (args -> {
 //      final var instruments = mercadoBitcoinService.retrieveAllInstruments();

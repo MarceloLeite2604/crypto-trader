@@ -164,11 +164,11 @@ public class CandleAnalyser {
 
     final var bodyAverage = bodyBottom.add(bodySize.divide(TWO, DEFAULT_ROUNDING_MODE));
 
-    final var upperWickPercentage = size.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : upperWickSize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var upperWickPercentage = size.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : upperWickSize.divide(size, DEFAULT_ROUNDING_MODE);
 
-    final var lowerWickPercentage = size.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : lowerWickSize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var lowerWickPercentage = size.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : lowerWickSize.divide(size, DEFAULT_ROUNDING_MODE);
 
-    final var bodyPercentage = size.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : bodySize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var bodyPercentage = size.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bodySize.divide(size, DEFAULT_ROUNDING_MODE);
 
     final boolean bodyPresent = bodyPercentage.compareTo(CATEGORIES_THRESHOLD) > 0;
 
