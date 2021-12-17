@@ -1,6 +1,7 @@
-package com.github.marceloleite2604.cryptotrader.model.patterns;
+package com.github.marceloleite2604.cryptotrader.service.pattern;
 
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
+import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,19 +1,21 @@
-package com.github.marceloleite2604.cryptotrader.model.patterns;
+package com.github.marceloleite2604.cryptotrader.service.pattern;
 
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.patterns.links.Pattern;
+import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.service.pattern.links.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
-@Component
-public class PatternCheckChain {
+@Service
+public class PatternCheckService {
 
   private final Pattern first;
 
-  public PatternCheckChain(List<Pattern> patterns) {
+  public PatternCheckService(List<Pattern> patterns) {
     this.first = createChain(patterns);
   }
 

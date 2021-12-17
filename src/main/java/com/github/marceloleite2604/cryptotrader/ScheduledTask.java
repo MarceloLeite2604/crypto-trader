@@ -3,10 +3,11 @@ package com.github.marceloleite2604.cryptotrader;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternCheckChain;
 import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.service.CandleAnalyser;
 import com.github.marceloleite2604.cryptotrader.service.MercadoBitcoinService;
+import com.github.marceloleite2604.cryptotrader.service.mail.MailService;
+import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,13 +30,15 @@ public class ScheduledTask {
 
   private static final String ETHEREUM = "ETH-BRL";
 
-  private static final Duration TIME_WINDOW = Duration.of(30, ChronoUnit.DAYS);
+  private static final Duration TIME_WINDOW = Duration.of(2, ChronoUnit.DAYS);
 
   private final MercadoBitcoinService mercadoBitcoinService;
 
-  private final PatternCheckChain patternCheckChain;
+  private final PatternCheckService patternCheckService;
 
   private final CandleAnalyser candleAnalyser;
+
+  private final MailService mailService;
 
   private List<CandleAnalysis> candleAnalyses = new ArrayList<>();
 
@@ -46,12 +49,7 @@ public class ScheduledTask {
     log.info("Checking candles.");
     candleAnalyses = retrieveAndAnalyseCandles(candleAnalyses);
     final List<PatternMatch> patternMatches = findPatterns(candleAnalyses);
-
-    patternMatches.forEach(patternMatch ->
-      System.out.printf("Found \"%s\" pattern at %s.%n", patternMatch.getType()
-        .name(), patternMatch.getCandleTime()));
-
-//    this.candleAnalyses.forEach(System.out::println);
+    patternMatches.forEach(mailService::send);
     log.info("Done.");
   }
 
@@ -60,7 +58,7 @@ public class ScheduledTask {
     List<PatternMatch> patternMatches = new ArrayList<>();
     for (int count = 12; count < candleAnalyses.size() - 12; count++) {
       final var ca = candleAnalyses.subList(count - 12, count);
-      final var pm = patternCheckChain.check(ca);
+      final var pm = patternCheckService.check(ca);
       patternMatches.addAll(pm);
     }
     return patternMatches;

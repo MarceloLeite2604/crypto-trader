@@ -1,9 +1,9 @@
-package com.github.marceloleite2604.cryptotrader.model.patterns.links;
+package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.model.patterns.PatternType;
+import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -30,6 +30,8 @@ public abstract class AbstractPattern implements Pattern {
           .candleTime(candleAnalysis.getCandle()
             .getTimestamp())
           .type(patternType)
+          .symbol(candleAnalysis.getCandle()
+            .getSymbol())
           .build()));
     }
 

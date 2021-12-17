@@ -1,9 +1,9 @@
-package com.github.marceloleite2604.cryptotrader.model.patterns.links;
+package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleDirection;
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleType;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternCheckContext;
+import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.patterns.PatternType;
 import org.springframework.stereotype.Component;
 

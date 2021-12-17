@@ -15,4 +15,6 @@ public class PatternMatch {
   private final PatternType type;
 
   private final OffsetDateTime candleTime;
+
+  private final String symbol;
 }
