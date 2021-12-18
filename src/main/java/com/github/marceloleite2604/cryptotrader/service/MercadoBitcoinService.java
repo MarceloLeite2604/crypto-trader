@@ -59,6 +59,10 @@ public class MercadoBitcoinService {
     return orderBookService.retrieve(symbol, limit);
   }
 
+  public Ticker retrieveTicker(String symbol) {
+    return tickersService.retrieve(symbol).get(symbol);
+  }
+
   public Map<String, Ticker> retrieveTickers(String... symbols) {
     return tickersService.retrieve(symbols);
   }

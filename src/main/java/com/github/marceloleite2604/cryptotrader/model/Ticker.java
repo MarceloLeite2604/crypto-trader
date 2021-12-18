@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,4 +31,6 @@ public class Ticker {
   private final BigDecimal sell;
 
   private final BigDecimal volume;
+
+  private final OffsetDateTime date;
 }

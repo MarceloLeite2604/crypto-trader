@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service;
 
+import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleDirection;
 import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandlePosition;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class CandleAnalyser {
-
-  public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
   public static final BigDecimal CATEGORIES_THRESHOLD = BigDecimal.valueOf(0.05);
 
@@ -59,10 +57,10 @@ public class CandleAnalyser {
     for (CandleAnalysis candleAnalysis : candlesAnalysis) {
 
       final var ratio = candleAnalysis.getSize()
-        .divide(averageSize, DEFAULT_ROUNDING_MODE);
+        .divide(averageSize, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
       final var step = BigDecimal.valueOf(1.0 / (CandleSizeCategory.values().length / 2.0));
-      var index = ratio.divide(step, DEFAULT_ROUNDING_MODE);
+      var index = ratio.divide(step, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
       if (index.intValue() >= CandleSizeCategory.values().length) {
         index = BigDecimal.valueOf(CandleSizeCategory.values().length - 1);
@@ -87,10 +85,10 @@ public class CandleAnalyser {
     for (CandleAnalysis candleAnalysis : candlesAnalysis) {
 
       final var ratio = candleAnalysis.getBodySize()
-        .divide(averageBodySize, DEFAULT_ROUNDING_MODE);
+        .divide(averageBodySize, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
       final var step = BigDecimal.valueOf(1.0 / (CandleSizeCategory.values().length / 2.0));
-      var index = ratio.divide(step, DEFAULT_ROUNDING_MODE);
+      var index = ratio.divide(step, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
       if (index.intValue() >= CandleSizeCategory.values().length) {
         index = BigDecimal.valueOf(CandleSizeCategory.values().length - 1);
@@ -135,7 +133,7 @@ public class CandleAnalyser {
       .subtract(candle.getLow());
 
     final var average = candle.getLow()
-      .add(size.divide(TWO, DEFAULT_ROUNDING_MODE));
+      .add(size.divide(TWO, GeneralConfiguration.DEFAULT_ROUNDING_MODE));
 
     BigDecimal bodyTop;
     BigDecimal bodyBottom;
@@ -162,13 +160,16 @@ public class CandleAnalyser {
 
     final var bodySize = bodyTop.subtract(bodyBottom);
 
-    final var bodyAverage = bodyBottom.add(bodySize.divide(TWO, DEFAULT_ROUNDING_MODE));
+    final var bodyAverage = bodyBottom.add(bodySize.divide(TWO, GeneralConfiguration.DEFAULT_ROUNDING_MODE));
 
-    final var upperWickPercentage = size.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : upperWickSize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var upperWickPercentage = size.compareTo(BigDecimal.ZERO) == 0 ?
+      BigDecimal.ZERO : upperWickSize.divide(size, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
-    final var lowerWickPercentage = size.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : lowerWickSize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var lowerWickPercentage = size.compareTo(BigDecimal.ZERO) == 0 ?
+      BigDecimal.ZERO : lowerWickSize.divide(size, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
-    final var bodyPercentage = size.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bodySize.divide(size, DEFAULT_ROUNDING_MODE);
+    final var bodyPercentage = size.compareTo(BigDecimal.ZERO) == 0 ?
+      BigDecimal.ZERO : bodySize.divide(size, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
     final boolean bodyPresent = bodyPercentage.compareTo(CATEGORIES_THRESHOLD) > 0;
 

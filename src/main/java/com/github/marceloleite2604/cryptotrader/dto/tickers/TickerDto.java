@@ -9,6 +9,8 @@ public class TickerDto {
 
   private final String buy;
 
+  private final long date;
+
   private final String high;
 
   private final String last;

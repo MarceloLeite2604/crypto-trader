@@ -7,12 +7,21 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 @Component
-public class CurrencyUtil {
+public class FormatUtil {
 
   private final NumberFormat brlNumberFormat;
 
-  public CurrencyUtil() {
+  private final NumberFormat percentageFormat;
+
+  public FormatUtil() {
     this.brlNumberFormat = createBrlNumberFormat();
+    this.percentageFormat = createPercentageFormat();
+  }
+
+  private NumberFormat createPercentageFormat() {
+    final var percentageFormat = NumberFormat.getPercentInstance();
+    percentageFormat.setMinimumFractionDigits(2);
+    return percentageFormat;
   }
 
   private NumberFormat createBrlNumberFormat() {
@@ -24,5 +33,9 @@ public class CurrencyUtil {
 
   public String toBrl(BigDecimal bigDecimal) {
     return brlNumberFormat.format(bigDecimal.doubleValue());
+  }
+
+  public String toPercentage(BigDecimal bigDecimal) {
+    return percentageFormat.format(bigDecimal.doubleValue());
   }
 }

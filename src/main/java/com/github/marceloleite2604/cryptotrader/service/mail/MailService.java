@@ -1,9 +1,12 @@
 package com.github.marceloleite2604.cryptotrader.service.mail;
 
+import com.github.marceloleite2604.cryptotrader.model.Profit;
+import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.Symbol;
 import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.properties.MailProperties;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
+import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +30,18 @@ public class MailService {
 
   private final List<InternetAddress> recipients;
 
+  private final FormatUtil formatUtil;
+
   public MailService(
     MailProperties mailProperties,
     CustomAuthenticator customAuthenticator,
-    DateTimeUtil dateTimeUtil) {
+    DateTimeUtil dateTimeUtil,
+    FormatUtil formatUtil) {
     this.session = createSession(mailProperties, customAuthenticator);
     this.mailProperties = mailProperties;
     this.dateTimeUtil = dateTimeUtil;
     this.recipients = createRecipients(mailProperties);
+    this.formatUtil = formatUtil;
   }
 
   private List<InternetAddress> createRecipients(MailProperties mailProperties) {
@@ -108,5 +115,46 @@ public class MailService {
     properties.put("mail.smtp.ssl.enable", "true");
     properties.put("mail.smtp.auth", "true");
     return properties;
+  }
+
+  @SneakyThrows
+  public void send(Profit profit, Side side) {
+    final var mimeMessage = createEmail(profit, side);
+    Transport.send(mimeMessage);
+  }
+
+  @SneakyThrows
+  private MimeMessage createEmail(Profit profit, Side side) {
+
+    final var mimeMessage = new MimeMessage(session);
+
+    final var address = new InternetAddress(mailProperties.getUsername());
+
+    final var active = profit.getSymbol()
+      .getName();
+
+    final var action = side
+      .toString()
+      .toLowerCase(Locale.ROOT);
+
+    final var percentage = formatUtil.toPercentage(profit.getPercentage());
+
+    String bodyStringBuilder = String.format("Your profit has reached %s.", percentage) +
+      "\n" +
+      String.format("It is a good time to %s your %s.", action, active);
+
+    mimeMessage.setFrom(address);
+    recipients.forEach(recipient -> {
+      try {
+        mimeMessage.addRecipient(MimeMessage.RecipientType.TO, recipient);
+      } catch (Exception exception) {
+        final var message = String.format("Exception thrown while adding a \"%s\" recipient address on mail.", recipient.getAddress());
+        throw new IllegalStateException(message, exception);
+      }
+    });
+
+    mimeMessage.setSubject(String.format("Crypto-trade - %s threshold reached", side.toString().toLowerCase(Locale.ROOT)));
+    mimeMessage.setText(bodyStringBuilder);
+    return mimeMessage;
   }
 }
