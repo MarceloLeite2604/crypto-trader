@@ -6,3 +6,9 @@ mercado-bitcoin:
   base-uri: https://api.mercadobitcoin.net/api/v4/
   client-id: ${CLIENT_ID}
   client-secret: ${CLIENT_SECRET}
+mail:
+  username: ${EMAIL_USERNAME}
+  password: ${EMAIL_PASSWORD}
+  host: ${EMAIL_HOST}
+  port: ${EMAIL_PORT}
+  recipients: ${EMAIL_RECIPIENTS}
