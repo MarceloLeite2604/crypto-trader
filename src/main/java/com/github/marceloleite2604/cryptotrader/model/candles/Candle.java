@@ -10,7 +10,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
@@ -18,36 +18,48 @@ import java.time.OffsetDateTime;
 public class Candle implements Comparable<Candle> {
 
   private final BigDecimal close;
+
   private final BigDecimal high;
+
   private final BigDecimal low;
+
   private final BigDecimal open;
+
   private final CandlePrecision precision;
+
   private final String symbol;
+
   @EqualsAndHashCode.Include
   private final OffsetDateTime timestamp;
+
   private final BigDecimal volume;
 
-  public Candle(Candle other) {
-    this.close = other.close;
+  private final BigDecimal size;
 
-    this.high = other.high;
+  private final BigDecimal bodySize;
 
-    this.low = other.low;
+  private final BigDecimal upperWickSize;
 
-    this.open = other.open;
+  private final BigDecimal lowerWickSize;
 
-    this.precision = other.precision;
+  private final BigDecimal upperWickPercentage;
 
-    this.symbol = other.symbol;
+  private final BigDecimal lowerWickPercentage;
 
-    this.timestamp = other.timestamp;
+  private final BigDecimal bodyPercentage;
 
-    this.volume = other.volume;
-  }
+  private final BigDecimal average;
+
+  private final BigDecimal bodyAverage;
+
+  private final CandleDirection direction;
+
+  private final CandleType type;
+
+  private final CandleComparison comparison;
 
   @Override
   public int compareTo(Candle other) {
-    return this.getTimestamp()
-      .compareTo(other.getTimestamp());
+    return timestamp.compareTo(other.timestamp);
   }
 }

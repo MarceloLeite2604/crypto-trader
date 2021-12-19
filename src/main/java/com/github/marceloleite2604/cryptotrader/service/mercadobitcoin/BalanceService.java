@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.account.BalanceDto;
 import com.github.marceloleite2604.cryptotrader.mapper.BalanceDtoMapper;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class BalanceService {
+class BalanceService {
 
   private final WebClient mbAuthenticatedWebClient;
 

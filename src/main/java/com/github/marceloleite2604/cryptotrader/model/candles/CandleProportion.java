@@ -1,6 +1,6 @@
-package com.github.marceloleite2604.cryptotrader.model.candles.analysis;
+package com.github.marceloleite2604.cryptotrader.model.candles;
 
-public enum CandleSizeCategory {
+public enum CandleProportion {
   MINIMAL,
   VERY_SMALL,
   SMALL,

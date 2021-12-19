@@ -1,9 +1,9 @@
 package com.github.marceloleite2604.cryptotrader.service.mail;
 
-import com.github.marceloleite2604.cryptotrader.model.Profit;
+import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
 import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.Symbol;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.properties.MailProperties;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import com.github.marceloleite2604.cryptotrader.util.FormatUtil;

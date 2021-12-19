@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.model.Instrument;
 import com.github.marceloleite2604.cryptotrader.model.Ticker;
@@ -8,8 +8,8 @@ import com.github.marceloleite2604.cryptotrader.model.account.Position;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
-import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
+import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
 import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
@@ -60,7 +60,8 @@ public class MercadoBitcoinService {
   }
 
   public Ticker retrieveTicker(String symbol) {
-    return tickersService.retrieve(symbol).get(symbol);
+    return tickersService.retrieve(symbol)
+      .get(symbol);
   }
 
   public Map<String, Ticker> retrieveTickers(String... symbols) {
@@ -82,6 +83,16 @@ public class MercadoBitcoinService {
 
   public List<Balance> retrieveBalances(String accountId, String symbol) {
     return balanceService.retrieve(accountId, symbol);
+  }
+
+  public Balance retrieveBalance(String accountId, String symbol) {
+    return balanceService.retrieve(accountId, symbol)
+      .stream()
+      .filter(balance -> symbol.equals(balance.getSymbol()))
+      .findFirst().orElseThrow(() -> {
+        final var message = String.format("Could not find balance for %s symbol.", symbol);
+        return new IllegalArgumentException(message);
+      });
   }
 
   public List<Position> retrievePositions(String accountId, String symbol) {

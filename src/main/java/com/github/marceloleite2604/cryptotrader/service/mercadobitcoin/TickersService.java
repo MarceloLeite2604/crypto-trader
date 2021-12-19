@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.tickers.TickerDto;
 import com.github.marceloleite2604.cryptotrader.mapper.ListTickersDtoToMapTickersMapper;
@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-public class TickersService {
+class TickersService {
 
   private final WebClient mbAuthenticatedWebClient;
 

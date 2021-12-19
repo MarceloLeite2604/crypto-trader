@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.account.AccountDto;
 import com.github.marceloleite2604.cryptotrader.mapper.AccountDtoMapper;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class AccountsService {
+class AccountsService {
 
   private final WebClient mbAuthenticatedWebClient;
 

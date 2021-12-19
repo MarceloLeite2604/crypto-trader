@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.model.candles.analysis;
+package com.github.marceloleite2604.cryptotrader.model.candles;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

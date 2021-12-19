@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+  crypto-trader-mysql:
+    image: mysql:8.0.27
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: crypto-trader
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: crypto-trader-db
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    volumes:
+      - ./docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro

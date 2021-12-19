@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.symbols.GetSymbolsResponsePayload;
 import com.github.marceloleite2604.cryptotrader.mapper.GetSymbolsResponsePayloadToInstrumentSetMapper;

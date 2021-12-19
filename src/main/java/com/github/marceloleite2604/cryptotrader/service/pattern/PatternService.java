@@ -1,21 +1,20 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.service.pattern.links.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
 @Service
-public class PatternCheckService {
+public class PatternService {
 
   private final Pattern first;
 
-  public PatternCheckService(List<Pattern> patterns) {
+  public PatternService(List<Pattern> patterns) {
     this.first = createChain(patterns);
   }
 
@@ -35,8 +34,8 @@ public class PatternCheckService {
     return first;
   }
 
-  public List<PatternMatch> check(List<CandleAnalysis> candleAnalyses) {
-    if (CollectionUtils.isEmpty(candleAnalyses)) {
+  public List<PatternMatch> check(List<Candle> candles) {
+    if (CollectionUtils.isEmpty(candles)) {
       return Collections.emptyList();
     }
 
@@ -44,12 +43,14 @@ public class PatternCheckService {
       return Collections.emptyList();
     }
 
-    candleAnalyses.sort(Collections.reverseOrder());
+
     var patternCheckContext = PatternCheckContext.builder()
-      .candleAnalyses(candleAnalyses)
+      .candles(candles)
       .build();
 
+    candles.sort(Collections.reverseOrder());
     patternCheckContext = first.check(patternCheckContext);
+    Collections.sort(candles);
 
     return patternCheckContext.getPatternMatches();
   }

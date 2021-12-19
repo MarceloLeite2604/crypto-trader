@@ -1,8 +1,8 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternType;
+import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,16 +22,14 @@ public abstract class AbstractPattern implements Pattern {
   @Override
   public PatternCheckContext check(PatternCheckContext patternCheckContext) {
 
-    if (patternCheckContext.getCandleAnalyses()
+    if (patternCheckContext.getCandles()
       .size() >= minAmountOfCandles) {
 
-      findMatch(patternCheckContext).ifPresent(candleAnalysis ->
+      findMatch(patternCheckContext).ifPresent(candle ->
         patternCheckContext.addMatch(PatternMatch.builder()
-          .candleTime(candleAnalysis.getCandle()
-            .getTimestamp())
+          .candleTime(candle.getTimestamp())
           .type(patternType)
-          .symbol(candleAnalysis.getCandle()
-            .getSymbol())
+          .symbol(candle.getSymbol())
           .build()));
     }
 
@@ -42,5 +40,5 @@ public abstract class AbstractPattern implements Pattern {
     return next.check(patternCheckContext);
   }
 
-  public abstract Optional<CandleAnalysis> findMatch(PatternCheckContext patternCheckContext);
+  public abstract Optional<Candle> findMatch(PatternCheckContext patternCheckContext);
 }

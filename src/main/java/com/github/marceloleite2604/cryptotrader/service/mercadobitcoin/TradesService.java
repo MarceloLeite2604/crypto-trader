@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.trades.TradeDto;
 import com.github.marceloleite2604.cryptotrader.mapper.TradeDtoMapper;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TradesService {
+class TradesService {
 
   private final WebClient mbAuthenticatedWebClient;
 

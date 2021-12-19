@@ -1,10 +1,10 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleDirection;
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleSizeCategory;
+import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,40 +13,42 @@ import java.util.Optional;
 @Component
 public class FallingPiercingLinePattern extends AbstractPattern {
 
-  private static final List<CandleSizeCategory> VALID_CANDLE_SIZE_CATEGORIES = List.of(
-    CandleSizeCategory.LARGE,
-    CandleSizeCategory.VERY_LARGE,
-    CandleSizeCategory.ENORMOUS);
+  private static final List<CandleProportion> VALID_CANDLE_SIZE_CATEGORIES = List.of(
+    CandleProportion.LARGE,
+    CandleProportion.VERY_LARGE,
+    CandleProportion.ENORMOUS);
 
   public FallingPiercingLinePattern() {
     super(PatternType.FALLING_PIERCING_LINE, 3);
   }
 
   @Override
-  public Optional<CandleAnalysis> findMatch(PatternCheckContext patternCheckContext) {
-    final var candleAnalyses = patternCheckContext.getCandleAnalyses();
+  public Optional<Candle> findMatch(PatternCheckContext patternCheckContext) {
+    final var candles = patternCheckContext.getCandles();
 
-    final var firstAnalysis = candleAnalyses.get(0);
+    final var firstCandle = candles.get(0);
+    final var firstComparison = firstCandle.getComparison();
 
-    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(firstAnalysis.getBodySizeCategory())) {
+    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(firstComparison.getBodyProportion())) {
       return Optional.empty();
     }
 
-    if (CandleDirection.ASCENDING.equals(firstAnalysis.getDirection())) {
+    if (CandleDirection.ASCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
-    final var secondAnalysis = candleAnalyses.get(1);
+    final var secondCandle = candles.get(1);
+    final var secondComparison = secondCandle.getComparison();
 
 
-    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(secondAnalysis.getBodySizeCategory())) {
+    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(secondComparison.getBodyProportion())) {
       return Optional.empty();
     }
 
-    if (CandleDirection.DESCENDING.equals(secondAnalysis.getDirection())) {
+    if (CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 
-    return Optional.of(firstAnalysis);
+    return Optional.of(firstCandle);
   }
 }

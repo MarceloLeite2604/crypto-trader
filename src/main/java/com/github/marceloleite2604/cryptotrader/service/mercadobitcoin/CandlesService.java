@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.candle.GetCandleResponsePayload;
 import com.github.marceloleite2604.cryptotrader.mapper.GetCandleResponsePayloadToListCandleMapper;
@@ -13,11 +13,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class CandlesService {
+class CandlesService {
 
   private final WebClient mbAuthenticatedWebClient;
 
@@ -48,9 +49,9 @@ public class CandlesService {
         return new IllegalStateException(message);
       });
 
-    return getCandleResponsePayloadToListCandleMapper.mapTo(getCandleResponsePayload);
-
-
+    final var candles = getCandleResponsePayloadToListCandleMapper.mapTo(getCandleResponsePayload);
+    Collections.sort(candles);
+    return candles;
   }
 
   private String buildRetrieveUri(CandlesRequest candlesRequest) {

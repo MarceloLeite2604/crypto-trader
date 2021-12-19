@@ -1,7 +1,8 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandleComparison;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import java.util.List;
 @Getter
 public class PatternCheckContext {
 
-  private final List<CandleAnalysis> candleAnalyses;
+  private final List<Candle> candles;
 
   private final List<PatternMatch> patternMatches = new ArrayList<>();
 

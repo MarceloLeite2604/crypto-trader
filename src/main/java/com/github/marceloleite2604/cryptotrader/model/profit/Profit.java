@@ -1,5 +1,6 @@
-package com.github.marceloleite2604.cryptotrader.model;
+package com.github.marceloleite2604.cryptotrader.model.profit;
 
+import com.github.marceloleite2604.cryptotrader.model.Symbol;
 import lombok.Getter;
 import lombok.Setter;
 

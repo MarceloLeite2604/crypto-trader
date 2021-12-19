@@ -1,3 +1,6 @@
+spring.jpa:
+  show-sql: true
+  hibernate.ddl-auto: update
 spring.main.web-application-type: none
 logging.level:
     org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
@@ -12,3 +15,9 @@ mail:
   host: ${EMAIL_HOST}
   port: ${EMAIL_PORT}
   recipients: ${EMAIL_RECIPIENTS}
+database:
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  url: ${DATABSE_URL}
+  username: ${DATABASE_USERNAME}
+  password: ${DATABASE_PASSWORD}
+  connections: 4

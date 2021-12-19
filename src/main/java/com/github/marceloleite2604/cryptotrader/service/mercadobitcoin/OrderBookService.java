@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.orderbook.GetOrderBookResponsePayload;
 import com.github.marceloleite2604.cryptotrader.mapper.GetOrderBookResponsePayloadToOrderBookMapper;
@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 
 @Component
 @RequiredArgsConstructor
-public class OrderBookService {
+class OrderBookService {
 
   private final WebClient mbAuthenticatedWebClient;
 

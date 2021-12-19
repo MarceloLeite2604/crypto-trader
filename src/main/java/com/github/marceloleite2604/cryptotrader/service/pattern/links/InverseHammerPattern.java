@@ -1,10 +1,10 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleDirection;
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleType;
+import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandleType;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternType;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -17,51 +17,49 @@ public class InverseHammerPattern extends AbstractPattern {
   }
 
   @Override
-  public Optional<CandleAnalysis> findMatch(PatternCheckContext patternCheckContext) {
-    final var candleAnalyses = patternCheckContext.getCandleAnalyses();
+  public Optional<Candle> findMatch(PatternCheckContext patternCheckContext) {
+    final var candles = patternCheckContext.getCandles();
 
-    final var firstAnalysis = candleAnalyses.get(0);
+    final var firstCandle = candles.get(0);
 
-    if (!CandleDirection.ASCENDING.equals(firstAnalysis.getDirection())) {
+    if (!CandleDirection.ASCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
-    final var secondAnalysis = candleAnalyses.get(1);
+    final var secondCandle = candles.get(1);
 
-    if (secondAnalysis.getAverage()
-      .compareTo(firstAnalysis.getAverage()) > 0) {
+    if (secondCandle.getAverage()
+      .compareTo(firstCandle.getAverage()) > 0) {
       return Optional.empty();
     }
 
-    if (!CandleType.SHOOTING_STAR.equals(secondAnalysis.getType()) ||
-      !CandleDirection.ASCENDING.equals(secondAnalysis.getDirection())) {
+    if (!CandleType.SHOOTING_STAR.equals(secondCandle.getType()) ||
+      !CandleDirection.ASCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 
-    final var thirdAnalysis = candleAnalyses.get(2);
+    final var thirdCandle = candles.get(2);
 
-    if (!CandleDirection.DESCENDING.equals(thirdAnalysis.getDirection())) {
+    if (!CandleDirection.DESCENDING.equals(thirdCandle.getDirection())) {
       return Optional.empty();
     }
 
-    if (thirdAnalysis.getCandle()
-      .getLow()
-      .compareTo(secondAnalysis.getCandle()
-        .getLow()) < 0) {
+    if (thirdCandle.getLow()
+      .compareTo(secondCandle.getLow()) < 0) {
       return Optional.empty();
     }
 
-    final var fourthAnalysis = candleAnalyses.get(3);
+    final var fourthCandle = candles.get(3);
 
-    if (!CandleDirection.DESCENDING.equals(fourthAnalysis.getDirection())) {
+    if (!CandleDirection.DESCENDING.equals(fourthCandle.getDirection())) {
       return Optional.empty();
     }
 
-    if (thirdAnalysis.getAverage()
-      .compareTo(fourthAnalysis.getAverage()) > 0) {
+    if (thirdCandle.getAverage()
+      .compareTo(fourthCandle.getAverage()) > 0) {
       return Optional.empty();
     }
 
-    return Optional.of(secondAnalysis);
+    return Optional.of(secondCandle);
   }
 }

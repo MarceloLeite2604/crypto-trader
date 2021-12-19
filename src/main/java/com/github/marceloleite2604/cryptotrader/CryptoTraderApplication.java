@@ -1,15 +1,14 @@
 package com.github.marceloleite2604.cryptotrader;
 
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
-import com.github.marceloleite2604.cryptotrader.service.MercadoBitcoinService;
-import com.github.marceloleite2604.cryptotrader.service.ProfitCalculatorService;
+import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
+import com.github.marceloleite2604.cryptotrader.service.ProfitService;
 import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableCaching
@@ -26,7 +25,7 @@ public class CryptoTraderApplication {
   public CommandLineRunner createCommandLineRunner(
     MercadoBitcoinService mercadoBitcoinService,
     FormatUtil formatUtil,
-    ProfitCalculatorService profitCalculatorService) {
+    ProfitService profitService) {
     return (args -> {
 //      final var instruments = mercadoBitcoinService.retrieveAllInstruments();
 //      final var bitcoinInstrument = instruments.stream()
@@ -78,7 +77,7 @@ public class CryptoTraderApplication {
         .symbol("ETH-BRL")
         .build();
       final var orders = mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
-      final var profit = profitCalculatorService.calculate(orders, ethBrlTicker);
+      final var profit = profitService.calculate(orders, ethBrlTicker);
 //      final var order = orders.get(0);
 //      final var retrievedOrder = mercadoBitcoinService.retrieveOrder(account.getId(), "BTC-BRL", order.getId());
 //      final var placeOrderRequest = PlaceOrderRequest.builder()

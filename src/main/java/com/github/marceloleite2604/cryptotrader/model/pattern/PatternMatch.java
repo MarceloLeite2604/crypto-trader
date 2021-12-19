@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.model.patterns;
+package com.github.marceloleite2604.cryptotrader.model.pattern;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

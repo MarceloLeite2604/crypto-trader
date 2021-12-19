@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
 import com.github.marceloleite2604.cryptotrader.dto.orders.OrderDto;
 import com.github.marceloleite2604.cryptotrader.dto.orders.PostOrderResponsePayload;
@@ -28,7 +28,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OrderService {
+class OrderService {
 
   private final WebClient mbAuthenticatedWebClient;
 

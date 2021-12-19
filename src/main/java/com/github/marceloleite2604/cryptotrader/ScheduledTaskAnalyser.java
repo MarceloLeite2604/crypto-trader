@@ -3,17 +3,18 @@ package com.github.marceloleite2604.cryptotrader;
 import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.Symbol;
 import com.github.marceloleite2604.cryptotrader.model.account.Account;
+import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
-import com.github.marceloleite2604.cryptotrader.model.candles.analysis.CandleAnalysis;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
-import com.github.marceloleite2604.cryptotrader.model.patterns.PatternMatch;
-import com.github.marceloleite2604.cryptotrader.service.CandleAnalyser;
-import com.github.marceloleite2604.cryptotrader.service.MercadoBitcoinService;
-import com.github.marceloleite2604.cryptotrader.service.ProfitCalculatorService;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.service.CandleService;
+import com.github.marceloleite2604.cryptotrader.service.ProfitService;
 import com.github.marceloleite2604.cryptotrader.service.mail.MailService;
-import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckService;
+import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
+import com.github.marceloleite2604.cryptotrader.service.pattern.PatternService;
+import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,23 +38,24 @@ public class ScheduledTaskAnalyser {
   private static final Duration TIME_WINDOW = CANDLE_PRECISION.getDuration()
     .multipliedBy(12);
 
-  private static final BigDecimal PROFIT_THRESHOLD = BigDecimal.valueOf(-0.03);
-
   private final MercadoBitcoinService mercadoBitcoinService;
 
-  private final PatternCheckService patternCheckService;
+  private final PatternService patternService;
 
-  private final CandleAnalyser candleAnalyser;
+  private final CandleService candleService;
 
   private final MailService mailService;
 
-  private final ProfitCalculatorService profitCalculatorService;
+  private final ProfitService profitService;
+
+  private final FormatUtil formatUtil;
 
   private Account account;
 
   private List<PatternMatch> patternMatches;
 
-  @Scheduled(cron = "0 * * ? * ?")
+  //  @Scheduled(cron = "0 * * ? * ?")
+  @Scheduled(fixedDelay = 60000)
   public void run() {
     log.info("Looking for candle patterns.");
     lookForCandlePatterns();
@@ -62,9 +64,19 @@ public class ScheduledTaskAnalyser {
   }
 
   private void lookForCandlePatterns() {
-    final var candleAnalyses = retrieveAndAnalyseCandles();
-    final var patternMatches = findPatterns(candleAnalyses);
+    final var candles = retrieveAndCompareCandles();
+    final var patternMatches = patternService.check(candles);
     checkAndReportPatterns(patternMatches);
+  }
+
+  private List<Candle> retrieveAndCompareCandles() {
+    var candles = retrieveCandles();
+    return candleService.compare(candles);
+  }
+
+  private List<Candle> retrieveCandles() {
+    final var candlesRequest = createCandlesRequest();
+    return mercadoBitcoinService.retrieveCandles(candlesRequest);
   }
 
   private void checkAndReportPatterns(List<PatternMatch> patternMatches) {
@@ -72,23 +84,6 @@ public class ScheduledTaskAnalyser {
       this.patternMatches = patternMatches;
       patternMatches.forEach(mailService::send);
     }
-  }
-
-  private List<PatternMatch> findPatterns(List<CandleAnalysis> candleAnalyses) {
-    return patternCheckService.check(candleAnalyses);
-  }
-
-  private List<CandleAnalysis> retrieveAndAnalyseCandles() {
-    final var candlesRequest = createCandlesRequest();
-    final var retrievedCandles = mercadoBitcoinService.retrieveCandles(candlesRequest);
-
-    final var candleAnalyses = retrievedCandles.stream()
-      .map(candle -> CandleAnalysis.builder()
-        .candle(candle)
-        .build())
-      .toList();
-
-    return candleAnalyser.analyse(candleAnalyses);
   }
 
   private CandlesRequest createCandlesRequest() {
@@ -104,13 +99,35 @@ public class ScheduledTaskAnalyser {
   }
 
   private void checkProfit() {
+
+    final var balance = mercadoBitcoinService.retrieveBalance(retrieveAccount().getId(), "ETH");
+
+    if (balance.getTotal()
+      .compareTo(BigDecimal.valueOf(0.000001)) < 0) {
+      System.out.printf("Not enough %s balance to check profit. Skipping.%n", SYMBOL.getName());
+      return;
+    }
+
     final var ticker = mercadoBitcoinService.retrieveTicker(SYMBOL.getValue());
     final var orders = retrieveOrders();
-    final var profit = profitCalculatorService.calculate(orders, ticker);
+    final var profit = profitService.calculate(orders, ticker);
 
-    if (profit.getPercentage().compareTo(PROFIT_THRESHOLD) < 0) {
-      mailService.send(profit, Side.SELL);
+    var thresholds = profitService.retrieveThresholds(account.getId());
+
+    final var percentage = profit.getPercentage();
+
+    if (percentage.compareTo(thresholds.getUpper()) >= 0 ||
+      percentage.compareTo(thresholds.getLower()) <= 0) {
+      thresholds = profitService.updateThresholds(percentage, account.getId());
+
+      if (percentage.compareTo(thresholds.getLower()) <= 0) {
+        mailService.send(profit, Side.SELL);
+      }
     }
+    System.out.printf("Current profit: %s <= %s <= %s%n",
+      formatUtil.toPercentage(thresholds.getLower()),
+      formatUtil.toPercentage(thresholds.getCurrent()),
+      formatUtil.toPercentage(thresholds.getUpper()));
   }
 
   private List<Order> retrieveOrders() {
