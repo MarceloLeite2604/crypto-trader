@@ -81,6 +81,10 @@ public class MercadoBitcoinService {
     return accountsService.retrieve();
   }
 
+  public Account retrieveAccount() {
+    return accountsService.retrieve().get(0);
+  }
+
   public List<Balance> retrieveBalances(String accountId, String symbol) {
     return balanceService.retrieve(accountId, symbol);
   }

@@ -1,9 +1,9 @@
 package com.github.marceloleite2604.cryptotrader.service.mail;
 
-import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.Side;
-import com.github.marceloleite2604.cryptotrader.model.Symbol;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
 import com.github.marceloleite2604.cryptotrader.properties.MailProperties;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
@@ -81,7 +81,7 @@ public class MailService {
 
     final var time = dateTimeUtil.formatOffsetDateTimeAsString(patternMatch.getCandleTime());
 
-    final var active = Symbol.findByValue(patternMatch.getSymbol())
+    final var active = Active.findBySymbol(patternMatch.getSymbol())
       .getName();
 
     final var action = patternMatch.getType()
@@ -130,18 +130,19 @@ public class MailService {
 
     final var address = new InternetAddress(mailProperties.getUsername());
 
-    final var active = profit.getSymbol()
+    final var active = profit.getId()
+      .getActive()
       .getName();
 
     final var action = side
       .toString()
       .toLowerCase(Locale.ROOT);
 
-    final var percentage = formatUtil.toPercentage(profit.getPercentage());
+    final var percentage = formatUtil.toPercentage(profit.getCurrent());
 
     String bodyStringBuilder = String.format("Your profit has reached %s.", percentage) +
       "\n" +
-      String.format("It is a good time to %s your %s.", action, active);
+      String.format("It is a good time to %s %s.", action, active);
 
     mimeMessage.setFrom(address);
     recipients.forEach(recipient -> {
@@ -153,7 +154,8 @@ public class MailService {
       }
     });
 
-    mimeMessage.setSubject(String.format("Crypto-trade - %s threshold reached", side.toString().toLowerCase(Locale.ROOT)));
+    mimeMessage.setSubject(String.format("Crypto-trade - %s threshold reached", side.toString()
+      .toLowerCase(Locale.ROOT)));
     mimeMessage.setText(bodyStringBuilder);
     return mimeMessage;
   }

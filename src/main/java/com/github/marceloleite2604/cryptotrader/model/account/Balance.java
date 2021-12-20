@@ -17,4 +17,8 @@ public class Balance {
   private String symbol;
 
   private BigDecimal total;
+
+  public boolean isEmpty() {
+    return total.compareTo(BigDecimal.valueOf(0.000001)) < 0;
+  }
 }

@@ -68,16 +68,16 @@ public class CryptoTraderApplication {
 //        .build();
 //      final var trades = mercadoBitcoinService.retrieveTrades(tradesRequest);
 
-      final var accounts = mercadoBitcoinService.retrieveAccounts();
-      final var account = accounts.get(0);
+//      final var accounts = mercadoBitcoinService.retrieveAccounts();
+//      final var account = accounts.get(0);
 //      final var balances = mercadoBitcoinService.retrieveBalances(account.getId(), "BTC-BRL");
 //      final var positions = mercadoBitcoinService.retrievePositions(account.getId(), "BTC-BRL");
-      final var retrieveOrdersRequest = RetrieveOrdersRequest.builder()
-        .accountId(account.getId())
-        .symbol("ETH-BRL")
-        .build();
-      final var orders = mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
-      final var profit = profitService.calculate(orders, ethBrlTicker);
+//      final var retrieveOrdersRequest = RetrieveOrdersRequest.builder()
+//        .accountId(account.getId())
+//        .symbol("ETH-BRL")
+//        .build();
+//      final var orders = mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
+//      final var profit = profitService.calculate(orders, ethBrlTicker);
 //      final var order = orders.get(0);
 //      final var retrievedOrder = mercadoBitcoinService.retrieveOrder(account.getId(), "BTC-BRL", order.getId());
 //      final var placeOrderRequest = PlaceOrderRequest.builder()

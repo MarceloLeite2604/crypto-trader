@@ -1,13 +1,11 @@
 package com.github.marceloleite2604.cryptotrader;
 
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.Side;
-import com.github.marceloleite2604.cryptotrader.model.Symbol;
 import com.github.marceloleite2604.cryptotrader.model.account.Account;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
-import com.github.marceloleite2604.cryptotrader.model.orders.Order;
-import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.service.CandleService;
 import com.github.marceloleite2604.cryptotrader.service.ProfitService;
@@ -20,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -31,7 +28,7 @@ import java.util.List;
 @Slf4j
 public class ScheduledTaskAnalyser {
 
-  private static final Symbol SYMBOL = Symbol.ETHEREUM;
+  private static final Active ACTIVE = Active.ETHEREUM;
 
   private static final CandlePrecision CANDLE_PRECISION = CandlePrecision.FIFTEEN_MINUTES;
 
@@ -51,11 +48,9 @@ public class ScheduledTaskAnalyser {
   private final FormatUtil formatUtil;
 
   private Account account;
-
   private List<PatternMatch> patternMatches;
 
-  //  @Scheduled(cron = "0 * * ? * ?")
-  @Scheduled(fixedDelay = 60000)
+  @Scheduled(cron = "0 * * ? * ?")
   public void run() {
     log.info("Looking for candle patterns.");
     lookForCandlePatterns();
@@ -91,7 +86,7 @@ public class ScheduledTaskAnalyser {
       .minus(CANDLE_PRECISION.getDuration());
     final var from = to.minus(TIME_WINDOW);
     return CandlesRequest.builder()
-      .symbol(SYMBOL.getValue())
+      .active(ACTIVE)
       .resolution(CANDLE_PRECISION)
       .toTime(to)
       .from(from)
@@ -100,49 +95,31 @@ public class ScheduledTaskAnalyser {
 
   private void checkProfit() {
 
-    final var balance = mercadoBitcoinService.retrieveBalance(retrieveAccount().getId(), "ETH");
+    final var activeBalance = mercadoBitcoinService.retrieveBalance(retrieveAccount().getId(), ACTIVE.getBase());
+    final var fiatBalance = mercadoBitcoinService.retrieveBalance(retrieveAccount().getId(), "BRL");
 
-    if (balance.getTotal()
-      .compareTo(BigDecimal.valueOf(0.000001)) < 0) {
-      System.out.printf("Not enough %s balance to check profit. Skipping.%n", SYMBOL.getName());
-      return;
+    var profit = profitService.retrieve(retrieveAccount().getId(), ACTIVE);
+
+    if (profit.hasReachedLowerLimit() && !activeBalance.isEmpty()) {
+      mailService.send(profit, Side.SELL);
     }
 
-    final var ticker = mercadoBitcoinService.retrieveTicker(SYMBOL.getValue());
-    final var orders = retrieveOrders();
-    final var profit = profitService.calculate(orders, ticker);
-
-    var thresholds = profitService.retrieveThresholds(account.getId());
-
-    final var percentage = profit.getPercentage();
-
-    if (percentage.compareTo(thresholds.getUpper()) >= 0 ||
-      percentage.compareTo(thresholds.getLower()) <= 0) {
-      thresholds = profitService.updateThresholds(percentage, account.getId());
-
-      if (percentage.compareTo(thresholds.getLower()) <= 0) {
-        mailService.send(profit, Side.SELL);
-      }
+    if (profit.hasReachedUpperLimit() && !fiatBalance.isEmpty()) {
+      mailService.send(profit, Side.BUY);
     }
+
+    profit = profitService.updateAndSave(profit);
+
     System.out.printf("Current profit: %s <= %s <= %s%n",
-      formatUtil.toPercentage(thresholds.getLower()),
-      formatUtil.toPercentage(thresholds.getCurrent()),
-      formatUtil.toPercentage(thresholds.getUpper()));
+      formatUtil.toPercentage(profit.getLower()),
+      formatUtil.toPercentage(profit.getCurrent()),
+      formatUtil.toPercentage(profit.getUpper()));
   }
 
-  private List<Order> retrieveOrders() {
-    final var account = retrieveAccount();
-    final var retrieveOrdersRequest = RetrieveOrdersRequest.builder()
-      .accountId(account.getId())
-      .symbol(SYMBOL.getValue())
-      .build();
-    return mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
-  }
 
   private Account retrieveAccount() {
     if (account == null) {
-      account = mercadoBitcoinService.retrieveAccounts()
-        .get(0);
+      account = mercadoBitcoinService.retrieveAccount();
     }
     return account;
   }

@@ -36,7 +36,8 @@ class CandlesService {
     final var getCandleResponsePayloadToListCandleMapper = GetCandleResponsePayloadToListCandleMapper.builder()
       .dateTimeUtil(dateTimeUtil)
       .precision(candlesRequest.getResolution())
-      .symbol(candlesRequest.getSymbol())
+      .symbol(candlesRequest.getActive()
+        .getSymbol())
       .build();
 
     final var getCandleResponsePayload = mbAuthenticatedWebClient.get()
@@ -45,7 +46,7 @@ class CandlesService {
       .bodyToMono(GetCandleResponsePayload.class)
       .blockOptional()
       .orElseThrow(() -> {
-        final var message = String.format("Could not retrieve candles for \"%s\" symbol.", candlesRequest.getSymbol());
+        final var message = String.format("Could not retrieve candles for \"%s\" symbol.", candlesRequest.getActive());
         return new IllegalStateException(message);
       });
 
@@ -57,7 +58,8 @@ class CandlesService {
   private String buildRetrieveUri(CandlesRequest candlesRequest) {
 
     final var uriBuilder = new URIBuilder().setPathSegments("candles")
-      .addParameter("symbol", candlesRequest.getSymbol())
+      .addParameter("symbol", candlesRequest.getActive()
+        .getSymbol())
       .addParameter("resolution", candlesRequest.getResolution()
         .getValue());
 

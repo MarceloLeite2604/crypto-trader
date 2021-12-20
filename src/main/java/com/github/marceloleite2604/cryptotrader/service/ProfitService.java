@@ -1,41 +1,55 @@
 package com.github.marceloleite2604.cryptotrader.service;
 
 import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
-import com.github.marceloleite2604.cryptotrader.model.Symbol;
-import com.github.marceloleite2604.cryptotrader.model.Ticker;
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.orders.Execution;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
+import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
-import com.github.marceloleite2604.cryptotrader.model.profit.ProfitMarginRatioThresholds;
-import com.github.marceloleite2604.cryptotrader.repository.ProfitThresholdRepository;
+import com.github.marceloleite2604.cryptotrader.model.profit.ProfitId;
+import com.github.marceloleite2604.cryptotrader.repository.ProfitRepository;
+import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProfitService {
 
   private static final BigDecimal PROFIT_THRESHOLD_STEP = BigDecimal.valueOf(0.005);
-  private final BigDecimal MAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.003);
-  private final BigDecimal TAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.007);
-  private final ProfitThresholdRepository profitThresholdRepository;
+  private static final BigDecimal MAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.003);
+  private static final BigDecimal TAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.007);
 
-  public Profit calculate(List<Order> orders, Ticker ticker) {
+  private final MercadoBitcoinService mercadoBitcoinService;
+  private final ProfitRepository profitRepository;
 
-    final var profit = new Profit();
+  public Profit retrieve(String accountId, Active active) {
+
+    final var profit = retrieveFromDatabase(accountId, active).orElseGet(() -> createDefault(accountId, active));
+
+    final var current = calculateCurrent(accountId, active);
+
+    return profit.toBuilder()
+      .current(current)
+      .build();
+  }
+
+  private BigDecimal calculateCurrent(String accountId, Active active) {
+    final var ticker = mercadoBitcoinService.retrieveTicker(active.getSymbol());
+
+    final var orders = retrieveOrders(accountId, active);
 
     if (CollectionUtils.isEmpty(orders)) {
-      return profit;
+      return BigDecimal.ZERO;
     }
 
-    final var symbol = Symbol.findByValue(orders.get(0)
-      .getInstrument());
-
-    profit.setSymbol(symbol);
+    var cryptoBalance = BigDecimal.ZERO;
+    var fiatBalance = BigDecimal.ZERO;
 
     for (Order order : orders) {
       for (Execution execution : order.getExecutions()) {
@@ -47,58 +61,74 @@ public class ProfitService {
             .multiply(execution.getQuantity())
             .multiply(BigDecimal.ONE.subtract(feePercentage));
 
-          profit.subtractCrypto(execution.getQuantity());
-          profit.addFiat(netIncome);
+          cryptoBalance = cryptoBalance.subtract(execution.getQuantity());
+          fiatBalance = fiatBalance.add(netIncome);
         } else {
           final var netIncome = execution.getQuantity()
             .multiply(BigDecimal.ONE.subtract(feePercentage));
           final var cost = execution.getPrice()
             .multiply(execution.getQuantity());
-          profit.subtractFiat(cost);
-          profit.addCrypto(netIncome);
+          fiatBalance = fiatBalance.subtract(cost);
+          cryptoBalance = cryptoBalance.add(netIncome);
         }
       }
     }
 
-    final var currentCryptoBalanceAsFiat = profit.getCryptoCurrencyBalance()
-      .multiply(ticker.getLast());
+    final var cryptoBalanceAsFiat = cryptoBalance.multiply(ticker.getLast());
 
-    final var value = currentCryptoBalanceAsFiat.add(profit.getFiatCurrencyBalance());
+    final var value = cryptoBalanceAsFiat.add(fiatBalance);
 
-    final var percentage = value.divide(profit.getFiatCurrencyBalance()
-      .negate(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
-
-    profit.setValue(value);
-    profit.setPercentage(percentage);
-
-    return profit;
+    return value.divide(fiatBalance.negate(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
   }
 
-  public ProfitMarginRatioThresholds retrieveThresholds(String accountId) {
-    return profitThresholdRepository.findById(accountId)
-      .orElseGet(() -> {
-        final var defaultThresholds = createDefaultThresholds(accountId);
-        return profitThresholdRepository.save(defaultThresholds);
-      });
-  }
-
-  private ProfitMarginRatioThresholds createDefaultThresholds(String accountId) {
-    return ProfitMarginRatioThresholds.builder()
+  private Optional<Profit> retrieveFromDatabase(String accountId, Active active) {
+    return retrieveFromDatabase(ProfitId.builder()
       .accountId(accountId)
+      .active(active)
+      .build());
+  }
+
+  private Optional<Profit> retrieveFromDatabase(ProfitId profitId) {
+    return profitRepository.findById(profitId);
+  }
+
+  private Profit createDefault(String accountId, Active active) {
+
+    final var id = ProfitId.builder()
+      .accountId(accountId)
+      .active(active)
+      .build();
+
+    return Profit.builder()
+      .id(id)
       .current(BigDecimal.ZERO)
       .lower(PROFIT_THRESHOLD_STEP.negate())
       .upper(PROFIT_THRESHOLD_STEP)
       .build();
   }
 
-  public ProfitMarginRatioThresholds updateThresholds(BigDecimal percentage, String accountId) {
-    final var thresholds = ProfitMarginRatioThresholds.builder()
+  private List<Order> retrieveOrders(String accountId, Active active) {
+    final var retrieveOrdersRequest = RetrieveOrdersRequest.builder()
       .accountId(accountId)
-      .current(percentage)
-      .upper(percentage.add(PROFIT_THRESHOLD_STEP))
-      .lower(percentage.subtract(PROFIT_THRESHOLD_STEP))
+      .symbol(active.getSymbol())
       .build();
+    return mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
+  }
 
-    return profitThresholdRepository.save(thresholds);
+  public Profit updateAndSave(Profit profit) {
+    var profitMarginToPersist = profit;
+
+    if (profit.hasReachedUpperLimit() || profit.hasReachedLowerLimit()) {
+      final var current = profit.getCurrent();
+      final var upper = current.add(PROFIT_THRESHOLD_STEP);
+      final var lower = current.subtract(PROFIT_THRESHOLD_STEP);
+
+      profitMarginToPersist = profit.toBuilder()
+        .upper(upper)
+        .lower(lower)
+        .build();
+    }
+
+    return profitRepository.save(profitMarginToPersist);
   }
 }

@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.model.candles;
 
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
 @Builder
@@ -14,8 +16,8 @@ import java.time.OffsetDateTime;
 @Getter
 public class CandlesRequest {
 
-  @NotBlank
-  private final String symbol;
+  @NotNull
+  private final Active active;
 
   private final CandlePrecision resolution;
 

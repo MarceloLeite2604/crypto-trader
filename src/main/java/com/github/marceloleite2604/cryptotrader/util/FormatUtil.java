@@ -13,6 +13,8 @@ public class FormatUtil {
 
   private final NumberFormat percentageFormat;
 
+  private final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+
   public FormatUtil() {
     this.brlNumberFormat = createBrlNumberFormat();
     this.percentageFormat = createPercentageFormat();
