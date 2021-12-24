@@ -160,7 +160,6 @@ class OrderService {
   private String buildPostUri(String accountId, String symbol) {
     try {
       return new URIBuilder().setPathSegments("accounts", accountId, symbol, "orders")
-//      return new URIBuilder("http://api.mercadobitcoin.net").setPathSegments("api", "v4", "accounts", accountId, symbol, "orders")
         .build()
         .toString();
     } catch (URISyntaxException exception) {

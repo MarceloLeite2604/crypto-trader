@@ -21,4 +21,8 @@ public class Balance {
   public boolean isEmpty() {
     return total.compareTo(BigDecimal.valueOf(0.000001)) < 0;
   }
+
+  public boolean isNotEmpty() {
+    return !isEmpty();
+  }
 }

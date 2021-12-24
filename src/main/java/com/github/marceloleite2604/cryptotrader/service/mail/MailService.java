@@ -1,6 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service.mail;
 
-import com.github.marceloleite2604.cryptotrader.model.Active;
+import com.github.marceloleite2604.cryptotrader.model.Action;
 import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
@@ -18,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Service
 public class MailService {
@@ -81,7 +82,7 @@ public class MailService {
 
     final var time = dateTimeUtil.formatOffsetDateTimeAsString(patternMatch.getCandleTime());
 
-    final var active = Active.findBySymbol(patternMatch.getSymbol())
+    final var active = patternMatch.getActive()
       .getName();
 
     final var action = patternMatch.getType()
@@ -156,6 +157,51 @@ public class MailService {
 
     mimeMessage.setSubject(String.format("Crypto-trade - %s threshold reached", side.toString()
       .toLowerCase(Locale.ROOT)));
+    mimeMessage.setText(bodyStringBuilder);
+    return mimeMessage;
+  }
+
+  @SneakyThrows
+  public void send(Action action) {
+    final var mimeMessage = createEmail(action);
+    Transport.send(mimeMessage);
+  }
+
+  @SneakyThrows
+  private MimeMessage createEmail(Action action) {
+    final var mimeMessage = new MimeMessage(session);
+
+    final var address = new InternetAddress(mailProperties.getUsername());
+
+    final var active = action.getActive()
+      .getName();
+
+    final var side = action.getSide()
+      .toString()
+      .toLowerCase(Locale.ROOT);
+
+    final var arguments = action.getArguments()
+      .stream()
+      .map(argument -> "\t- " + argument)
+      .collect(Collectors.joining("\n"));
+
+    String bodyStringBuilder = String.format("We advise you to %s %s due to the following ", side, active) +
+      (action.getArguments()
+        .size() > 1 ? "arguments" : "argument") +
+      ":\n" +
+      arguments;
+
+    mimeMessage.setFrom(address);
+    recipients.forEach(recipient -> {
+      try {
+        mimeMessage.addRecipient(MimeMessage.RecipientType.TO, recipient);
+      } catch (Exception exception) {
+        final var message = String.format("Exception thrown while adding a \"%s\" recipient address on mail.", recipient.getAddress());
+        throw new IllegalStateException(message, exception);
+      }
+    });
+
+    mimeMessage.setSubject("Crypto-trader: " + action.getSummary());
     mimeMessage.setText(bodyStringBuilder);
     return mimeMessage;
   }

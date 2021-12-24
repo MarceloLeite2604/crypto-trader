@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class HammerPattern extends AbstractPattern {
+public class HammerPatternChecker extends AbstractPatternChecker {
 
-  public HammerPattern() {
+  public HammerPatternChecker() {
     super(PatternType.HAMMER, 4);
   }
 

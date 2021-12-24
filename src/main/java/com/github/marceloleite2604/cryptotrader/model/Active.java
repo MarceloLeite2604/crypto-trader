@@ -9,7 +9,9 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum Active {
-  ETHEREUM("ETH", "BRL", "Ethereum");
+  ETHEREUM("ETH", "BRL", "Ethereum"),
+  BITCOIN("BTC", "BRL", "Bitcoin"),
+  LITECOIN("LTC", "BRL", "Litecoin");
 
   private final String base;
 

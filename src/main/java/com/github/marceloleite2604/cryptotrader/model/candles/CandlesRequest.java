@@ -19,6 +19,7 @@ public class CandlesRequest {
   @NotNull
   private final Active active;
 
+  @NotNull
   private final CandlePrecision resolution;
 
   private final OffsetDateTime toTime;

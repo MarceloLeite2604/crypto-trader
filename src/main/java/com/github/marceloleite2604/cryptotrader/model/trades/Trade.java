@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Trade {
+public class Trade implements Comparable<Trade> {
 
   private final BigDecimal amount;
 
@@ -22,4 +22,9 @@ public class Trade {
   private final long tid;
 
   private final String type;
+
+  @Override
+  public int compareTo(Trade other) {
+    return date.compareTo(other.date);
+  }
 }

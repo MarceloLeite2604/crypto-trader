@@ -1,11 +1,10 @@
-package com.github.marceloleite2604.cryptotrader.service;
+package com.github.marceloleite2604.cryptotrader.service.candle;
 
 import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleComparison;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePosition;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +15,7 @@ import java.util.List;
 import java.util.function.Function;
 
 @Component
-@RequiredArgsConstructor
-public class CandleService {
+class CandleComparisonService {
 
   public List<Candle> compare(List<Candle> candles) {
 
@@ -31,13 +29,16 @@ public class CandleService {
 
     final var candlesProportions = retrieveCandlesProportions(candles);
     final var bodiesProportions = retrieveBodiesProportions(candles);
+    final var volumeProportions = retrieveVolumeProportions(candles);
     final var positions = retrieveCandlesPositions(candles);
+
 
     for (int count = 0; count < candles.size(); count++) {
       final var comparison = CandleComparison.builder()
         .candleProportion(candlesProportions.get(count))
         .bodyProportion(bodiesProportions.get(count))
         .position(positions.get(count))
+        .volumeProportion(volumeProportions.get(count))
         .build();
 
       final var candle = candles.get(count);
@@ -53,12 +54,15 @@ public class CandleService {
   }
 
   private List<CandleProportion> retrieveCandlesProportions(List<Candle> candles) {
-
     return retrieveProportions(candles, Candle::getSize);
   }
 
   private List<CandleProportion> retrieveBodiesProportions(List<Candle> candles) {
     return retrieveProportions(candles, Candle::getBodySize);
+  }
+
+  private List<CandleProportion> retrieveVolumeProportions(List<Candle> candles) {
+    return retrieveProportions(candles, Candle::getVolume);
   }
 
   private List<CandleProportion> retrieveProportions(List<Candle> candles, Function<Candle, BigDecimal> sizeGetter) {
@@ -73,7 +77,8 @@ public class CandleService {
 
     for (BigDecimal size : sizes) {
 
-      final var ratio = size.divide(averageBodySize, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+      final var ratio = size.compareTo(BigDecimal.ZERO) == 0 ?
+        BigDecimal.ZERO : size.divide(averageBodySize, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
       final var step = BigDecimal.valueOf(1.0 / (CandleProportion.values().length / 2.0));
       var index = ratio.divide(step, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
@@ -90,17 +95,6 @@ public class CandleService {
     return bodiesProportions;
   }
 
-  private BigDecimal calculateAverage(List<Candle> candles, Function<Candle, BigDecimal> getter) {
-    return candles.stream()
-      .map(getter)
-      .mapToDouble(BigDecimal::doubleValue)
-      .average()
-      .stream()
-      .mapToObj(BigDecimal::valueOf)
-      .findFirst()
-      .orElse(BigDecimal.ZERO);
-  }
-
   private List<CandlePosition> retrieveCandlesPositions(List<Candle> candles) {
     Candle previous = null;
     final var candlesPositions = new ArrayList<CandlePosition>(candles.size());
@@ -114,8 +108,6 @@ public class CandleService {
         final var ratio = previous.getSize()
           .compareTo(BigDecimal.ZERO) == 0 ?
           BigDecimal.ZERO : averageDifference.divide(previous.getSize(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
-//        final var ratio = averageDifference
-//          .divide(previous.getSize(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
         if (ratio.compareTo(BigDecimal.ZERO) > 0 &&
           ratio.compareTo(GeneralConfiguration.COMPARISON_THRESHOLD) > 0) {
@@ -132,6 +124,17 @@ public class CandleService {
 
     candlesPositions.sort(Collections.reverseOrder());
     return candlesPositions;
+  }
+
+  private BigDecimal calculateAverage(List<Candle> candles, Function<Candle, BigDecimal> getter) {
+    return candles.stream()
+      .map(getter)
+      .mapToDouble(BigDecimal::doubleValue)
+      .average()
+      .stream()
+      .mapToObj(BigDecimal::valueOf)
+      .findFirst()
+      .orElse(BigDecimal.ZERO);
   }
 
 }

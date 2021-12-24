@@ -17,4 +17,6 @@ public class CandleComparison {
   private final CandleProportion candleProportion;
 
   private final CandleProportion bodyProportion;
+
+  private final CandleProportion volumeProportion;
 }

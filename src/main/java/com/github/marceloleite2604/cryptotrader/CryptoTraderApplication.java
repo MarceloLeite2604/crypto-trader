@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader;
 
+import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
 import com.github.marceloleite2604.cryptotrader.service.ProfitService;
@@ -9,7 +10,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.math.BigDecimal;
 
 @EnableCaching
 @SpringBootApplication
@@ -68,7 +72,7 @@ public class CryptoTraderApplication {
 //        .build();
 //      final var trades = mercadoBitcoinService.retrieveTrades(tradesRequest);
 
-//      final var accounts = mercadoBitcoinService.retrieveAccounts();
+      final var account = mercadoBitcoinService.retrieveAccount();
 //      final var account = accounts.get(0);
 //      final var balances = mercadoBitcoinService.retrieveBalances(account.getId(), "BTC-BRL");
 //      final var positions = mercadoBitcoinService.retrievePositions(account.getId(), "BTC-BRL");
@@ -90,26 +94,26 @@ public class CryptoTraderApplication {
 //        .type("limit")
 //        .build();
 
-//      final var placeOrderRequest = PlaceOrderRequest.builder()
-//        .async(true)
-//        .accountId(account.getId())
-//        .symbol("ETH-BRL")
-//        .cost(BigDecimal.valueOf(9.99))
-//        .side("buy")
-//        .type("market")
-//        .build();
-//      log.info("Placing order.");
-//      final var optionalOrderId = mercadoBitcoinService.placeOrder(placeOrderRequest);
+      final var placeOrderRequest = PlaceOrderRequest.builder()
+        .async(false)
+        .accountId(account.getId())
+        .symbol("ETH-BRL")
+        .cost(BigDecimal.valueOf(10.01))
+        .side("buy")
+        .type("market")
+        .build();
+      log.info("Placing order.");
+      final var optionalOrderId = mercadoBitcoinService.placeOrder(placeOrderRequest);
 
-//      if (optionalOrderId.isPresent()) {
-//        log.info("Order placed.");
-//        final var cancelled = mercadoBitcoinService.cancelOrder(account.getId(), "ETH-BRL", optionalOrderId.get());
-//        if (!cancelled) {
-//          log.error("Something went wrong while canceling order {}.", optionalOrderId.get());
-//        }
-//      } else {
-//        log.info("Could not place order.");
-//      }
+      if (optionalOrderId.isPresent()) {
+        log.info("Order placed.");
+        final var cancelled = mercadoBitcoinService.cancelOrder(account.getId(), "ETH-BRL", optionalOrderId.get());
+        if (!cancelled) {
+          log.error("Something went wrong while canceling order {}.", optionalOrderId.get());
+        }
+      } else {
+        log.info("Could not place order.");
+      }
 
       log.info("Done");
     });

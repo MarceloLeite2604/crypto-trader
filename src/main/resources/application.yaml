@@ -1,9 +1,10 @@
 spring.jpa:
-  show-sql: true
+  show-sql: false
   hibernate.ddl-auto: update
 spring.main.web-application-type: none
 logging.level:
-    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
+  org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
+  com.github.marceloleite2604.cryptotrader: DEBUG
 
 mercado-bitcoin:
   base-uri: https://api.mercadobitcoin.net/api/v4/

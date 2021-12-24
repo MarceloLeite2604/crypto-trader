@@ -11,15 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class RisingPiercingLinePattern extends AbstractPattern {
+public class FallingPiercingLinePatternChecker extends AbstractPatternChecker {
 
   private static final List<CandleProportion> VALID_CANDLE_SIZE_CATEGORIES = List.of(
-    CandleProportion.LARGE,
     CandleProportion.VERY_LARGE,
     CandleProportion.ENORMOUS);
 
-  public RisingPiercingLinePattern() {
-    super(PatternType.RISING_PIERCING_LINE, 3);
+  public FallingPiercingLinePatternChecker() {
+    super(PatternType.FALLING_PIERCING_LINE, 3);
   }
 
   @Override
@@ -33,8 +32,7 @@ public class RisingPiercingLinePattern extends AbstractPattern {
       return Optional.empty();
     }
 
-
-    if (CandleDirection.DESCENDING.equals(firstCandle.getDirection())) {
+    if (CandleDirection.ASCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
@@ -46,7 +44,7 @@ public class RisingPiercingLinePattern extends AbstractPattern {
       return Optional.empty();
     }
 
-    if (CandleDirection.ASCENDING.equals(secondCandle.getDirection())) {
+    if (CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 

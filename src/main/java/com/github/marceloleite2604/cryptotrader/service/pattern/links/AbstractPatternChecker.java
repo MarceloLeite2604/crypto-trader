@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
@@ -10,14 +11,14 @@ import lombok.Setter;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public abstract class AbstractPattern implements Pattern {
+public abstract class AbstractPatternChecker implements PatternChecker {
 
   private final PatternType patternType;
 
   private final int minAmountOfCandles;
 
   @Setter
-  private Pattern next;
+  private PatternChecker next;
 
   @Override
   public PatternCheckContext check(PatternCheckContext patternCheckContext) {
@@ -26,11 +27,16 @@ public abstract class AbstractPattern implements Pattern {
       .size() >= minAmountOfCandles) {
 
       findMatch(patternCheckContext).ifPresent(candle ->
+      {
+        final var active = Active.findBySymbol(candle.getSymbol());
+
         patternCheckContext.addMatch(PatternMatch.builder()
           .candleTime(candle.getTimestamp())
           .type(patternType)
-          .symbol(candle.getSymbol())
-          .build()));
+          .candlePrecision(candle.getPrecision())
+          .active(active)
+          .build());
+      });
     }
 
     if (next == null) {

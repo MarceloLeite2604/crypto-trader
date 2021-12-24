@@ -10,18 +10,21 @@ import com.github.marceloleite2604.cryptotrader.model.profit.ProfitId;
 import com.github.marceloleite2604.cryptotrader.repository.ProfitRepository;
 import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProfitService {
 
-  private static final BigDecimal PROFIT_THRESHOLD_STEP = BigDecimal.valueOf(0.005);
+  private static final BigDecimal PROFIT_THRESHOLD_STEP = BigDecimal.valueOf(0.0142);
   private static final BigDecimal MAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.003);
   private static final BigDecimal TAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.007);
 
@@ -51,6 +54,8 @@ public class ProfitService {
     var cryptoBalance = BigDecimal.ZERO;
     var fiatBalance = BigDecimal.ZERO;
 
+    orders.sort(Comparator.comparing(Order::getCreatedAt));
+
     for (Order order : orders) {
       for (Execution execution : order.getExecutions()) {
         final var feePercentage = order.getSide()
@@ -62,6 +67,9 @@ public class ProfitService {
             .multiply(BigDecimal.ONE.subtract(feePercentage));
 
           cryptoBalance = cryptoBalance.subtract(execution.getQuantity());
+          if (cryptoBalance.compareTo(BigDecimal.ZERO) < 0) {
+            cryptoBalance = BigDecimal.ZERO;
+          }
           fiatBalance = fiatBalance.add(netIncome);
         } else {
           final var netIncome = execution.getQuantity()

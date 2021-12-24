@@ -1,7 +1,5 @@
 package com.github.marceloleite2604.cryptotrader.model.profit;
 
-import com.github.marceloleite2604.cryptotrader.model.Active;
-import com.github.marceloleite2604.cryptotrader.model.converter.ActiveConverter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Converter;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import java.math.BigDecimal;
 
 @Builder(toBuilder = true)
