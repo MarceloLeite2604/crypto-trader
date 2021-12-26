@@ -47,7 +47,6 @@ class TradesService {
 
   private String buildRetrieveUri(TradesRequest tradesRequest) {
 
-
     final var uriBuilder = new URIBuilder().setPathSegments(tradesRequest.getSymbol(), "trades");
 
     if (tradesRequest.getTid() != null) {
@@ -60,7 +59,7 @@ class TradesService {
 
     if (tradesRequest.getFrom() != null) {
       uriBuilder.addParameter("from", Long.toString(tradesRequest.getFrom()
-        .toEpochSecond()));
+        .toEpochSecond() - 60));
     }
 
     if (tradesRequest.getTo() != null) {

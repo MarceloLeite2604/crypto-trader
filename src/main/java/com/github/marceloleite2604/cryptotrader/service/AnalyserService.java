@@ -140,14 +140,14 @@ public class AnalyserService {
 
     if (!hasActiveBalance && buyPatternFound) {
       if (!sellPatternFound) {
-        log.debug("Decision factors: {}", decisionFactors);
+        log.debug("Buying - Decision factors: {}", decisionFactors);
         return Optional.of(elaborateAction(analysisContext, Side.BUY, buyArguments));
       }
       return Optional.empty();
     }
 
     if (lowerLimitReached) {
-      log.debug("Buying - Decision factors: {}", decisionFactors);
+      log.debug("Selling - Decision factors: {}", decisionFactors);
       return Optional.of(elaborateAction(analysisContext, Side.SELL, sellArguments));
     }
 
