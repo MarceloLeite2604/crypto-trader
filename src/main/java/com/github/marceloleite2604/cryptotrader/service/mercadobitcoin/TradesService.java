@@ -59,12 +59,12 @@ class TradesService {
 
     if (tradesRequest.getFrom() != null) {
       uriBuilder.addParameter("from", Long.toString(tradesRequest.getFrom()
-        .toEpochSecond() - 60));
+        .toEpochSecond()));
     }
 
     if (tradesRequest.getTo() != null) {
       uriBuilder.addParameter("to", Long.toString(tradesRequest.getTo()
-        .toEpochSecond()));
+        .toEpochSecond() - 60));
     }
 
     try {
