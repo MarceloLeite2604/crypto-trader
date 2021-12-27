@@ -12,9 +12,12 @@ services:
     volumes:
       - ./docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
       - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ./docker/mysql/data:/var/lib/mysql
   crypto-trader:
     build: .
     restart: unless-stopped
+    ports:
+      - "9010:9010"
     environment:
       CLIENT_SECRET: ${CLIENT_SECRET}
       CLIENT_ID: ${CLIENT_ID}
@@ -28,3 +31,4 @@ services:
       DATABASE_URL: ${DATABASE_URL:-jdbc:mysql://database:3306/crypto-trader-db}
       DATABASE_USERNAME: ${DATABASE_USERNAME:-crypto-trader}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:-password}
+      JAVA_OPTIONS: ${JAVA_OPTIONS:-}

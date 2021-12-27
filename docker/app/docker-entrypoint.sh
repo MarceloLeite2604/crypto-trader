@@ -13,6 +13,4 @@ do
   attempts=$((attempts + 1));
 done;
 
-echo "Database is reachable.";
-
 exec "$@";
