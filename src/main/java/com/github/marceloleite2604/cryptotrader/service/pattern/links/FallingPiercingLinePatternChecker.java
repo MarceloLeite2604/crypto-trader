@@ -2,6 +2,7 @@ package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandlePosition;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
@@ -47,6 +48,15 @@ public class FallingPiercingLinePatternChecker extends AbstractPatternChecker {
     }
 
     if (CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
+      return Optional.empty();
+    }
+
+    if (!CandlePosition.RAISED.equals(secondComparison.getPosition())) {
+      return Optional.empty();
+    }
+
+    if (secondCandle.getClose()
+      .compareTo(firstCandle.getBodyAverage()) >= 0) {
       return Optional.empty();
     }
 
