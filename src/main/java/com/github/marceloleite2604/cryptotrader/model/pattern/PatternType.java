@@ -13,7 +13,9 @@ public enum PatternType {
   HAMMER("Hammer", Side.BUY),
   INVERSE_HAMMER("Inverse Hammer", Side.BUY),
   RISING_PIERCING_LINE("Rising Piercing Line", Side.BUY),
-  FALLING_PIERCING_LINE("Falling Piercing Line", Side.SELL);
+  FALLING_PIERCING_LINE("Falling Piercing Line", Side.SELL),
+  BULLISH_ENGULFING("Bullish Engulfing", Side.BUY),
+  BEARISH_ENGULFING("Bearish Engulfing", Side.SELL);
 
   private final String name;
 
