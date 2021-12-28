@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public enum CandlePrecision {
 
   ONE_MINUTE("1m", "one minute", Duration.ofMinutes(1), false),
-  THREE_MINUTES("3m", "three minutes", Duration.ofMinutes(1), false),
+  THREE_MINUTES("3m", "three minutes", Duration.ofMinutes(3), false),
   FIVE_MINUTES("5m", "five minutes", Duration.ofMinutes(5), false),
   FIFTEEN_MINUTES("15m", "fifteen minutes", Duration.ofMinutes(15), true),
   THIRTY_MINUTES("30m", "thirty minutes", Duration.ofMinutes(30), true),
