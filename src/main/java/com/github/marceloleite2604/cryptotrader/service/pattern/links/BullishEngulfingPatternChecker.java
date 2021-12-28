@@ -2,17 +2,26 @@ package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Component
 public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
+
+  private static final List<CandleProportion> VALID_BODY_SIZE_CATEGORIES = List.of(
+    CandleProportion.MEDIUM,
+    CandleProportion.MEDIUM_LARGE,
+    CandleProportion.LARGE,
+    CandleProportion.VERY_LARGE,
+    CandleProportion.ENORMOUS);
 
   public BullishEngulfingPatternChecker() {
     super(PatternType.BULLISH_ENGULFING, 2);
@@ -24,14 +33,16 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
     final var candles = patternCheckContext.getCandles();
 
     final var firstCandle = candles.get(0);
+    final var firstComparison = firstCandle.getComparison();
 
-    if (!CandleDirection.DESCENDING.equals(firstCandle.getDirection())) {
+    if (!CandleDirection.ASCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
     final var secondCandle = candles.get(1);
+    final var secondComparison = secondCandle.getComparison();
 
-    if (!CandleDirection.ASCENDING.equals(secondCandle.getDirection())) {
+    if (!CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 
@@ -41,7 +52,15 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
     }
 
     if (firstCandle.getUpperWickSize()
-      .compareTo(secondCandle.getUpperWickSize()) > 0) {
+      .compareTo(secondCandle.getUpperWickSize()) < 0) {
+      return Optional.empty();
+    }
+
+    if (!VALID_BODY_SIZE_CATEGORIES.contains(firstComparison.getBodyProportion())) {
+      return Optional.empty();
+    }
+
+    if (!VALID_BODY_SIZE_CATEGORIES.contains(secondComparison.getBodyProportion())) {
       return Optional.empty();
     }
 
@@ -55,28 +74,33 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    if (firstCandle.getBodySize()
-      .compareTo(secondCandle.getBodySize()) > 0) {
+    if (secondCandle.getBodySize()
+      .compareTo(firstCandle.getBodySize()) > 0) {
       return Optional.empty();
     }
 
-    if (firstCandle.getOpen()
-      .compareTo(secondCandle.getClose()) > 0) {
+    if (secondCandle.getSize()
+      .compareTo(firstCandle.getSize()) > 0) {
       return Optional.empty();
     }
 
-    if (firstCandle.getClose()
-      .compareTo(secondCandle.getOpen()) < 0) {
+    if (secondCandle.getOpen()
+      .compareTo(firstCandle.getClose()) > 0) {
       return Optional.empty();
     }
 
-    if (firstCandle.getHigh()
-      .compareTo(secondCandle.getHigh()) > 0) {
+    if (secondCandle.getClose()
+      .compareTo(firstCandle.getOpen()) < 0) {
       return Optional.empty();
     }
 
-    if (firstCandle.getLow()
-      .compareTo(secondCandle.getLow()) < 0) {
+    if (secondCandle.getHigh()
+      .compareTo(firstCandle.getHigh()) > 0) {
+      return Optional.empty();
+    }
+
+    if (secondCandle.getLow()
+      .compareTo(firstCandle.getLow()) < 0) {
       return Optional.empty();
     }
 
