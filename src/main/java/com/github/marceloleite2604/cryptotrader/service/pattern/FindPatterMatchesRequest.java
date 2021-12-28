@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;

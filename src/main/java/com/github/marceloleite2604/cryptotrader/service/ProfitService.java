@@ -3,7 +3,6 @@ package com.github.marceloleite2604.cryptotrader.service;
 import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.Side;
-import com.github.marceloleite2604.cryptotrader.model.orders.Execution;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
@@ -12,7 +11,6 @@ import com.github.marceloleite2604.cryptotrader.repository.ProfitRepository;
 import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,8 +24,6 @@ import java.util.Optional;
 public class ProfitService {
 
   private static final BigDecimal PROFIT_THRESHOLD_STEP = BigDecimal.valueOf(0.0142);
-  private static final BigDecimal MAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.003);
-  private static final BigDecimal TAKER_FEE_PERCENTAGE = BigDecimal.valueOf(0.007);
 
   private final MercadoBitcoinService mercadoBitcoinService;
   private final ProfitRepository profitRepository;
@@ -46,61 +42,18 @@ public class ProfitService {
   private BigDecimal calculateCurrent(String accountId, Active active) {
     final var ticker = mercadoBitcoinService.retrieveTicker(active.getSymbol());
 
-    final var orders = retrieveOrders(accountId, active);
+    return retrieveOrders(accountId, active).stream()
+      .filter(order -> "filled".equals(order.getStatus()))
+      .filter(order -> Side.BUY.name()
+        .equalsIgnoreCase(order.getSide()))
+      .max(Comparator.comparing(Order::getCreatedAt))
+      .map(lastBuyOrder -> {
+        final var lastBuyOrderPrice = lastBuyOrder.getAveragePrice();
+        final var lastPrice = ticker.getLast();
 
-    if (CollectionUtils.isEmpty(orders)) {
-      return BigDecimal.ZERO;
-    }
-
-    var activeBalance = BigDecimal.ZERO;
-
-    orders.sort(Comparator.comparing(Order::getCreatedAt));
-
-    var incoming = BigDecimal.ZERO;
-    var outgoing = BigDecimal.ZERO;
-
-    for (Order order : orders) {
-      for (Execution execution : order.getExecutions()) {
-        final var feePercentage = order.getSide()
-          .equals(execution.getSide()) ? TAKER_FEE_PERCENTAGE : MAKER_FEE_PERCENTAGE;
-
-        if (Side.SELL.name()
-          .equalsIgnoreCase(order.getSide())) {
-          final var netIncome = execution.getPrice()
-            .multiply(execution.getQuantity())
-            .multiply(BigDecimal.ONE.subtract(feePercentage));
-
-          incoming = incoming.add(netIncome);
-
-          activeBalance = activeBalance.subtract(execution.getQuantity());
-
-          if (activeBalance.compareTo(BigDecimal.ZERO) < 0) {
-            activeBalance = BigDecimal.ZERO;
-          }
-        } else {
-          final var netIncome = execution.getQuantity()
-            .multiply(BigDecimal.ONE.subtract(feePercentage));
-
-          activeBalance = activeBalance.add(netIncome);
-
-          final var cost = execution.getPrice()
-            .multiply(execution.getQuantity());
-
-          outgoing = outgoing.add(cost);
-        }
-      }
-    }
-
-    var activeBalanceAsFiat = activeBalance.multiply(ticker.getLast());
-
-    if (activeBalance.compareTo(GeneralConfiguration.LOGICAL_ZERO) <= 0) {
-      activeBalanceAsFiat = BigDecimal.ZERO;
-    }
-
-    incoming = incoming.add(activeBalanceAsFiat);
-    
-    return incoming.subtract(outgoing)
-      .divide(outgoing, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+        return lastPrice.subtract(lastBuyOrderPrice)
+          .divide(lastBuyOrderPrice, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+      }).orElse(BigDecimal.ZERO);
   }
 
   private Optional<Profit> retrieveFromDatabase(String accountId, Active active) {
