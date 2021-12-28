@@ -4,10 +4,12 @@ import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
 
@@ -21,16 +23,14 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
     final var candles = patternCheckContext.getCandles();
 
     final var firstCandle = candles.get(0);
-    final var firstComparison = firstCandle.getComparison();
 
     if (CandleDirection.ASCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
     final var secondCandle = candles.get(1);
-    final var secondComparison = secondCandle.getComparison();
 
-    if (CandleDirection.DESCENDING.equals(firstCandle.getDirection())) {
+    if (CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 
@@ -68,6 +68,9 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
       .compareTo(secondCandle.getLow()) < 0) {
       return Optional.empty();
     }
+
+    log.debug("First candle: {}", firstCandle);
+    log.debug("Second candle: {}", secondCandle);
 
     return Optional.of(firstCandle);
   }
