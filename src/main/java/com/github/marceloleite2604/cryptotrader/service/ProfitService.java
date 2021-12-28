@@ -2,6 +2,7 @@ package com.github.marceloleite2604.cryptotrader.service;
 
 import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import com.github.marceloleite2604.cryptotrader.model.Active;
+import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.orders.Execution;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
@@ -51,42 +52,55 @@ public class ProfitService {
       return BigDecimal.ZERO;
     }
 
-    var cryptoBalance = BigDecimal.ZERO;
-    var fiatBalance = BigDecimal.ZERO;
+    var activeBalance = BigDecimal.ZERO;
 
     orders.sort(Comparator.comparing(Order::getCreatedAt));
+
+    var incoming = BigDecimal.ZERO;
+    var outgoing = BigDecimal.ZERO;
 
     for (Order order : orders) {
       for (Execution execution : order.getExecutions()) {
         final var feePercentage = order.getSide()
           .equals(execution.getSide()) ? TAKER_FEE_PERCENTAGE : MAKER_FEE_PERCENTAGE;
 
-        if ("sell".equals(order.getSide())) {
+        if (Side.SELL.name()
+          .equalsIgnoreCase(order.getSide())) {
           final var netIncome = execution.getPrice()
             .multiply(execution.getQuantity())
             .multiply(BigDecimal.ONE.subtract(feePercentage));
 
-          cryptoBalance = cryptoBalance.subtract(execution.getQuantity());
-          if (cryptoBalance.compareTo(BigDecimal.ZERO) < 0) {
-            cryptoBalance = BigDecimal.ZERO;
+          incoming = incoming.add(netIncome);
+
+          activeBalance = activeBalance.subtract(execution.getQuantity());
+
+          if (activeBalance.compareTo(BigDecimal.ZERO) < 0) {
+            activeBalance = BigDecimal.ZERO;
           }
-          fiatBalance = fiatBalance.add(netIncome);
         } else {
           final var netIncome = execution.getQuantity()
             .multiply(BigDecimal.ONE.subtract(feePercentage));
+
+          activeBalance = activeBalance.add(netIncome);
+
           final var cost = execution.getPrice()
             .multiply(execution.getQuantity());
-          fiatBalance = fiatBalance.subtract(cost);
-          cryptoBalance = cryptoBalance.add(netIncome);
+
+          outgoing = outgoing.add(cost);
         }
       }
     }
 
-    final var cryptoBalanceAsFiat = cryptoBalance.multiply(ticker.getLast());
+    var activeBalanceAsFiat = activeBalance.multiply(ticker.getLast());
 
-    final var value = cryptoBalanceAsFiat.add(fiatBalance);
+    if (activeBalance.compareTo(GeneralConfiguration.LOGICAL_ZERO) <= 0) {
+      activeBalanceAsFiat = BigDecimal.ZERO;
+    }
 
-    return value.divide(fiatBalance.negate(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+    incoming = incoming.add(activeBalanceAsFiat);
+    
+    return incoming.subtract(outgoing)
+      .divide(outgoing, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
   }
 
   private Optional<Profit> retrieveFromDatabase(String accountId, Active active) {

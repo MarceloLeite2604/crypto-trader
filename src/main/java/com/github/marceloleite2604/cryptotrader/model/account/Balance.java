@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.model.account;
 
+import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class Balance {
   private BigDecimal total;
 
   public boolean isEmpty() {
-    return total.compareTo(BigDecimal.valueOf(0.000001)) < 0;
+    return total.compareTo(GeneralConfiguration.LOGICAL_ZERO) < 0;
   }
 
   public boolean isNotEmpty() {

@@ -64,7 +64,8 @@ public class PatternService {
       return Collections.emptyList();
     }
 
-    final List<PatternMatch> alreadyDiscoveredPatternMatches = retrieveAlreadyDiscoveredPatternMatches(active, candles);
+    final List<PatternMatch> alreadyDiscoveredPatternMatches =
+      retrieveAlreadyDiscoveredPatternMatches(active, candles);
 
     if (CollectionUtils.isNotEmpty(alreadyDiscoveredPatternMatches)) {
       log.debug("Patterns already found. Ignoring analysis.");
@@ -87,7 +88,9 @@ public class PatternService {
 
     final var precision = firstCandle.getPrecision();
 
-    final var end = dateTimeUtil.truncateTo(OffsetDateTime.now(ZoneOffset.UTC), precision.getDuration());
+    final var end = dateTimeUtil.truncateTo(
+      OffsetDateTime.now(ZoneOffset.UTC),
+      precision.getDuration());
 
     final var start = end.minus(precision.getDuration());
 
@@ -98,7 +101,10 @@ public class PatternService {
       .end(end)
       .build();
 
-    return findPatternMatches(findPatterMatchesRequest);
+    log.debug("{}", findPatterMatchesRequest);
+    final var result = findPatternMatches(findPatterMatchesRequest);
+    log.debug("Result: {}", result.size());
+    return result;
   }
 
   private List<PatternMatch> findPatternMatches(FindPatterMatchesRequest findPatterMatchesRequest) {

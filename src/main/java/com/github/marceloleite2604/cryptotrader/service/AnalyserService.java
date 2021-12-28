@@ -76,13 +76,10 @@ public class AnalyserService {
 
     elaborateAction(analysisContext).ifPresent(mailService::send);
 
-    if (analysisContext.getActiveBalance()
-      .isNotEmpty()) {
-      log.debug("Current profit: {} <= {} <= {}",
-        formatUtil.toPercentage(profit.getLower()),
-        formatUtil.toPercentage(profit.getCurrent()),
-        formatUtil.toPercentage(profit.getUpper()));
-    }
+    log.debug("Current profit: {} <= {} <= {}",
+      formatUtil.toPercentage(profit.getLower()),
+      formatUtil.toPercentage(profit.getCurrent()),
+      formatUtil.toPercentage(profit.getUpper()));
 
     profitService.updateAndSave(profit);
   }
@@ -178,7 +175,9 @@ public class AnalyserService {
   }
 
   private List<Candle> retrieveCandles(CandlePrecision resolution, Active active) {
-    final var end = dateTimeUtil.truncateTo(OffsetDateTime.now(ZoneOffset.UTC), resolution.getDuration());
+    final var end = dateTimeUtil.truncateTo(
+      OffsetDateTime.now(ZoneOffset.UTC),
+      resolution.getDuration());
 
     var start = end
       .minus(resolution.getDuration()
