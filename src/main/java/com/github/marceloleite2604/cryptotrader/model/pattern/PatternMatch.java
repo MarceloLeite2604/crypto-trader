@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 @Getter
 @Entity
+@ToString
 public class PatternMatch {
 
   @Id
