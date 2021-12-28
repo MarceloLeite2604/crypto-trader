@@ -7,6 +7,7 @@ import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckCont
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Slf4j
@@ -24,13 +25,13 @@ public class BearishEngulfingPatternChecker extends AbstractPatternChecker {
 
     final var firstCandle = candles.get(0);
 
-    if (CandleDirection.DESCENDING.equals(firstCandle.getDirection())) {
+    if (!CandleDirection.ASCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
     final var secondCandle = candles.get(1);
 
-    if (CandleDirection.ASCENDING.equals(secondCandle.getDirection())) {
+    if (!CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 
@@ -41,6 +42,14 @@ public class BearishEngulfingPatternChecker extends AbstractPatternChecker {
 
     if (firstCandle.getUpperWickSize()
       .compareTo(secondCandle.getUpperWickSize()) > 0) {
+      return Optional.empty();
+    }
+
+    if (firstCandle.getBodySize().compareTo(BigDecimal.ZERO) == 0) {
+      return Optional.empty();
+    }
+
+    if (secondCandle.getBodySize().compareTo(BigDecimal.ZERO) == 0) {
       return Optional.empty();
     }
 
