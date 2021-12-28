@@ -15,7 +15,6 @@ import java.time.OffsetDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString
 public class FindPatterMatchesRequest {
 
   @NotNull

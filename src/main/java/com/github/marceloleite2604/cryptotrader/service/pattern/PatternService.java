@@ -105,10 +105,7 @@ public class PatternService {
       .end(end)
       .build();
 
-    log.debug("{}", findPatterMatchesRequest);
-    final var result = findPatternMatches(findPatterMatchesRequest);
-    log.debug("Result: {}", result.size());
-    return result;
+    return findPatternMatches(findPatterMatchesRequest);
   }
 
   private List<PatternMatch> findPatternMatches(FindPatterMatchesRequest findPatterMatchesRequest) {
