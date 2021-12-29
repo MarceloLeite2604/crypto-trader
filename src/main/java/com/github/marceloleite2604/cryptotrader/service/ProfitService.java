@@ -42,7 +42,7 @@ public class ProfitService {
   private BigDecimal calculateCurrent(String accountId, Active active) {
     final var ticker = mercadoBitcoinService.retrieveTicker(active.getSymbol());
 
-    final var balance = mercadoBitcoinService.retrieveBalance(accountId, active.getSymbol());
+    final var balance = mercadoBitcoinService.retrieveBalance(accountId, active.getBase());
 
     if (balance.isEmpty()) {
       return BigDecimal.ZERO;
