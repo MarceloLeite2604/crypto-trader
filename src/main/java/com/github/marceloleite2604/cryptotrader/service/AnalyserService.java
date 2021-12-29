@@ -52,7 +52,6 @@ public class AnalyserService {
   private Account account;
 
   public void analyse(Active active) {
-    log.info("Analysing {}.", active.getName());
     final var accountId = retrieveAccount().getId();
 
     final var shortRangeCandles = retrieveShortRangeCandles(active);
@@ -76,10 +75,15 @@ public class AnalyserService {
 
     elaborateAction(analysisContext).ifPresent(mailService::send);
 
-    log.debug("Current profit: {} <= {} <= {}",
-      formatUtil.toPercentage(profit.getLower()),
-      formatUtil.toPercentage(profit.getCurrent()),
-      formatUtil.toPercentage(profit.getUpper()));
+    if (activeBalance.isNotEmpty()) {
+      log.debug("{}: {} <= {} <= {}",
+        active.getName(),
+        formatUtil.toPercentage(profit.getLower()),
+        formatUtil.toPercentage(profit.getCurrent()),
+        formatUtil.toPercentage(profit.getUpper()));
+    } else {
+      log.debug("{} analysed.", active.getName());
+    }
 
     profitService.updateAndSave(profit);
   }
@@ -189,6 +193,7 @@ public class AnalyserService {
       .build();
 
     final var candlesRequest = createCandlesRequest(range, resolution, active);
+    log.debug("Retrieving candles: {}", candlesRequest);
     return candleService.retrieveCandles(candlesRequest);
   }
 

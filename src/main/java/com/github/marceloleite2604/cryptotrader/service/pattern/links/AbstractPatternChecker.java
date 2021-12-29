@@ -7,10 +7,12 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 public abstract class AbstractPatternChecker implements PatternChecker {
 
   private final PatternType patternType;
@@ -36,6 +38,17 @@ public abstract class AbstractPatternChecker implements PatternChecker {
           .candlePrecision(candle.getPrecision())
           .active(active)
           .build());
+
+        if (log.isDebugEnabled()) {
+          final var candles = patternCheckContext.getCandles();
+          final var analysedCandles = candles.subList(
+            candles.size() - minAmountOfCandles,
+            candles.size());
+
+          log.debug("{} pattern found analysing the following candles: {}",
+            patternType.getName(),
+            analysedCandles);
+        }
       });
     }
 

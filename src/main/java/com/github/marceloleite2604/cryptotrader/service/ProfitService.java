@@ -42,18 +42,28 @@ public class ProfitService {
   private BigDecimal calculateCurrent(String accountId, Active active) {
     final var ticker = mercadoBitcoinService.retrieveTicker(active.getSymbol());
 
-    return retrieveOrders(accountId, active).stream()
-      .filter(order -> "filled".equals(order.getStatus()))
-      .filter(order -> Side.BUY.name()
-        .equalsIgnoreCase(order.getSide()))
-      .max(Comparator.comparing(Order::getCreatedAt))
+    final var balance = mercadoBitcoinService.retrieveBalance(accountId, active.getSymbol());
+
+    if (balance.isEmpty()) {
+      return BigDecimal.ZERO;
+    }
+
+    return retrieveLastOrderOfSide(accountId, active, Side.BUY)
       .map(lastBuyOrder -> {
         final var lastBuyOrderPrice = lastBuyOrder.getAveragePrice();
         final var lastPrice = ticker.getLast();
-
         return lastPrice.subtract(lastBuyOrderPrice)
           .divide(lastBuyOrderPrice, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
-      }).orElse(BigDecimal.ZERO);
+      })
+      .orElse(BigDecimal.ZERO);
+  }
+
+  private Optional<Order> retrieveLastOrderOfSide(String accountId, Active active, Side side) {
+    return retrieveOrders(accountId, active).stream()
+      .filter(order -> "filled".equals(order.getStatus()))
+      .filter(order -> side.name()
+        .equalsIgnoreCase(order.getSide()))
+      .max(Comparator.comparing(Order::getCreatedAt));
   }
 
   private Optional<Profit> retrieveFromDatabase(String accountId, Active active) {

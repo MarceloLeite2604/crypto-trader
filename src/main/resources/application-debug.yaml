@@ -1,0 +1,4 @@
+spring.jpa.show-sql: true
+logging.level:
+  org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
+  com.github.marceloleite2604.cryptotrader: DEBUG

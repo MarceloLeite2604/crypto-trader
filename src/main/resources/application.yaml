@@ -4,7 +4,7 @@ spring.jpa:
 spring.main.web-application-type: none
 logging.level:
   org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
-  com.github.marceloleite2604.cryptotrader: DEBUG
+  com.github.marceloleite2604.cryptotrader: INFO
 
 mercado-bitcoin:
   base-uri: https://api.mercadobitcoin.net/api/v4/

@@ -105,7 +105,17 @@ public class PatternService {
       .end(end)
       .build();
 
-    return findPatternMatches(findPatterMatchesRequest);
+    log.debug("Checking if patterns were already found for {}", findPatterMatchesRequest);
+    final var patternMatches = findPatternMatches(findPatterMatchesRequest);
+    if (log.isDebugEnabled()) {
+      if (CollectionUtils.isNotEmpty(patternMatches)) {
+        log.debug("The following patterns were found: {}", patternMatches);
+      }  else {
+        log.debug("No patterns previously found.");
+      }
+    }
+
+    return patternMatches;
   }
 
   private List<PatternMatch> findPatternMatches(FindPatterMatchesRequest findPatterMatchesRequest) {
