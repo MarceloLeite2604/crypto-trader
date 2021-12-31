@@ -60,6 +60,6 @@ public class HammerPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    return Optional.of(secondCandle);
+    return Optional.of(firstCandle);
   }
 }
