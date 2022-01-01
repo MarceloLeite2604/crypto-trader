@@ -64,7 +64,7 @@ class TradesService {
 
     if (tradesRequest.getTo() != null) {
       uriBuilder.addParameter("to", Long.toString(tradesRequest.getTo()
-        .toEpochSecond() - 60));
+        .toEpochSecond() - 1));
     }
 
     try {
