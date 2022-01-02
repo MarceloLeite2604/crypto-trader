@@ -9,8 +9,8 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public enum TrendType {
   UNDEFINED(v -> v == 0),
-  DOWNTREND(v -> v > 0),
-  UPTREND(v -> v < 1);
+  DOWNTREND(v -> v < 0),
+  UPTREND(v -> v > 1);
 
   private final Function<Integer, Boolean> comparisonResultMatcher;
 

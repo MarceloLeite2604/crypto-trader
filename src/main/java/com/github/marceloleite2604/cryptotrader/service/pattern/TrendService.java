@@ -6,12 +6,14 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class TrendService {
 
-  public Trend search(List<Candle> candles) {
+  public Trend search(final List<Candle> candles) {
+
     if (candles.size() <= 1) {
       return Trend.builder()
         .type(TrendType.UNDEFINED)
