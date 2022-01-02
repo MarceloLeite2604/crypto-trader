@@ -14,13 +14,17 @@ import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -179,12 +183,11 @@ public class CandleService {
         final var optionalRange = candleRanges.stream()
           .filter(range -> range.isBetween(trade.getDate()))
           .findFirst();
-//          .orElseThrow(() -> new IllegalStateException("Trade is not between any valid date time range.");
 
         if (optionalRange.isEmpty()) {
           log.warn("Trade done at {} is outside proposed range.", trade.getDate());
           final var firstCandle = candleRanges.get(0);
-          final var lastCandle = candleRanges.get(candleRanges.size()-1);
+          final var lastCandle = candleRanges.get(candleRanges.size() - 1);
 
           log.warn("Candles are between {} and {} (exclusive).", firstCandle.getStart(), lastCandle.getEnd());
           throw new IllegalStateException("Trade is not between any valid date time range.");
@@ -193,13 +196,70 @@ public class CandleService {
         return optionalRange.get();
       }));
 
-    return tradesByRange.entrySet()
+    candleRanges.forEach(candleRange -> {
+      if (!tradesByRange.containsKey(candleRange)) {
+        tradesByRange.put(candleRange, Collections.emptyList());
+      }
+    });
+
+    final var optionalCandlesByTimeRange = tradesByRange.entrySet()
       .stream()
-      .map(entry -> createCandle(entry.getValue(), entry.getKey(), candlesRequest))
-      .collect(Collectors.toCollection(ArrayList::new));
+      .map(entry -> Map.entry(entry.getKey(), createCandle(entry.getValue(), entry.getKey(), candlesRequest)))
+      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    final var candlesByTimeRange = addEmptyCandles(optionalCandlesByTimeRange);
+
+    return candlesByTimeRange.values()
+      .stream()
+      .sorted(Comparator.comparing(Candle::getTimestamp))
+      .toList();
   }
 
-  private Candle createCandle(List<Trade> trades, OffsetDateTimeRange range, CandlesRequest candlesRequest) {
+  private Map<OffsetDateTimeRange, Candle> addEmptyCandles(Map<OffsetDateTimeRange, Optional<Candle>> candlesByTimeRange) {
+    final var sortedEntries = candlesByTimeRange.entrySet()
+      .stream()
+      .sorted(Comparator.comparing(e -> e.getKey()
+        .getStart()))
+      .toList();
+
+    Map<OffsetDateTimeRange, Candle> result = new HashMap<>();
+    Candle previousCandle = null;
+    for (Map.Entry<OffsetDateTimeRange, Optional<Candle>> entry : sortedEntries) {
+      Candle candle;
+      if (entry.getValue().isEmpty()) {
+        final var timestamp = entry.getKey()
+          .getStart();
+        if (previousCandle == null) {
+          log.warn("Not enough trades data to elaborate candle for {} time. Skipping it.", timestamp);
+          continue;
+        }
+        candle = Candle.builder()
+          .open(previousCandle.getClose())
+          .close(previousCandle.getClose())
+          .high(previousCandle.getClose())
+          .low(previousCandle.getClose())
+          .precision(previousCandle.getPrecision())
+          .timestamp(timestamp)
+          .symbol(previousCandle.getSymbol())
+          .volume(BigDecimal.ZERO)
+          .build();
+      } else {
+        candle = entry.getValue()
+          .get();
+      }
+
+      result.put(entry.getKey(), candle);
+      previousCandle = candle;
+    }
+
+    return result;
+  }
+
+  private Optional<Candle> createCandle(List<Trade> trades, OffsetDateTimeRange range, CandlesRequest candlesRequest) {
+
+    if (CollectionUtils.isEmpty(trades)) {
+      return Optional.empty();
+    }
 
     final var high = trades.stream()
       .map(Trade::getPrice)
@@ -228,7 +288,7 @@ public class CandleService {
     final var symbol = candlesRequest.getActive()
       .getSymbol();
 
-    return Candle.builder()
+    final var candle = Candle.builder()
       .high(high)
       .low(low)
       .open(open)
@@ -238,6 +298,8 @@ public class CandleService {
       .symbol(symbol)
       .volume(volume)
       .build();
+
+    return Optional.of(candle);
   }
 
   private List<Trade> retrieveTrades(CandlesRequest candlesRequest) {

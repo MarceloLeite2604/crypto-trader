@@ -3,8 +3,10 @@ package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
-import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
+import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
+import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,10 @@ import java.util.Optional;
 @Component
 public class BearishEngulfingPatternChecker extends AbstractPatternChecker {
 
+  private static final int MINIMAL_CANDLES_AMOUNT = 4;
+  private static final int PATTERN_CANDLES_SIZE = 2;
+  private static final int MINIMAL_TREND_SIZE = MINIMAL_CANDLES_AMOUNT - PATTERN_CANDLES_SIZE;
+
   private static final List<CandleProportion> VALID_BODY_SIZE_CATEGORIES = List.of(
     CandleProportion.MEDIUM,
     CandleProportion.MEDIUM_LARGE,
@@ -23,12 +29,16 @@ public class BearishEngulfingPatternChecker extends AbstractPatternChecker {
     CandleProportion.VERY_LARGE,
     CandleProportion.ENORMOUS);
 
-  public BearishEngulfingPatternChecker() {
-    super(PatternType.BEARISH_ENGULFING, 2);
+  public BearishEngulfingPatternChecker(TrendService trendService) {
+    super(PatternType.BEARISH_ENGULFING, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
   }
 
   @Override
   public Optional<Candle> findMatch(PatternCheckContext patternCheckContext) {
+
+    if (trendDoesNotMatchMinimal(patternCheckContext, TrendType.UPTREND, MINIMAL_TREND_SIZE)) {
+      return Optional.empty();
+    }
 
     final var candles = patternCheckContext.getCandles();
 
@@ -104,8 +114,6 @@ public class BearishEngulfingPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    log.debug("First candle: {}", firstCandle);
-    log.debug("Second candle: {}", secondCandle);
     return Optional.of(firstCandle);
   }
 }

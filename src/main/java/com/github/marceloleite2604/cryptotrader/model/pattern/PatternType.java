@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 public enum PatternType {
   HAMMER("Hammer", Side.BUY),
   INVERSE_HAMMER("Inverse Hammer", Side.BUY),
-  RISING_PIERCING_LINE("Rising Piercing Line", Side.BUY),
-  FALLING_PIERCING_LINE("Falling Piercing Line", Side.SELL),
+  DARK_CLOUD_COVER("Dark Cloud Cover", Side.SELL),
+  PIERCING_LINE("Piercing Line", Side.BUY),
   BULLISH_ENGULFING("Bullish Engulfing", Side.BUY),
   BEARISH_ENGULFING("Bearish Engulfing", Side.SELL);
 

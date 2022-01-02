@@ -1,6 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 
-import com.github.marceloleite2604.cryptotrader.service.pattern.PatternCheckContext;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
 
 public interface PatternChecker {
 

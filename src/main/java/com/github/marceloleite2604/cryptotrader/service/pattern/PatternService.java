@@ -2,6 +2,7 @@ package com.github.marceloleite2604.cryptotrader.service.pattern;
 
 import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.repository.PatternMatchRepository;
 import com.github.marceloleite2604.cryptotrader.service.pattern.links.PatternChecker;

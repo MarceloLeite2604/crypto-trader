@@ -181,7 +181,7 @@ public class AnalyserService {
   private List<Candle> retrieveCandles(CandlePrecision resolution, Active active) {
     final var end = dateTimeUtil.truncateTo(
       OffsetDateTime.now(ZoneOffset.UTC),
-      resolution.getDuration()).minus(resolution.getDuration());
+      resolution.getDuration());
 
     var start = end
       .minus(resolution.getDuration()
