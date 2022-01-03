@@ -68,9 +68,9 @@ class CandlesService {
       uriBuilder.addParameter("countback", Integer.toString(candlesRequest.getCountback()));
     } else {
       uriBuilder.addParameter("to", Long.toString(candlesRequest.getToTime()
-        .toEpochSecond()));
-      uriBuilder.addParameter("from", Long.toString(candlesRequest.getFrom()
         .toEpochSecond() - 1));
+      uriBuilder.addParameter("from", Long.toString(candlesRequest.getFrom()
+        .toEpochSecond()));
     }
 
     try {

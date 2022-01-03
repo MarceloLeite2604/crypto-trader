@@ -31,7 +31,7 @@ public class TrendService {
           trendCandles.add(previousCandle);
           trendCandles.add(candle);
         } else {
-          if (trendType.equals(currentTrendType)) {
+          if (trendType.equals(currentTrendType) || TrendType.UNDEFINED.equals(trendType)) {
             trendCandles.add(candle);
           } else {
             break;

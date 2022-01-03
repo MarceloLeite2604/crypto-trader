@@ -17,7 +17,8 @@ public enum PatternType {
   BULLISH_ENGULFING("Bullish Engulfing", Side.BUY),
   BEARISH_ENGULFING("Bearish Engulfing", Side.SELL),
   MORNING_STAR("Morning Star", Side.BUY),
-  EVENING_STAR("Evening Star", Side.SELL);
+  EVENING_STAR("Evening Star", Side.SELL),
+  HANGING_MAN("Hanging Man", Side.SELL);
 
   private final String name;
 
