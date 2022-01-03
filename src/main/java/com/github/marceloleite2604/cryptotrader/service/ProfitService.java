@@ -9,6 +9,7 @@ import com.github.marceloleite2604.cryptotrader.model.profit.Profit;
 import com.github.marceloleite2604.cryptotrader.model.profit.ProfitId;
 import com.github.marceloleite2604.cryptotrader.repository.ProfitRepository;
 import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
+import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,10 @@ public class ProfitService {
   private static final BigDecimal PROFIT_THRESHOLD_STEP = BigDecimal.valueOf(0.0142);
 
   private final MercadoBitcoinService mercadoBitcoinService;
+
   private final ProfitRepository profitRepository;
+
+  private final FormatUtil formatUtil;
 
   public Profit retrieve(String accountId, Active active) {
 
@@ -79,6 +83,11 @@ public class ProfitService {
 
   private Profit createDefault(String accountId, Active active) {
 
+    final var basePrice = retrieveLastOrderOfSide(accountId, active, Side.BUY)
+      .map(Order::getAveragePrice)
+      .orElse(BigDecimal.ZERO);
+
+
     final var id = ProfitId.builder()
       .accountId(accountId)
       .active(active)
@@ -86,6 +95,7 @@ public class ProfitService {
 
     return Profit.builder()
       .id(id)
+      .basePrice(basePrice)
       .current(BigDecimal.ZERO)
       .lower(PROFIT_THRESHOLD_STEP.negate())
       .upper(PROFIT_THRESHOLD_STEP)
@@ -115,5 +125,21 @@ public class ProfitService {
     }
 
     return profitRepository.save(profitMarginToPersist);
+  }
+
+  public String toStringPercentage(Profit profit) {
+    return String.format("%s: %s <= %s <= %s",
+      profit.getId().getActive().getName(),
+      formatUtil.toPercentage(profit.getLower()),
+      formatUtil.toPercentage(profit.getCurrent()),
+      formatUtil.toPercentage(profit.getUpper()));
+  }
+
+  public String toStringPrice(Profit profit) {
+    return String.format("%s: %s <= %s <= %s",
+      profit.getId().getActive().getName(),
+      formatUtil.toBrl(profit.retrieveLowerLimitPrice()),
+      formatUtil.toBrl(profit.retrieveCurrentLimitPrice()),
+      formatUtil.toBrl(profit.retrieveUpperLimitPrice()));
   }
 }

@@ -22,6 +22,9 @@ public class Profit {
   private final ProfitId id;
 
   @Column(nullable = false, precision = 19, scale = 8)
+  private final BigDecimal basePrice;
+
+  @Column(nullable = false, precision = 19, scale = 8)
   private final BigDecimal upper;
 
   @Column(nullable = false, precision = 19, scale = 8)
@@ -42,5 +45,29 @@ public class Profit {
       return false;
     }
     return current.compareTo(lower) <= 0;
+  }
+
+  public BigDecimal retrieveUpperLimitPrice() {
+    if (basePrice == null) {
+      return BigDecimal.ZERO;
+    }
+
+    return basePrice.add(basePrice.multiply(upper));
+  }
+
+  public BigDecimal retrieveCurrentLimitPrice() {
+    if (basePrice == null) {
+      return BigDecimal.ZERO;
+    }
+
+    return basePrice.add(basePrice.multiply(current));
+  }
+
+  public BigDecimal retrieveLowerLimitPrice() {
+    if (basePrice == null) {
+      return BigDecimal.ZERO;
+    }
+
+    return basePrice.add(basePrice.multiply(lower));
   }
 }

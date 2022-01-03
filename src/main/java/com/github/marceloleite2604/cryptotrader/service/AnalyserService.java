@@ -76,11 +76,7 @@ public class AnalyserService {
     elaborateAction(analysisContext).ifPresent(mailService::send);
 
     if (activeBalance.isNotEmpty()) {
-      log.debug("{}: {} <= {} <= {}",
-        active.getName(),
-        formatUtil.toPercentage(profit.getLower()),
-        formatUtil.toPercentage(profit.getCurrent()),
-        formatUtil.toPercentage(profit.getUpper()));
+      log.debug("{} ({})", profitService.toStringPrice(profit), profitService.toStringPercentage(profit));
     } else {
       log.debug("{} analysed.", active.getName());
     }
