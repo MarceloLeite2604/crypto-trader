@@ -6,7 +6,6 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service

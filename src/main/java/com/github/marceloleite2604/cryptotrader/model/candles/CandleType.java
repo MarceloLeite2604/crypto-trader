@@ -8,14 +8,14 @@ import java.util.Optional;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum CandleType {
   NO_OPERATION(false, false, false, null),
-  COMMON(true, true, true, null), // Has upper, has lower, has body, indiferent
+  COMMON(true, true, true, null), // Has upper, has lower, has body, indifferent
   RISING(false, false, true, true), // No upper, no lower, has body, ascending
   FALLING(false, false, true, false), // No upper, no lower, has body, descending
-  DOJI(true, true, false, null), // Has upper, has lower, no body, indiferent
-  GRAVESTONE(true, false, false, null), // Has upper, no lower, no body, indiferent
-  DRAGONFLY(false, true, false, null), // No upper, has lower, no body, indiferent
-  SHOOTING_STAR(true, false, true, null), // Has upper, no lower, has body, indiferent
-  HAMMER(false, true, true, null); // No upper, has lower, has body, indiferent
+  DOJI(true, true, false, null), // Has upper, has lower, no body, indifferent
+  GRAVESTONE(true, false, false, null), // Has upper, no lower, no body, indifferent
+  DRAGONFLY(false, true, false, null), // No upper, has lower, no body, indifferent
+  SHOOTING_STAR(true, false, true, null), // Has upper, no lower, has body, indifferent
+  HAMMER(false, true, true, null); // No upper, has lower, has body, indifferent
 
   private final boolean upperWickPresent;
 

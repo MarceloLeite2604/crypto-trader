@@ -38,8 +38,6 @@ public abstract class AbstractPatternChecker implements PatternChecker {
 
     final var trend = trendService.search(analyzedCandles);
 
-    log.debug("{} Trend: {}", patternType.getName(), trend);
-
     return (!trend.getType()
       .equals(trendType) || trend.getCandles()
       .size() < minimalTrendSize);

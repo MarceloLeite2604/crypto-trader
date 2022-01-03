@@ -26,8 +26,6 @@ class CandlesService {
 
   private final ValidationUtil validationUtil;
 
-//  private final com.github.marceloleite2604.cryptotrader.service.candle.CandleService candleService;
-
   public List<Candle> retrieve(CandlesRequest candlesRequest) {
 
     Assert.notNull(candlesRequest, "Must inform a valid candle request.");
@@ -38,7 +36,6 @@ class CandlesService {
     final var getCandleResponsePayloadToListCandleMapper = GetCandleResponsePayloadToListCandleMapper.builder()
       .dateTimeUtil(dateTimeUtil)
       .precision(candlesRequest.getResolution())
-//      .candleService(candleService)
       .symbol(candlesRequest.getActive()
         .getSymbol())
       .build();
@@ -73,7 +70,7 @@ class CandlesService {
       uriBuilder.addParameter("to", Long.toString(candlesRequest.getToTime()
         .toEpochSecond()));
       uriBuilder.addParameter("from", Long.toString(candlesRequest.getFrom()
-        .toEpochSecond()));
+        .toEpochSecond() - 1));
     }
 
     try {
