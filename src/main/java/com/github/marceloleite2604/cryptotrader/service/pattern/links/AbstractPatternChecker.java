@@ -62,9 +62,7 @@ public abstract class AbstractPatternChecker implements PatternChecker {
 
         if (log.isDebugEnabled()) {
           final var candles = patternCheckContext.getCandles();
-          final var analysedCandles = candles.subList(
-            candles.size() - patternCandlesSize,
-            candles.size());
+          final var analysedCandles = candles.subList(0, patternCandlesSize);
 
           log.debug("{} pattern found analysing the following candles: {}",
             patternType.getName(),
