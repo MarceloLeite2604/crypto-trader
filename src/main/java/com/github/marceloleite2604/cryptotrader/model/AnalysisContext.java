@@ -33,6 +33,10 @@ public class AnalysisContext {
 
   private final Profit profit;
 
+  private Boolean sellPatternFound;
+
+  private Boolean buyPatternFound;
+
   public List<PatternMatch> retrieveBuyPatternMatches() {
     return retrievePatternMatchesBySide(Side.BUY);
   }
@@ -46,5 +50,47 @@ public class AnalysisContext {
       .filter(patternMatch -> side.equals(patternMatch.getType()
         .getSide()))
       .toList();
+  }
+
+  public boolean isSellPatternFound() {
+    if (sellPatternFound == null) {
+      sellPatternFound = retrieveSellPatternMatches()
+        .size() > 0;
+    }
+    return sellPatternFound;
+  }
+
+  public boolean isBuyPatternFound() {
+    if (buyPatternFound == null) {
+      buyPatternFound = retrieveBuyPatternMatches()
+        .size() > 0;
+    }
+    return buyPatternFound;
+  }
+
+  public boolean isFiatBalanceAvailable() {
+    return fiatBalance.isNotEmpty();
+  }
+
+  public boolean isActiveBalanceAvailable() {
+    return activeBalance.isNotEmpty();
+  }
+
+  public boolean isOverUpperLimit() {
+    return profit.hasReachedUpperLimit();
+  }
+
+  public boolean isBelowLowerLimit() {
+    return profit.hasReachedLowerLimit();
+  }
+
+  public String toString() {
+    return AnalysisContext.class.getSimpleName() +
+      "(isFiatBalanceAvailable=" + isFiatBalanceAvailable() + ", " +
+      "isActiveBalanceAvailable=" + isActiveBalanceAvailable() + ", " +
+      "isBuyPatternFound=" + isBuyPatternFound() + ", " +
+      "isSellPatternFound=" + isSellPatternFound() + ", " +
+      "isBelowLowerLimit=" + isBelowLowerLimit() +
+      "isOverUpperLimit=" + isOverUpperLimit() + ")";
   }
 }

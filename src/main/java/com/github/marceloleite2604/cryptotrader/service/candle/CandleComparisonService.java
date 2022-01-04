@@ -5,7 +5,9 @@ import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleComparison;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePosition;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -15,7 +17,10 @@ import java.util.List;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 class CandleComparisonService {
+
+  private static final StandardDeviation STANDARD_DEVIATION = new StandardDeviation();
 
   public List<Candle> compare(List<Candle> candles) {
 
@@ -99,15 +104,17 @@ class CandleComparisonService {
     Candle previous = null;
     final var candlesPositions = new ArrayList<CandlePosition>(candles.size());
 
+    final var averageStandardDeviation = calculateStandardDeviation(candles, Candle::getAverage);
+
     for (Candle candle : candles) {
       var candlePosition = CandlePosition.SAME_LEVEL;
       if (previous != null) {
 
         final var averageDifference = candle.getAverage()
           .subtract(previous.getAverage());
-        final var ratio = previous.getSize()
+        final var ratio = averageStandardDeviation
           .compareTo(BigDecimal.ZERO) == 0 ?
-          BigDecimal.ZERO : averageDifference.divide(previous.getSize(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+          BigDecimal.ZERO : averageDifference.divide(averageStandardDeviation, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
         if (ratio.compareTo(BigDecimal.ZERO) > 0 &&
           ratio.compareTo(GeneralConfiguration.COMPARISON_THRESHOLD) > 0) {
@@ -124,6 +131,15 @@ class CandleComparisonService {
 
     candlesPositions.sort(Collections.reverseOrder());
     return candlesPositions;
+  }
+
+  private BigDecimal calculateStandardDeviation(List<Candle> candles, Function<Candle, BigDecimal> getter) {
+    final var averages = candles.stream()
+      .map(getter)
+      .mapToDouble(BigDecimal::doubleValue)
+      .toArray();
+
+    return BigDecimal.valueOf(STANDARD_DEVIATION.evaluate(averages));
   }
 
   private BigDecimal calculateAverage(List<Candle> candles, Function<Candle, BigDecimal> getter) {

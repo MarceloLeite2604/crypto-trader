@@ -1,7 +1,7 @@
 package com.github.marceloleite2604.cryptotrader;
 
 import com.github.marceloleite2604.cryptotrader.model.Active;
-import com.github.marceloleite2604.cryptotrader.service.AnalyserService;
+import com.github.marceloleite2604.cryptotrader.service.analyser.AnalyserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

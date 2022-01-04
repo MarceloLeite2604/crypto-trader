@@ -32,14 +32,13 @@ public class OffsetDateTimeRange {
     if (o == this) return true;
     if (!(o instanceof OffsetDateTimeRange)) return false;
     final OffsetDateTimeRange other = (OffsetDateTimeRange) o;
-    if (!other.canEqual((Object) this)) return false;
+    if (!other.canEqual(this)) return false;
     final Object this$start = this.getStart();
     final Object other$start = other.getStart();
     if (this$start == null ? other$start != null : !this$start.equals(other$start)) return false;
     final Object this$end = this.getEnd();
     final Object other$end = other.getEnd();
-    if (this$end == null ? other$end != null : !this$end.equals(other$end)) return false;
-    return true;
+    return this$end == null ? other$end == null : this$end.equals(other$end);
   }
 
   protected boolean canEqual(final Object other) {
