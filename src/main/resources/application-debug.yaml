@@ -1,4 +1,4 @@
-spring.jpa.show-sql: true
+spring.jpa.show-sql: false
 logging.level:
   org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
   com.github.marceloleite2604.cryptotrader: DEBUG

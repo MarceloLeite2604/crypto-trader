@@ -3,8 +3,8 @@ package com.github.marceloleite2604.cryptotrader.service.pattern.links;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
-import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
 import lombok.extern.slf4j.Slf4j;
@@ -56,16 +56,6 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    if (firstCandle.getLowerWickSize()
-      .compareTo(secondCandle.getLowerWickSize()) > 0) {
-      return Optional.empty();
-    }
-
-    if (firstCandle.getUpperWickSize()
-      .compareTo(secondCandle.getUpperWickSize()) < 0) {
-      return Optional.empty();
-    }
-
     if (!VALID_BODY_SIZE_CATEGORIES.contains(firstComparison.getBodyProportion())) {
       return Optional.empty();
     }
@@ -84,33 +74,13 @@ public class BullishEngulfingPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    if (secondCandle.getBodySize()
-      .compareTo(firstCandle.getBodySize()) > 0) {
+    if (firstCandle.getClose()
+      .compareTo(secondCandle.getHigh()) < 0) {
       return Optional.empty();
     }
 
-    if (secondCandle.getSize()
-      .compareTo(firstCandle.getSize()) > 0) {
-      return Optional.empty();
-    }
-
-    if (secondCandle.getOpen()
-      .compareTo(firstCandle.getClose()) > 0) {
-      return Optional.empty();
-    }
-
-    if (secondCandle.getClose()
-      .compareTo(firstCandle.getOpen()) < 0) {
-      return Optional.empty();
-    }
-
-    if (secondCandle.getHigh()
-      .compareTo(firstCandle.getHigh()) > 0) {
-      return Optional.empty();
-    }
-
-    if (secondCandle.getLow()
-      .compareTo(firstCandle.getLow()) < 0) {
+    if (firstCandle.getOpen()
+      .compareTo(secondCandle.getLow()) > 0) {
       return Optional.empty();
     }
 

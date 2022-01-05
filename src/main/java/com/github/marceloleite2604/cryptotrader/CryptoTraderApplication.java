@@ -1,11 +1,15 @@
 package com.github.marceloleite2604.cryptotrader;
 
-import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
-import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
-import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
-import com.github.marceloleite2604.cryptotrader.service.ProfitService;
-import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
+import com.github.marceloleite2604.cryptotrader.model.Active;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
+import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.service.candle.CandleComparisonService;
+import com.github.marceloleite2604.cryptotrader.service.candle.CandleService;
+import com.github.marceloleite2604.cryptotrader.service.pattern.PatternService;
+import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +17,12 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @EnableCaching
 @SpringBootApplication
@@ -25,97 +34,50 @@ public class CryptoTraderApplication {
     SpringApplication.run(CryptoTraderApplication.class, args);
   }
 
-//  @Bean
+  @Bean
   public CommandLineRunner createCommandLineRunner(
-    MercadoBitcoinService mercadoBitcoinService,
-    FormatUtil formatUtil,
-    ProfitService profitService) {
+    CandleService candleService,
+    DateTimeUtil dateTimeUtil,
+    PatternService patternService,
+    CandleComparisonService candleComparisonService) {
     return (args -> {
-//      final var instruments = mercadoBitcoinService.retrieveAllInstruments();
-//      final var bitcoinInstrument = instruments.stream()
-//        .filter(instrument -> instrument.getSymbol()
-//          .equals("BTC-BRL"))
-//        .findFirst()
-//        .orElseThrow(() -> new IllegalStateException("Could not find Bitcoin cryptocurrency."));
-//
-//      final var orderBook = mercadoBitcoinService.retrieveOrderBook(Symbol.ETHEREUM.getValue());
-//      log.info("Order book asks: {}", orderBook.getAsks()
-//        .size());
-//      log.info("Order book bids: {}", orderBook.getBids()
-//        .size());
-//      log.info("Timestamp: {}", orderBook.getTimestamp());
-//
-      final var tickers = mercadoBitcoinService.retrieveTickers("ETH-BRL");
-      final var ethBrlTicker = tickers.get("ETH-BRL");
-//      log.info("Last price for \"{}\" instrument was {}", btcBrlTicker.getPair(), currencyUtil.toBrl(btcBrlTicker.getLast()));
-//      final var now = OffsetDateTime.now(ZoneOffset.UTC);
-//      final var candlesRequestTime = CandlesRequest.builder()
-//        .symbol("BTC-BRL")
-//        .resolution(CandlePrecision.FIFTEEN_MINUTES)
-//        .toTime(now)
-//        .from(now.minus(1, ChronoUnit.HOURS))
-//        .build();
-//      final var candlesRequestCount = CandlesRequest.builder()
-//        .symbol("BTC-BRL")
-//        .resolution(CandlePrecision.FIFTEEN_MINUTES)
-//        .toCount(0)
-//        .countback(4)
-//        .build();
-//      final var candles = mercadoBitcoinService.retrieveCandles(candlesRequestCount);
+      final var listSize = 12;
+      final var active = Active.BITCOIN;
+      final var precision = CandlePrecision.ONE_DAY;
+      final var duration = precision.getDuration();
+      final var to = dateTimeUtil.truncateTo(
+        OffsetDateTime.now(ZoneOffset.UTC),
+        duration);
+      final var from = to.minus(duration.multipliedBy(100));
 
-//      final var to = OffsetDateTime.now(ZoneOffset.UTC);
-//      final var from = to.minus(1, ChronoUnit.HOURS);
-//      final var tradesRequest = TradesRequest.builder()
-//        .symbol("BTC-BRL")
-//        .from(from)
-//        .to(to)
-//        .build();
-//      final var trades = mercadoBitcoinService.retrieveTrades(tradesRequest);
-
-      final var account = mercadoBitcoinService.retrieveAccount();
-//      final var account = accounts.get(0);
-//      final var balances = mercadoBitcoinService.retrieveBalances(account.getId(), "BTC-BRL");
-//      final var positions = mercadoBitcoinService.retrievePositions(account.getId(), "BTC-BRL");
-//      final var retrieveOrdersRequest = RetrieveOrdersRequest.builder()
-//        .accountId(account.getId())
-//        .symbol("ETH-BRL")
-//        .build();
-//      final var orders = mercadoBitcoinService.retrieveOrders(retrieveOrdersRequest);
-//      final var profit = profitService.calculate(orders, ethBrlTicker);
-//      final var order = orders.get(0);
-//      final var retrievedOrder = mercadoBitcoinService.retrieveOrder(account.getId(), "BTC-BRL", order.getId());
-//      final var placeOrderRequest = PlaceOrderRequest.builder()
-//        .async(true)
-//        .accountId(account.getId())
-//        .symbol("ETH-BRL")
-//        .limitPrice(BigDecimal.valueOf(21640.2236))
-//        .quantity(BigDecimal.valueOf(0.0001))
-//        .side("sell")
-//        .type("limit")
-//        .build();
-
-      final var placeOrderRequest = PlaceOrderRequest.builder()
-        .async(false)
-        .accountId(account.getId())
-        .symbol("ETH-BRL")
-        .cost(BigDecimal.valueOf(10.01))
-        .side("buy")
-        .type("market")
+      final var candlesRequest = CandlesRequest.builder()
+        .resolution(precision)
+        .from(from)
+        .toTime(to)
+        .active(active)
         .build();
-      log.info("Placing order.");
-      final var optionalOrderId = mercadoBitcoinService.placeOrder(placeOrderRequest);
 
-      if (optionalOrderId.isPresent()) {
-        log.info("Order placed.");
-        final var cancelled = mercadoBitcoinService.cancelOrder(account.getId(), "ETH-BRL", optionalOrderId.get());
-        if (!cancelled) {
-          log.error("Something went wrong while canceling order {}.", optionalOrderId.get());
-        }
-      } else {
-        log.info("Could not place order.");
+      final var candles = candleService.retrieveCandles(candlesRequest);
+
+      List<PatternMatch> patternMatches = new ArrayList<>();
+
+      for (int count = candles.size(); count >= listSize; count--) {
+        var selectedCandles = candles.subList(count - listSize, count);
+        selectedCandles = candleComparisonService.compare(selectedCandles);
+        selectedCandles.sort(Comparator.reverseOrder());
+        final var patternMatchesForSelectedCandles = patternService.check(active, selectedCandles);
+        patternMatches.addAll(patternMatchesForSelectedCandles);
       }
 
-      log.info("Done");
+      if (CollectionUtils.isNotEmpty(patternMatches)) {
+        patternMatches.sort(Comparator.comparing(PatternMatch::getCandleTime));
+        log.info("The following patterns were found:");
+        patternMatches.forEach(patternMatch -> log.info("{}: {}", patternMatch.getCandleTime(), patternMatch.getType()));
+
+        patternMatches.stream()
+          .collect(Collectors.groupingBy(PatternMatch::getType, Collectors.counting()))
+          .forEach((type, count) -> log.info("{}: {}", type, count));
+      }
     });
   }
 }

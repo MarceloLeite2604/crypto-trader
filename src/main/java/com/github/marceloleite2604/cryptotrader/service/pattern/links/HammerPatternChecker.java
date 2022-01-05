@@ -44,11 +44,15 @@ public class HammerPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    if (!CandlePosition.RAISED.equals(firstComparison.getPosition())) {
-      return Optional.empty();
-    }
+//    if (!CandlePosition.RAISED.equals(firstComparison.getPosition())) {
+//      return Optional.empty();
+//    }
 
     final var secondCandle = candles.get(1);
+
+    if (firstCandle.getClose().compareTo(secondCandle.getClose()) <= 0) {
+      return Optional.empty();
+    }
 
     if (!ACCEPTED_CANDLE_TYPES.contains(secondCandle.getType())) {
       return Optional.empty();

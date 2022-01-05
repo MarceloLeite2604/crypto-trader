@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 @Component
 @Slf4j
-class CandleComparisonService {
+public class CandleComparisonService {
 
   private static final StandardDeviation STANDARD_DEVIATION = new StandardDeviation();
 
@@ -129,7 +129,6 @@ class CandleComparisonService {
       previous = candle;
     }
 
-    candlesPositions.sort(Collections.reverseOrder());
     return candlesPositions;
   }
 

@@ -8,12 +8,14 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContex
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class HangingManPatternChecker extends AbstractPatternChecker {
 
   private static final int MINIMAL_CANDLES_AMOUNT = 5;

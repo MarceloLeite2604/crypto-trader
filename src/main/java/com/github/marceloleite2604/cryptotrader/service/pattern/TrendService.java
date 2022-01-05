@@ -3,12 +3,14 @@ package com.github.marceloleite2604.cryptotrader.service.pattern;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.Trend;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class TrendService {
 
   public Trend search(final List<Candle> candles) {

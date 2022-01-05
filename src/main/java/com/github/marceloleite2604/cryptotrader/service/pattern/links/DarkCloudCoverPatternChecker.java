@@ -21,12 +21,6 @@ public class DarkCloudCoverPatternChecker extends AbstractPatternChecker {
   private static final int PATTERN_CANDLES_SIZE = 3;
   private static final int MINIMAL_TREND_SIZE = MINIMAL_CANDLES_AMOUNT - PATTERN_CANDLES_SIZE;
 
-  private static final List<CandleProportion> VALID_CANDLE_SIZE_CATEGORIES = List.of(
-    CandleProportion.MEDIUM_LARGE,
-    CandleProportion.LARGE,
-    CandleProportion.VERY_LARGE,
-    CandleProportion.ENORMOUS);
-
   public DarkCloudCoverPatternChecker(TrendService trendService) {
     super(PatternType.DARK_CLOUD_COVER, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
   }
@@ -41,22 +35,12 @@ public class DarkCloudCoverPatternChecker extends AbstractPatternChecker {
     final var candles = patternCheckContext.getCandles();
 
     final var secondCandle = candles.get(1);
-    final var secondComparison = secondCandle.getComparison();
-
-    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(secondComparison.getBodyProportion())) {
-      return Optional.empty();
-    }
 
     if (!CandleDirection.DESCENDING.equals(secondCandle.getDirection())) {
       return Optional.empty();
     }
 
     final var thirdCandle = candles.get(2);
-    final var thirdComparison = thirdCandle.getComparison();
-
-    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(thirdComparison.getBodyProportion())) {
-      return Optional.empty();
-    }
 
     if (!CandleDirection.ASCENDING.equals(thirdCandle.getDirection())) {
       return Optional.empty();
@@ -68,7 +52,7 @@ public class DarkCloudCoverPatternChecker extends AbstractPatternChecker {
     }
 
     if (secondCandle.getClose()
-      .compareTo(thirdCandle.getBodyAverage()) >= 0) {
+      .compareTo(thirdCandle.getAverage()) >= 0) {
       return Optional.empty();
     }
 

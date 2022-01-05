@@ -17,13 +17,13 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Candle implements Comparable<Candle> {
 
-  private final BigDecimal close;
+  private final BigDecimal open;
 
   private final BigDecimal high;
 
   private final BigDecimal low;
 
-  private final BigDecimal open;
+  private final BigDecimal close;
 
   private final CandlePrecision precision;
 

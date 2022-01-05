@@ -42,36 +42,22 @@ public class EveningStarPatternChecker extends AbstractPatternChecker {
 
     final var candles = patternCheckContext.getCandles();
 
-    final var firstCandle = candles.get(0);
-    final var firstComparison = firstCandle.getComparison();
+    final var thirdCandle = candles.get(2);
+    final var thirdComparison = thirdCandle.getComparison();
 
-    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(firstComparison.getBodyProportion())) {
+    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(thirdComparison.getBodyProportion())) {
       return Optional.empty();
     }
 
-    if (!CandleDirection.DESCENDING.equals(firstCandle.getDirection())) {
-      return Optional.empty();
-    }
-
-    if (!CandlePosition.LOWERED.equals(firstComparison.getPosition())) {
+    if (!CandleDirection.ASCENDING.equals(thirdCandle.getDirection())) {
       return Optional.empty();
     }
 
     final var secondCandle = candles.get(1);
     final var secondComparison = secondCandle.getComparison();
 
-    if (secondCandle.getUpperWickPercentage()
-      .compareTo(secondCandle.getBodyPercentage()) < 0) {
-      return Optional.empty();
-    }
-
-    if (secondCandle.getLowerWickPercentage()
-      .compareTo(secondCandle.getBodyPercentage()) < 0) {
-      return Optional.empty();
-    }
-
-    if (secondComparison.getCandleProportion()
-      .ordinal() >= firstComparison.getCandleProportion()
+    if (thirdComparison.getBodyProportion()
+      .ordinal() <= secondComparison.getBodyProportion()
       .ordinal()) {
       return Optional.empty();
     }
@@ -80,20 +66,24 @@ public class EveningStarPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    final var thirdCandle = candles.get(2);
-    final var thirdComparison = thirdCandle.getComparison();
+    final var firstCandle = candles.get(0);
+    final var firstComparison = firstCandle.getComparison();
 
-    if (secondComparison.getCandleProportion()
-      .ordinal() >= thirdComparison.getCandleProportion()
+    if (firstComparison.getBodyProportion()
+      .ordinal() <= secondComparison.getBodyProportion()
       .ordinal()) {
       return Optional.empty();
     }
 
-    if (!VALID_CANDLE_SIZE_CATEGORIES.contains(thirdComparison.getBodyProportion())) {
+    if (!CandleDirection.DESCENDING.equals(firstCandle.getDirection())) {
       return Optional.empty();
     }
 
-    if (!CandleDirection.ASCENDING.equals(thirdCandle.getDirection())) {
+    if (firstCandle.getOpen().compareTo(secondCandle.getOpen()) >= 0) {
+      return Optional.empty();
+    }
+
+    if (firstCandle.getClose().compareTo(thirdCandle.getAverage()) > 0) {
       return Optional.empty();
     }
 

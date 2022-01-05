@@ -61,12 +61,9 @@ public class MorningStarPatternChecker extends AbstractPatternChecker {
     final var secondComparison = secondCandle.getComparison();
 
     if (secondCandle.getUpperWickPercentage()
-      .compareTo(secondCandle.getBodyPercentage()) < 0) {
-      return Optional.empty();
-    }
-
-    if (secondCandle.getLowerWickPercentage()
-      .compareTo(secondCandle.getBodyPercentage()) < 0) {
+      .compareTo(secondCandle.getBodyPercentage()) < 0 &&
+      secondCandle.getLowerWickPercentage()
+        .compareTo(secondCandle.getBodyPercentage()) < 0) {
       return Optional.empty();
     }
 

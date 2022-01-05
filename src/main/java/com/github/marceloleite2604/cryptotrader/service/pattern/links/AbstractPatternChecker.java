@@ -34,7 +34,7 @@ public abstract class AbstractPatternChecker implements PatternChecker {
     int minimalTrendSize) {
 
     final var candles = patternCheckContext.getCandles();
-    final var analyzedCandles = candles.subList(0, candles.size() - patternCandlesSize);
+    final var analyzedCandles = candles.subList(patternCandlesSize, candles.size());
 
     final var trend = trendService.search(analyzedCandles);
 

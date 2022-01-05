@@ -18,7 +18,7 @@ public class ScheduledTaskAnalyser {
 
   private final AnalyserService analyserService;
 
-  @Scheduled(cron = "0 * * ? * ?")
+//  @Scheduled(cron = "0 * * ? * ?")
   public void run() {
     ACTIVES_TO_CHECK.forEach(analyserService::analyse);
   }
