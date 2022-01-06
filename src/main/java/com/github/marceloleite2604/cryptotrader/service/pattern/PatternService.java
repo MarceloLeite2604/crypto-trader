@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,11 +91,9 @@ public class PatternService {
 
     final var precision = firstCandle.getPrecision();
 
-    final var end = dateTimeUtil.truncateTo(
-      OffsetDateTime.now(ZoneOffset.UTC),
-      precision.getDuration());
+    final var start = firstCandle.getTimestamp();
 
-    final var start = end.minus(precision.getDuration());
+    final var end = start.plus(precision.getDuration().minusSeconds(1));
 
     final var findPatterMatchesRequest = FindPatterMatchesRequest.builder()
       .active(active)
@@ -106,7 +102,8 @@ public class PatternService {
       .end(end)
       .build();
 
-    return findPatternMatches(findPatterMatchesRequest);
+    // return findPatternMatches(findPatterMatchesRequest);
+    return Collections.emptyList();
   }
 
   private List<PatternMatch> findPatternMatches(FindPatterMatchesRequest findPatterMatchesRequest) {

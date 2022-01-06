@@ -7,6 +7,8 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContex
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
+import com.github.marceloleite2604.cryptotrader.util.ComparisonUtil;
+import com.github.marceloleite2604.cryptotrader.util.StatisticsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +29,8 @@ public class PiercingLinePatternChecker extends AbstractPatternChecker {
     CandleProportion.VERY_LARGE,
     CandleProportion.ENORMOUS);
 
-  public PiercingLinePatternChecker(TrendService trendService) {
-    super(PatternType.PIERCING_LINE, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
+  public PiercingLinePatternChecker(TrendService trendService, StatisticsUtil statisticsUtil, ComparisonUtil comparisonUtil) {
+    super(PatternType.PIERCING_LINE, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService, statisticsUtil, comparisonUtil);
   }
 
   @Override

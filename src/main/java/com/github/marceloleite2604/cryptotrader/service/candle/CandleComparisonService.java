@@ -5,9 +5,11 @@ import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleComparison;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePosition;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
+import com.github.marceloleite2604.cryptotrader.util.ComparisonUtil;
+import com.github.marceloleite2604.cryptotrader.util.StatisticsUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -18,9 +20,12 @@ import java.util.function.Function;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CandleComparisonService {
 
-  private static final StandardDeviation STANDARD_DEVIATION = new StandardDeviation();
+  private final StatisticsUtil statisticsUtil;
+
+  private final ComparisonUtil comparisonUtil;
 
   public List<Candle> compare(List<Candle> candles) {
 
@@ -72,7 +77,7 @@ public class CandleComparisonService {
 
   private List<CandleProportion> retrieveProportions(List<Candle> candles, Function<Candle, BigDecimal> sizeGetter) {
 
-    final var averageBodySize = calculateAverage(candles, sizeGetter);
+    final var averageBodySize = statisticsUtil.calculateAverage(candles, sizeGetter);
 
     final var bodiesProportions = new ArrayList<CandleProportion>(candles.size());
 
@@ -104,7 +109,7 @@ public class CandleComparisonService {
     Candle previous = null;
     final var candlesPositions = new ArrayList<CandlePosition>(candles.size());
 
-    final var averageStandardDeviation = calculateStandardDeviation(candles, Candle::getAverage);
+    final var averageStandardDeviation = statisticsUtil.calculateStandardDeviation(candles, Candle::getAverage);
 
     for (Candle candle : candles) {
       var candlePosition = CandlePosition.SAME_LEVEL;
@@ -112,17 +117,10 @@ public class CandleComparisonService {
 
         final var averageDifference = candle.getAverage()
           .subtract(previous.getAverage());
-        final var ratio = averageStandardDeviation
-          .compareTo(BigDecimal.ZERO) == 0 ?
-          BigDecimal.ZERO : averageDifference.divide(averageStandardDeviation, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
-        if (ratio.compareTo(BigDecimal.ZERO) > 0 &&
-          ratio.compareTo(GeneralConfiguration.COMPARISON_THRESHOLD) > 0) {
-          candlePosition = CandlePosition.RAISED;
-        } else if (ratio.compareTo(BigDecimal.ZERO) < 0 &&
-          ratio.compareTo(GeneralConfiguration.COMPARISON_THRESHOLD.negate()) < 0) {
-          candlePosition = CandlePosition.LOWERED;
-        }
+        final int comparisonResult = comparisonUtil.compareRatioUsingMargin(averageDifference, averageStandardDeviation);
+
+        candlePosition = CandlePosition.findByComparisonResult(comparisonResult);
       }
 
       candlesPositions.add(candlePosition);
@@ -130,26 +128,6 @@ public class CandleComparisonService {
     }
 
     return candlesPositions;
-  }
-
-  private BigDecimal calculateStandardDeviation(List<Candle> candles, Function<Candle, BigDecimal> getter) {
-    final var averages = candles.stream()
-      .map(getter)
-      .mapToDouble(BigDecimal::doubleValue)
-      .toArray();
-
-    return BigDecimal.valueOf(STANDARD_DEVIATION.evaluate(averages));
-  }
-
-  private BigDecimal calculateAverage(List<Candle> candles, Function<Candle, BigDecimal> getter) {
-    return candles.stream()
-      .map(getter)
-      .mapToDouble(BigDecimal::doubleValue)
-      .average()
-      .stream()
-      .mapToObj(BigDecimal::valueOf)
-      .findFirst()
-      .orElse(BigDecimal.ZERO);
   }
 
 }

@@ -7,6 +7,8 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContex
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
+import com.github.marceloleite2604.cryptotrader.util.ComparisonUtil;
+import com.github.marceloleite2604.cryptotrader.util.StatisticsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +23,8 @@ public class DarkCloudCoverPatternChecker extends AbstractPatternChecker {
   private static final int PATTERN_CANDLES_SIZE = 3;
   private static final int MINIMAL_TREND_SIZE = MINIMAL_CANDLES_AMOUNT - PATTERN_CANDLES_SIZE;
 
-  public DarkCloudCoverPatternChecker(TrendService trendService) {
-    super(PatternType.DARK_CLOUD_COVER, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
+  public DarkCloudCoverPatternChecker(TrendService trendService, StatisticsUtil statisticsUtil, ComparisonUtil comparisonUtil) {
+    super(PatternType.DARK_CLOUD_COVER, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService, statisticsUtil, comparisonUtil);
   }
 
   @Override

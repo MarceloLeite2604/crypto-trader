@@ -8,6 +8,8 @@ import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContex
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
 import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
+import com.github.marceloleite2604.cryptotrader.util.ComparisonUtil;
+import com.github.marceloleite2604.cryptotrader.util.StatisticsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +26,11 @@ public class HangingManPatternChecker extends AbstractPatternChecker {
 
   private static final List<CandleType> ACCEPTED_CANDLE_TYPES = List.of(
     CandleType.HAMMER,
-    CandleType.SHOOTING_STAR);
+    CandleType.SHOOTING_STAR,
+    CandleType.GRAVESTONE);
 
-  public HangingManPatternChecker(TrendService trendService) {
-    super(PatternType.HANGING_MAN, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
+  public HangingManPatternChecker(TrendService trendService, StatisticsUtil statisticsUtil, ComparisonUtil comparisonUtil) {
+    super(PatternType.HANGING_MAN, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService, statisticsUtil, comparisonUtil);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.github.marceloleite2604.cryptotrader;
 
 import com.github.marceloleite2604.cryptotrader.model.Active;
+import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
@@ -19,9 +20,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @EnableCaching
@@ -48,7 +53,7 @@ public class CryptoTraderApplication {
       final var to = dateTimeUtil.truncateTo(
         OffsetDateTime.now(ZoneOffset.UTC),
         duration);
-      final var from = to.minus(duration.multipliedBy(100));
+      final var from = to.minus(duration.multipliedBy(200));
 
       final var candlesRequest = CandlesRequest.builder()
         .resolution(precision)
@@ -77,6 +82,36 @@ public class CryptoTraderApplication {
         patternMatches.stream()
           .collect(Collectors.groupingBy(PatternMatch::getType, Collectors.counting()))
           .forEach((type, count) -> log.info("{}: {}", type, count));
+
+        log.info("Total of patterns found:");
+        patternMatches.stream()
+          .collect(Collectors.groupingBy(PatternMatch::getType, Collectors.counting()))
+          .forEach((type, count) -> log.info("{}: {}", type, count));
+
+        final var patternMatchesByDay = patternMatches.stream()
+          .collect(Collectors.groupingBy(patternMatch ->
+            patternMatch.getCandleTime()
+              .truncatedTo(ChronoUnit.DAYS)));
+
+        Map<OffsetDateTime, Map<Side, Long>> sideCountingByDay = new HashMap<>();
+        for (Map.Entry<OffsetDateTime, List<PatternMatch>> entry : patternMatchesByDay.entrySet()) {
+          final var sideCountingMap = entry.getValue()
+            .stream()
+            .collect(Collectors.groupingBy(patternMatch -> patternMatch.getType()
+              .getSide(), Collectors.counting()));
+          sideCountingByDay.put(entry.getKey(), sideCountingMap);
+        }
+
+        final var days = new ArrayList<>(sideCountingByDay.keySet());
+
+        Collections.sort(days);
+
+        for (OffsetDateTime day : days) {
+          final var sidesCounting = sideCountingByDay.get(day);
+          log.info("{}: {}",
+            day,
+            sidesCounting);
+        }
       }
     });
   }
