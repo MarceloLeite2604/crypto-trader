@@ -41,14 +41,40 @@ public abstract class AbstractPatternChecker implements PatternChecker {
     TrendType trendType,
     int minimalTrendSize) {
 
-    final var candles = patternCheckContext.getCandles();
+    /*final var candles = patternCheckContext.getCandles();
     final var analyzedCandles = candles.subList(patternCandlesSize, candles.size());
 
     final var trend = trendService.search(analyzedCandles);
 
     return (!trend.getType()
       .equals(trendType) || trend.getCandles()
-      .size() < minimalTrendSize);
+      .size() < minimalTrendSize);*/
+
+    var trendCandles = patternCheckContext.getCandles()
+      .subList(
+        patternCandlesSize,
+        patternCheckContext.getCandles()
+          .size());
+
+    final var closeAverage = statisticsUtil.calculateAverage(trendCandles, Candle::getClose);
+    final var closeStandardDeviation = statisticsUtil.calculateStandardDeviation(trendCandles, Candle::getClose);
+
+    final var secondHalfSumCloseDiff = trendCandles
+      .subList(0, trendCandles.size() / 2)
+      .stream()
+      .map(trendCandle -> trendCandle.getClose()
+        .subtract(closeAverage))
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    final var multiplier = BigDecimal.valueOf(0);
+
+    if (Side.SELL.equals(patternType.getSide())) {
+      return secondHalfSumCloseDiff.compareTo(
+        closeStandardDeviation.multiply(multiplier)) <= 0;
+    }
+
+    return secondHalfSumCloseDiff.compareTo(
+      closeStandardDeviation.negate().multiply(multiplier)) >= 0;
   }
 
   @Override
@@ -59,38 +85,48 @@ public abstract class AbstractPatternChecker implements PatternChecker {
 
       findMatch(patternCheckContext).ifPresent(candle ->
       {
-        final var closeAverage = statisticsUtil.calculateAverage(patternCheckContext.getCandles(), Candle::getClose);
-        final var closeStandardDeviation = statisticsUtil.calculateStandardDeviation(patternCheckContext.getCandles(), Candle::getClose);
+//        var trendCandles = patternCheckContext.getCandles()
+//          .subList(
+//            patternCandlesSize,
+//            patternCheckContext.getCandles()
+//              .size());
+//
+//        final var closeAverage = statisticsUtil.calculateAverage(trendCandles, Candle::getClose);
+//        final var closeStandardDeviation = statisticsUtil.calculateStandardDeviation(trendCandles, Candle::getClose);
+//
+//        final var secondHalfSumCloseDiff = trendCandles
+//          .subList(0, trendCandles.size() / 2)
+//          .stream()
+//          .map(trendCandle -> trendCandle.getClose()
+//            .subtract(closeAverage))
+//          .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        log.info("Close average: {}", closeAverage);
-        log.info("Close std dev: {}", closeStandardDeviation);
+//        log.info("Close average: {}", closeAverage);
+//        log.info("Close std dev: {}", closeStandardDeviation);
+//        log.info("Sum close diff: {}", secondHalfSumCloseDiff);
 
-        final var closeDiff = patternCheckContext.getCandles()
-          .get(0)
-          .getClose().subtract(closeAverage);
+//        if ((Side.SELL.equals(patternType.getSide()) &&
+//          secondHalfSumCloseDiff.compareTo(BigDecimal.ZERO) > 0) ||
+//          (Side.BUY.equals(patternType.getSide()) &&
+//            secondHalfSumCloseDiff.compareTo(BigDecimal.ZERO) < 0)) {
+        final var active = Active.findBySymbol(candle.getSymbol());
 
-        final var comparison = comparisonUtil.compareRatioUsingMargin(closeDiff, closeStandardDeviation, BigDecimal.valueOf(0.5));
+        patternCheckContext.addMatch(PatternMatch.builder()
+          .candleTime(candle.getTimestamp())
+          .type(patternType)
+          .candlePrecision(candle.getPrecision())
+          .active(active)
+          .build());
 
-        if ((Side.SELL.equals(patternType.getSide()) && comparison > 0) ||
-          (Side.BUY.equals(patternType.getSide()) && comparison < 0)) {
-          final var active = Active.findBySymbol(candle.getSymbol());
+        if (log.isDebugEnabled()) {
+          final var candles = patternCheckContext.getCandles();
+          final var analysedCandles = candles.subList(0, patternCandlesSize);
 
-          patternCheckContext.addMatch(PatternMatch.builder()
-            .candleTime(candle.getTimestamp())
-            .type(patternType)
-            .candlePrecision(candle.getPrecision())
-            .active(active)
-            .build());
-
-          if (log.isDebugEnabled()) {
-            final var candles = patternCheckContext.getCandles();
-            final var analysedCandles = candles.subList(0, patternCandlesSize);
-
-            log.debug("{} pattern found analysing the following candles: {}",
-              patternType.getName(),
-              analysedCandles);
-          }
+          log.debug("{} pattern found analysing the following candles: {}",
+            patternType.getName(),
+            analysedCandles);
         }
+//        }
       });
     }
 

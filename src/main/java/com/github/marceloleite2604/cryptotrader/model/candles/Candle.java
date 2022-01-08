@@ -17,6 +17,9 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Candle implements Comparable<Candle> {
 
+  @EqualsAndHashCode.Include
+  private final OffsetDateTime timestamp;
+
   private final BigDecimal open;
 
   private final BigDecimal high;
@@ -28,9 +31,6 @@ public class Candle implements Comparable<Candle> {
   private final CandlePrecision precision;
 
   private final String symbol;
-
-  @EqualsAndHashCode.Include
-  private final OffsetDateTime timestamp;
 
   private final BigDecimal volume;
 

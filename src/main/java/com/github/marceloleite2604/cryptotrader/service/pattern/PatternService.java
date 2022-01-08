@@ -79,11 +79,12 @@ public class PatternService {
     patternCheckContext = first.check(patternCheckContext);
     Collections.sort(candles);
 
-    if (CollectionUtils.isNotEmpty(patternCheckContext.getPatternMatches())) {
-      log.debug("Pattern matches to be persisted: {}", patternCheckContext.getPatternMatches());
-    }
+//    if (CollectionUtils.isNotEmpty(patternCheckContext.getPatternMatches())) {
+//      log.debug("Pattern matches to be persisted: {}", patternCheckContext.getPatternMatches());
+//    }
 
-    return patternMatchRepository.saveAll(patternCheckContext.getPatternMatches());
+    // return patternMatchRepository.saveAll(patternCheckContext.getPatternMatches());
+    return patternCheckContext.getPatternMatches();
   }
 
   private List<PatternMatch> retrieveAlreadyDiscoveredPatternMatches(Active active, List<Candle> candles) {
