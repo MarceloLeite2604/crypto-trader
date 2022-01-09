@@ -18,11 +18,9 @@ public class ComparisonUtil {
       .compareTo(BigDecimal.ZERO) == 0 ?
       BigDecimal.ZERO : first.divide(second, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
-    if (ratio.compareTo(BigDecimal.ZERO) > 0 &&
-      ratio.compareTo(margin) > 0) {
+    if (ratio.compareTo(margin) > 0) {
       return 1;
-    } else if (ratio.compareTo(BigDecimal.ZERO) < 0 &&
-      ratio.compareTo(margin.negate()) < 0) {
+    } else if (ratio.compareTo(margin.negate()) < 0) {
       return -1;
     }
 

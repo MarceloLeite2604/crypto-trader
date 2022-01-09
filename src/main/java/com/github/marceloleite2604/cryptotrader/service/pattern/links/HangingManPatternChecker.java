@@ -6,10 +6,7 @@ import com.github.marceloleite2604.cryptotrader.model.candles.CandlePosition;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleType;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
-import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
-import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
-import com.github.marceloleite2604.cryptotrader.util.ComparisonUtil;
-import com.github.marceloleite2604.cryptotrader.util.StatisticsUtil;
+import com.github.marceloleite2604.cryptotrader.service.pattern.TrendAnalyser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -22,23 +19,18 @@ public class HangingManPatternChecker extends AbstractPatternChecker {
 
   private static final int MINIMAL_CANDLES_AMOUNT = 5;
   private static final int PATTERN_CANDLES_SIZE = 2;
-  private static final int MINIMAL_TREND_SIZE = MINIMAL_CANDLES_AMOUNT - PATTERN_CANDLES_SIZE;
 
   private static final List<CandleType> ACCEPTED_CANDLE_TYPES = List.of(
     CandleType.HAMMER,
     CandleType.SHOOTING_STAR,
     CandleType.GRAVESTONE);
 
-  public HangingManPatternChecker(TrendService trendService, StatisticsUtil statisticsUtil, ComparisonUtil comparisonUtil) {
-    super(PatternType.HANGING_MAN, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService, statisticsUtil, comparisonUtil);
+  public HangingManPatternChecker(TrendAnalyser trendService) {
+    super(PatternType.HANGING_MAN, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
   }
 
   @Override
   public Optional<Candle> findMatch(PatternCheckContext patternCheckContext) {
-
-    if (trendDoesNotMatchMinimal(patternCheckContext, TrendType.UPTREND, MINIMAL_TREND_SIZE)) {
-      return Optional.empty();
-    }
 
     final var candles = patternCheckContext.getCandles();
 

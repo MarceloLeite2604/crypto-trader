@@ -6,10 +6,7 @@ import com.github.marceloleite2604.cryptotrader.model.candles.CandlePosition;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleProportion;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternType;
-import com.github.marceloleite2604.cryptotrader.model.pattern.trend.TrendType;
-import com.github.marceloleite2604.cryptotrader.service.pattern.TrendService;
-import com.github.marceloleite2604.cryptotrader.util.ComparisonUtil;
-import com.github.marceloleite2604.cryptotrader.util.StatisticsUtil;
+import com.github.marceloleite2604.cryptotrader.service.pattern.TrendAnalyser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +19,6 @@ public class EveningStarPatternChecker extends AbstractPatternChecker {
 
   private static final int MINIMAL_CANDLES_AMOUNT = 5;
   private static final int PATTERN_CANDLES_SIZE = 3;
-  private static final int MINIMAL_TREND_SIZE = MINIMAL_CANDLES_AMOUNT - PATTERN_CANDLES_SIZE;
 
   private static final List<CandleProportion> VALID_CANDLE_SIZE_CATEGORIES = List.of(
     CandleProportion.MEDIUM,
@@ -31,16 +27,12 @@ public class EveningStarPatternChecker extends AbstractPatternChecker {
     CandleProportion.VERY_LARGE,
     CandleProportion.ENORMOUS);
 
-  public EveningStarPatternChecker(TrendService trendService, StatisticsUtil statisticsUtil, ComparisonUtil comparisonUtil) {
-    super(PatternType.EVENING_STAR, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService, statisticsUtil, comparisonUtil);
+  public EveningStarPatternChecker(TrendAnalyser trendService) {
+    super(PatternType.EVENING_STAR, MINIMAL_CANDLES_AMOUNT, PATTERN_CANDLES_SIZE, trendService);
   }
 
   @Override
   public Optional<Candle> findMatch(PatternCheckContext patternCheckContext) {
-
-    if (trendDoesNotMatchMinimal(patternCheckContext, TrendType.UPTREND, MINIMAL_TREND_SIZE)) {
-      return Optional.empty();
-    }
 
     final var candles = patternCheckContext.getCandles();
 
@@ -81,11 +73,13 @@ public class EveningStarPatternChecker extends AbstractPatternChecker {
       return Optional.empty();
     }
 
-    if (firstCandle.getOpen().compareTo(secondCandle.getOpen()) >= 0) {
+    if (firstCandle.getOpen()
+      .compareTo(secondCandle.getOpen()) >= 0) {
       return Optional.empty();
     }
 
-    if (firstCandle.getClose().compareTo(thirdCandle.getAverage()) > 0) {
+    if (firstCandle.getClose()
+      .compareTo(thirdCandle.getAverage()) > 0) {
       return Optional.empty();
     }
 

@@ -28,17 +28,17 @@ public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
 
   private static final int CANDLES_WINDOW_SIZE = 12;
 
+  private static final int TIME_WINDOW_SIZE = 365;
+
   private static final Active ACTIVE = Active.BITCOIN;
 
   private static final CandlePrecision PRECISION = CandlePrecision.ONE_DAY;
 
   private static final Duration DURATION = PRECISION.getDuration();
 
-  private static final BigDecimal BUY_PROFIT_THRESHOLD = BigDecimal.valueOf(0.0142);
+  private static final BigDecimal BUY_PROFIT_THRESHOLD = BigDecimal.valueOf(0.10);
 
   private static final BigDecimal FEE_PERCENTAGE = BigDecimal.valueOf(0.0142);
-
-//  private static final BigDecimal SELL_PROFIT_THRESHOLD = BigDecimal.valueOf(-1);
 
   private final CandleService candleService;
 
@@ -48,29 +48,25 @@ public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
 
   private final FormatUtil formatUtil;
 
-//  private int limitCount = 1;
-
   @Override
   public void run(String... args) {
     log.info("Executing strategy analyser.");
+
+
+    var currentSide = Side.BUY;
+    var buyingPrice = BigDecimal.ZERO;
+
     final var finish = dateTimeUtil.truncateTo(
       OffsetDateTime.now(ZoneOffset.UTC),
       DURATION);
 
-    var currentSide = Side.BUY;
-    var buyingPrice = BigDecimal.ZERO.setScale(8, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
-
-    var begin = finish.minus(DURATION.multipliedBy(365 * 3));
+    var begin = finish.minus(DURATION.multipliedBy(TIME_WINDOW_SIZE));
     var end = begin.plus(DURATION.multipliedBy(CANDLES_WINDOW_SIZE));
-//    var sellProfitLimit = BigDecimal.ZERO;
-
 
     final var allCandles = retrieveCandles(begin, finish);
 
-//    Map<Integer, BigDecimal> totalByLimitCount = new HashMap<>();
+    var total = BigDecimal.ONE;
 
-//    for (limitCount = 1; limitCount <= 1; limitCount++) {
-    var total = BigDecimal.ONE.setScale(8, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
     for (int count = CANDLES_WINDOW_SIZE; count < allCandles.size(); count++) {
       final var candles = allCandles.subList(count - CANDLES_WINDOW_SIZE, count);
       final var time = candles.get(CANDLES_WINDOW_SIZE - 1)
@@ -99,8 +95,6 @@ public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
 
           buyingPrice = closePrice;
           currentSide = Side.SELL;
-//            sellProfitLimit = calculateSellProfitLimit(candles);
-//            log.info("{}: Buying. Sell profit threshold is {}.", time, formatUtil.toPercentage(sellProfitLimit));
           log.info("{}: Buying.", time);
         } else {
 
@@ -108,58 +102,16 @@ public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
             log.info("{}: Selling with profit of {}.", time, formatUtil.toPercentage(profit));
             currentSide = Side.BUY;
             total = total.multiply(BigDecimal.ONE.add(profit.subtract(FEE_PERCENTAGE)));
-            log.info("{}: Total profit is {}.", time, formatUtil.toPercentage(total));
-//            } else if (profit.compareTo(sellProfitLimit) <= 0) {
-//              log.info("{}: Selling with profit of {}.", time, formatUtil.toPercentage(profit));
-//              currentSide = Side.BUY;
-//              total = total.multiply(BigDecimal.ONE.add(profit.subtract(FEE_PERCENTAGE)));
-//              log.info("{}: Total profit is {}.", time, formatUtil.toPercentage(total));
+            log.info("{}: Total profit is {}.", time, formatUtil.toPercentage(total.subtract(BigDecimal.ONE)));
           }
         }
-      } /*else {
-          if (Side.SELL.equals(currentSide) && profit.compareTo(sellProfitLimit) <= 0) {
-            log.info("{}: Escape selling with profit of {}.", time, formatUtil.toPercentage(profit));
-            currentSide = Side.BUY;
-            total = total.multiply(BigDecimal.ONE.add(profit.subtract(FEE_PERCENTAGE)));
-            log.info("{}: Total profit is {}.", time, formatUtil.toPercentage(total));
-          }
-        }*/
+      }
 
       begin = begin.plus(DURATION);
       end = end.plus(DURATION);
     }
-    log.info("Total profit: {}", formatUtil.toPercentage(total));
-//      totalByLimitCount.put(limitCount, total.subtract(BigDecimal.ONE));
-//    }
-//    totalByLimitCount.forEach((count, total) -> log.info("{}: {}", count, formatUtil.toPercentage(total)));
+    log.info("Total profit: {}", formatUtil.toPercentage(total.subtract(BigDecimal.ONE)));
   }
-
-//  private BigDecimal calculateSellProfitLimit(List<Candle> candles) {
-//
-//    Candle previousCandle = null;
-//    BigDecimal sumCloseDiff = BigDecimal.ZERO;
-//    for (Candle candle : candles) {
-//      if (previousCandle != null) {
-//        final var closeDiff = candle.getClose()
-//          .subtract(previousCandle.getClose());
-//        sumCloseDiff = closeDiff.add(closeDiff);
-//      }
-//      previousCandle = candle;
-//    }
-//
-//    final var lastClose = candles.get(candles.size() - 1)
-//      .getClose();
-//
-//
-//    final var closeDiffAverage = sumCloseDiff.divide(
-//      BigDecimal.valueOf(candles.size() - 1),
-//      GeneralConfiguration.DEFAULT_ROUNDING_MODE);
-//
-//    return BigDecimal.valueOf(limitCount)
-//      .multiply(closeDiffAverage)
-//      .divide(lastClose, GeneralConfiguration.DEFAULT_ROUNDING_MODE)
-//      .negate();
-//  }
 
   private List<Candle> retrieveCandles(OffsetDateTime begin, OffsetDateTime end) {
     final var candlesRequest = CandlesRequest.builder()

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -18,4 +19,6 @@ public class Trend {
   private final List<Candle> candles;
 
   private final TrendType type;
+
+  private final BigDecimal acceleration;
 }
