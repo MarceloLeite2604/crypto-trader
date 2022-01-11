@@ -4,6 +4,7 @@ import com.github.marceloleite2604.cryptotrader.dto.orders.OrderDto;
 import com.github.marceloleite2604.cryptotrader.dto.orders.PostOrderResponsePayload;
 import com.github.marceloleite2604.cryptotrader.mapper.OrderDtoMapper;
 import com.github.marceloleite2604.cryptotrader.mapper.PlaceOrderRequestToPostOrderRequestPayloadMapper;
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
 import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
@@ -16,14 +17,19 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor

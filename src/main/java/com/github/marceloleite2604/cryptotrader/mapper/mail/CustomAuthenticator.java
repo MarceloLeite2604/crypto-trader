@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service.mail;
+package com.github.marceloleite2604.cryptotrader.mapper.mail;
 
 import com.github.marceloleite2604.cryptotrader.properties.MailProperties;
 import lombok.RequiredArgsConstructor;

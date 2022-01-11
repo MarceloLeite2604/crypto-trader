@@ -1,113 +1,155 @@
 package com.github.marceloleite2604.cryptotrader.service.analyser;
 
+import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
+import com.github.marceloleite2604.cryptotrader.model.Action;
 import com.github.marceloleite2604.cryptotrader.model.Active;
-import com.github.marceloleite2604.cryptotrader.model.AnalysisContext;
 import com.github.marceloleite2604.cryptotrader.model.OffsetDateTimeRange;
+import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.account.Account;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
-import com.github.marceloleite2604.cryptotrader.service.ProfitService;
-import com.github.marceloleite2604.cryptotrader.service.analyser.action.ActionService;
+import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
+import com.github.marceloleite2604.cryptotrader.properties.MonitoringProperties;
+import com.github.marceloleite2604.cryptotrader.service.ActionService;
+import com.github.marceloleite2604.cryptotrader.service.actionexecutor.ActionExecutor;
 import com.github.marceloleite2604.cryptotrader.service.candle.CandleService;
-import com.github.marceloleite2604.cryptotrader.service.mail.MailService;
-import com.github.marceloleite2604.cryptotrader.service.mercadobitcoin.MercadoBitcoinService;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternService;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AnalyserService {
 
-  private final MercadoBitcoinService mercadoBitcoinService;
+  private final MonitoringProperties monitoringProperties;
+
+  private final ActionService actionService;
 
   private final PatternService patternService;
 
   private final CandleService candleService;
 
-  private final MailService mailService;
-
-  private final ProfitService profitService;
-
   private final DateTimeUtil dateTimeUtil;
 
-  private final ActionService actionService;
+  private final ActionExecutor mailService;
 
-  private Account account;
+  public void analyse(Account account) {
 
-  public void analyse(Active active) {
-    final AnalysisContext context = elaborateContext(active);
+    final var actions = monitoringProperties.getActives()
+      .stream()
+      .map(active -> analyse(account, active))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .toList();
 
-    actionService.check(context)
-      .ifPresent(mailService::send);
+    mailService.execute(actions);
+  }
 
-    if (context.isActiveBalanceAvailable()) {
-      log.debug("{} ({})",
-        profitService.toStringPrice(context.getProfit()),
-        profitService.toStringPercentage(context.getProfit()));
+  private Optional<Action> analyse(Account account, Active active) {
+    final var optionalLastOrder = account.retrieveLastOrderFor(active);
+
+    final var candles = retrieveCandles(active);
+
+    final var patternMatches = patternService.check(active, candles);
+
+    if (optionalLastOrder.isEmpty() ||
+      Side.SELL.name()
+        .equalsIgnoreCase(optionalLastOrder.get()
+          .getSide())) {
+      return analyseBuyStrategy(active, patternMatches);
     } else {
-      log.debug("{} analysed.", active.getName());
+      return analyseSellStrategy(account, active, patternMatches, candles);
+    }
+  }
+
+  private Optional<Action> analyseBuyStrategy(Active active, List<PatternMatch> patternMatches) {
+
+    final var buyPatternMatches = patternService.findPatternMatchesBySide(patternMatches, Side.BUY);
+
+    if (CollectionUtils.isNotEmpty(buyPatternMatches)) {
+
+      final Action action = actionService.create(active, buyPatternMatches);
+
+      return Optional.of(action);
     }
 
-    profitService.updateAndSave(context.getProfit());
+    return Optional.empty();
   }
 
-  private AnalysisContext elaborateContext(Active active) {
-    final var accountId = retrieveAccount().getId();
+  private Optional<Action> analyseSellStrategy(
+    Account account,
+    Active active,
+    List<PatternMatch> patternMatches,
+    List<Candle> candles) {
 
-    final var shortRangeCandles = retrieveShortRangeCandles(active);
-    final var longRangeCandles = retrieveLongRangeCandles(active);
-    final var shortRangePatterns = patternService.check(active, shortRangeCandles);
-    final var longRangePatterns = patternService.check(active, longRangeCandles);
-    final var profit = profitService.retrieve(accountId, active);
-    final var activeBalance = mercadoBitcoinService.retrieveBalance(accountId, active.getBase());
-    final var fiatBalance = mercadoBitcoinService.retrieveBalance(accountId, active.getQuote());
+    final var sellPatternMatches = patternService.findPatternMatchesBySide(patternMatches, Side.SELL);
 
-    return AnalysisContext.builder()
-      .active(active)
-      .activeBalance(activeBalance)
-      .fiatBalance(fiatBalance)
-      .longRangeCandles(longRangeCandles)
-      .shortRangeCandles(shortRangeCandles)
-      .shortRangePatterns(shortRangePatterns)
-      .longRangePatterns(longRangePatterns)
-      .profit(profit)
-      .build();
+    if (CollectionUtils.isNotEmpty(sellPatternMatches)) {
+      final BigDecimal profit = calculateProfit(account, active, candles);
+
+      if (profit.compareTo(monitoringProperties.getProfitThreshold()) >= 0) {
+        final Action action = actionService.create(active, sellPatternMatches, profit);
+
+        return Optional.of(action);
+      }
+    }
+
+    return Optional.empty();
   }
 
-  private List<Candle> retrieveLongRangeCandles(Active active) {
-    return retrieveCandles(CandlePrecision.FIFTEEN_MINUTES, active);
+  private BigDecimal calculateProfit( Account account, Active active, List<Candle> candles) {
+    final var optionalLastBuyingOrder = account.retrieveLastSideOrder(active, Side.BUY);
+
+    if (optionalLastBuyingOrder.isEmpty()) {
+      final var message = String.format("Could not find last buying order for \"%s\" active.", active);
+      throw new IllegalStateException(message);
+    }
+
+    final var lastBuyingOrder = optionalLastBuyingOrder.get();
+    final var buyingPrice = lastBuyingOrder.getAveragePrice();
+    final var lastClose = candles.get(0)
+      .getClose();
+
+    return buyingPrice.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO :
+      lastClose.subtract(buyingPrice)
+        .divide(buyingPrice, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
   }
 
-  private List<Candle> retrieveShortRangeCandles(Active active) {
-    return retrieveCandles(CandlePrecision.THREE_MINUTES, active);
-  }
+  private List<Candle> retrieveCandles(Active active) {
 
-  private List<Candle> retrieveCandles(CandlePrecision resolution, Active active) {
+    final var precision = monitoringProperties.getPrecision();
+    final var quantity = monitoringProperties.getQuantity();
+
     final var end = dateTimeUtil.truncateTo(
       OffsetDateTime.now(ZoneOffset.UTC),
-      resolution.getDuration());
+      precision.getDuration());
 
     var start = end
-      .minus(resolution.getDuration()
-        .multipliedBy(12));
+      .minus(precision.getDuration()
+        .multipliedBy(quantity));
 
     final var range = OffsetDateTimeRange.builder()
       .start(start)
       .end(end)
       .build();
 
-    final var candlesRequest = createCandlesRequest(range, resolution, active);
+    final var candlesRequest = createCandlesRequest(range, precision, active);
     log.debug("Retrieving candles: {}", candlesRequest);
-    return candleService.retrieveCandles(candlesRequest);
+    final var candles = candleService.retrieveCandles(candlesRequest);
+    candles.sort(Comparator.reverseOrder());
+    return candles;
   }
 
   private CandlesRequest createCandlesRequest(OffsetDateTimeRange range, CandlePrecision resolution, Active active) {
@@ -117,12 +159,5 @@ public class AnalyserService {
       .toTime(range.getEnd())
       .from(range.getStart())
       .build();
-  }
-
-  private Account retrieveAccount() {
-    if (account == null) {
-      account = mercadoBitcoinService.retrieveAccount();
-    }
-    return account;
   }
 }

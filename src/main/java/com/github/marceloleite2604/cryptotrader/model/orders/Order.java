@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class Order {
+public class Order implements Comparable<Order> {
 
   private final BigDecimal averagePrice;
 
@@ -38,4 +38,9 @@ public class Order {
   private final String type;
 
   private final OffsetDateTime updatedAt;
+
+  @Override
+  public int compareTo(Order other) {
+    return this.createdAt.compareTo(other.createdAt);
+  }
 }

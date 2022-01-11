@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader;
+package com.github.marceloleite2604.cryptotrader.laboratory;
 
 import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import com.github.marceloleite2604.cryptotrader.model.Active;
@@ -22,7 +22,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Component
+//@Component
 @Slf4j
 public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
 

@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader;
+package com.github.marceloleite2604.cryptotrader.laboratory;
 
 import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.Side;

@@ -1,29 +1,27 @@
 package com.github.marceloleite2604.cryptotrader.properties;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
-import java.net.URI;
 
-@Setter
 @Getter
-@NoArgsConstructor(force = true)
 @ConfigurationProperties(PropertiesPath.MERCADO_BITCOIN)
 @Validated
-@Component
+@ConstructorBinding
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MercadoBitcoinProperties {
 
-    @NotBlank
-    private String baseUri;
+  @NotBlank
+  private final String baseUri;
 
-    @NotBlank
-    private String clientId;
+  @NotBlank
+  private final String clientId;
 
-    @NotBlank
-    private String clientSecret;
+  @NotBlank
+  private final String clientSecret;
 }

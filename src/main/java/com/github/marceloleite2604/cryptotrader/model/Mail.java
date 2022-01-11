@@ -10,11 +10,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class Action {
+public class Mail {
 
-  private final Side side;
+  private final String from;
 
-  private final Active active;
+  private final List<String> recipients;
 
-  private final List<String> reasons;
+  private final String subject;
+
+  private final String text;
 }

@@ -1,6 +1,7 @@
 package com.github.marceloleite2604.cryptotrader.service.pattern;
 
 import com.github.marceloleite2604.cryptotrader.model.Active;
+import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternCheckContext;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
@@ -11,6 +12,7 @@ import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.List;
@@ -118,5 +120,17 @@ public class PatternService {
       findPatterMatchesRequest.getStart(),
       findPatterMatchesRequest.getEnd()
     );
+  }
+
+  public List<PatternMatch> findPatternMatchesBySide(List<PatternMatch> patternMatches, Side side) {
+    if (CollectionUtils.isEmpty(patternMatches)) {
+      return Collections.emptyList();
+    }
+
+    return patternMatches.stream()
+      .filter(patternMatch -> patternMatch.getType()
+        .getSide()
+        .equals(side))
+      .toList();
   }
 }

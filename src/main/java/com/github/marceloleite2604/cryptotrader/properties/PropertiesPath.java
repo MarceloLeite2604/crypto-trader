@@ -5,8 +5,13 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class PropertiesPath {
 
-  public final String MERCADO_BITCOIN = "mercado-bitcoin";
+  private final String BASE_PATH = "crypto-trader";
 
-  public static final String MAIL = "mail";
-  public static final String DATABASE = "database";
+  public final String MERCADO_BITCOIN = BASE_PATH + ".mercado-bitcoin";
+
+  public static final String MAIL = BASE_PATH + ".mail";
+
+  public static final String DATABASE = BASE_PATH + ".database";
+
+  public static final String MONITORING = BASE_PATH + ".monitoring";
 }

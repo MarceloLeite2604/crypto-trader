@@ -1,10 +1,10 @@
 package com.github.marceloleite2604.cryptotrader.properties;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
@@ -12,25 +12,24 @@ import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @ConfigurationProperties(PropertiesPath.MAIL)
-@Component
 @Validated
-@Setter
 @Getter
-@NoArgsConstructor(force = true)
+@ConstructorBinding
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MailProperties {
 
   @NotBlank
-  private String username;
+  private final String username;
 
   @NotBlank
-  private String password;
+  private final String password;
 
   @NotBlank
-  private String host;
+  private final String host;
 
   @NotBlank
-  private String port;
+  private final String port;
 
   @NotEmpty
-  private List<String> recipients;
+  private final List<String> recipients;
 }
