@@ -4,7 +4,6 @@ import com.github.marceloleite2604.cryptotrader.model.OffsetDateTimeRange;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,7 +12,6 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Component
 public class DateTimeUtil {
@@ -28,11 +26,6 @@ public class DateTimeUtil {
     long nanoAdjustment = timestampWithNanos % 1_000_000_000L;
     final var instant = Instant.ofEpochSecond(epochSecond, nanoAdjustment);
     return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
-  }
-
-  public String formatOffsetDateTimeAsString(OffsetDateTime offsetDateTime) {
-    return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.forLanguageTag("pt-BR"))
-      .format(offsetDateTime);
   }
 
   public List<OffsetDateTimeRange> splitRange(OffsetDateTimeRange range, Duration duration) {

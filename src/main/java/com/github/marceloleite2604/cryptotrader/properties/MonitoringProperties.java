@@ -1,6 +1,5 @@
 package com.github.marceloleite2604.cryptotrader.properties;
 
-import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,7 @@ import java.util.List;
 public class MonitoringProperties {
 
   @NotEmpty
-  private final List<Active> actives;
+  private final List<String> actives;
 
   @NotNull
   private final CandlePrecision precision;

@@ -13,6 +13,7 @@ public class CustomAuthenticator extends Authenticator {
 
   private final MailProperties mailProperties;
 
+  @Override
   protected PasswordAuthentication getPasswordAuthentication() {
     return new PasswordAuthentication(mailProperties.getUsername(), mailProperties.getPassword());
   }

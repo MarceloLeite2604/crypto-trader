@@ -20,9 +20,9 @@ public class DoubleStdSerializer extends StdSerializer<Double> {
 
   private DecimalFormat createDecimalFormat() {
     DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.US);
-    final var decimalFormat = new DecimalFormat("#.#", decimalFormatSymbols);
-    decimalFormat.setMaximumFractionDigits(8);
-    return decimalFormat;
+    final var result = new DecimalFormat("#.#", decimalFormatSymbols);
+    result.setMaximumFractionDigits(8);
+    return result;
   }
 
   @Override

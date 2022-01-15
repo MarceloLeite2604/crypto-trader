@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service.analyser;
+package com.github.marceloleite2604.cryptotrader.service;
 
 import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import com.github.marceloleite2604.cryptotrader.model.Action;
@@ -11,8 +11,6 @@ import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
 import com.github.marceloleite2604.cryptotrader.model.pattern.PatternMatch;
 import com.github.marceloleite2604.cryptotrader.properties.MonitoringProperties;
-import com.github.marceloleite2604.cryptotrader.service.ActionService;
-import com.github.marceloleite2604.cryptotrader.service.actionexecutor.ActionExecutor;
 import com.github.marceloleite2604.cryptotrader.service.candle.CandleService;
 import com.github.marceloleite2604.cryptotrader.service.pattern.PatternService;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
@@ -43,18 +41,15 @@ public class AnalyserService {
 
   private final DateTimeUtil dateTimeUtil;
 
-  private final ActionExecutor mailService;
+  public List<Action> analyse(Account account) {
 
-  public void analyse(Account account) {
-
-    final var actions = monitoringProperties.getActives()
+    return monitoringProperties.getActives()
       .stream()
+      .map(Active::findByBase)
       .map(active -> analyse(account, active))
       .filter(Optional::isPresent)
       .map(Optional::get)
       .toList();
-
-    mailService.execute(actions);
   }
 
   private Optional<Action> analyse(Account account, Active active) {
@@ -62,7 +57,7 @@ public class AnalyserService {
 
     final var candles = retrieveCandles(active);
 
-    final var patternMatches = patternService.check(active, candles);
+    final var patternMatches = patternService.check(candles);
 
     if (optionalLastOrder.isEmpty() ||
       Side.SELL.name()
@@ -109,7 +104,7 @@ public class AnalyserService {
     return Optional.empty();
   }
 
-  private BigDecimal calculateProfit( Account account, Active active, List<Candle> candles) {
+  private BigDecimal calculateProfit(Account account, Active active, List<Candle> candles) {
     final var optionalLastBuyingOrder = account.retrieveLastSideOrder(active, Side.BUY);
 
     if (optionalLastBuyingOrder.isEmpty()) {

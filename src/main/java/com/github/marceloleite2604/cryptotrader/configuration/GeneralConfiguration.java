@@ -1,8 +1,11 @@
 package com.github.marceloleite2604.cryptotrader.configuration;
 
+import lombok.experimental.UtilityClass;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+@UtilityClass
 public class GeneralConfiguration {
   public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 

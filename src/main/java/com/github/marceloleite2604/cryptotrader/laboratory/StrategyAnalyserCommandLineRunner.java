@@ -13,7 +13,6 @@ import com.github.marceloleite2604.cryptotrader.util.FormatUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -30,7 +29,7 @@ public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
 
   private static final int TIME_WINDOW_SIZE = 365;
 
-  private static final Active ACTIVE = Active.BITCOIN;
+  private static final Active ACTIVE = Active.findBySymbol("BTC");
 
   private static final CandlePrecision PRECISION = CandlePrecision.ONE_DAY;
 
@@ -72,7 +71,7 @@ public class StrategyAnalyserCommandLineRunner implements CommandLineRunner {
       final var time = candles.get(CANDLES_WINDOW_SIZE - 1)
         .getTimestamp();
 
-      final var patternMatches = patternService.check(ACTIVE, candles);
+      final var patternMatches = patternService.check(candles);
 
       final var finalCurrentSide = currentSide;
       final var optionalCurrentSidePatterMatch = patternMatches.stream()

@@ -25,8 +25,6 @@ public class GetCandleResponsePayloadToListCandleMapper
 
   private final DateTimeUtil dateTimeUtil;
 
-//  private final CandleService candleService;
-
   @Override
   public List<Candle> mapTo(GetCandleResponsePayload getCandleResponsePayload) {
     if (CollectionUtils.isEmpty(getCandleResponsePayload.getClose())) {
@@ -67,8 +65,6 @@ public class GetCandleResponsePayloadToListCandleMapper
         .timestamp(timestamp)
         .volume(volume)
         .build();
-
-//      final var candle = candleService.analyse(partialCandle, symbol, precision);
 
       candles.add(candle);
     }

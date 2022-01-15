@@ -1,17 +1,25 @@
 package com.github.marceloleite2604.cryptotrader.model;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public enum Active {
-  ETHEREUM("ETH", "BRL", "Ethereum"),
-  BITCOIN("BTC", "BRL", "Bitcoin"),
-  LITECOIN("LTC", "BRL", "Litecoin");
+public class Active {
+
+  public static final Active BRL = Active.builder()
+    .base("BRL")
+    .quote("BRL")
+    .name("Brazilian Real")
+    .build();
+
+  private static final List<Active> ACTIVES = new ArrayList<>(List.of(BRL));
 
   private final String base;
 
@@ -19,12 +27,20 @@ public enum Active {
 
   private final String name;
 
+  public static void add(Active active) {
+    ACTIVES.add(active);
+  }
+
+  public static Active[] values() {
+    return ACTIVES.toArray(Active[]::new);
+  }
+
   public static Active findBySymbol(String symbol) {
     if (symbol == null) {
       return null;
     }
 
-    return Stream.of(values())
+    return ACTIVES.stream()
       .filter(active -> active.getSymbol()
         .equals(symbol))
       .findFirst()
@@ -36,7 +52,7 @@ public enum Active {
       return null;
     }
 
-    return Stream.of(values())
+    return ACTIVES.stream()
       .filter(active -> active.getBase()
         .equals(base))
       .findFirst()

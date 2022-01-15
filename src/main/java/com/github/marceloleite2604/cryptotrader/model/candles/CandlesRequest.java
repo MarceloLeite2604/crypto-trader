@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 

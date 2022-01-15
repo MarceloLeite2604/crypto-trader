@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,15 +31,14 @@ public class OffsetDateTimeRange {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof OffsetDateTimeRange)) return false;
-    final OffsetDateTimeRange other = (OffsetDateTimeRange) o;
+    if (!(o instanceof final OffsetDateTimeRange other)) return false;
     if (!other.canEqual(this)) return false;
-    final Object this$start = this.getStart();
-    final Object other$start = other.getStart();
-    if (this$start == null ? other$start != null : !this$start.equals(other$start)) return false;
-    final Object this$end = this.getEnd();
-    final Object other$end = other.getEnd();
-    return this$end == null ? other$end == null : this$end.equals(other$end);
+    final Object thisStart = this.getStart();
+    final Object otherStart = other.getStart();
+    if (!Objects.equals(thisStart, otherStart)) return false;
+    final Object thisEnd = this.getEnd();
+    final Object otherEnd = other.getEnd();
+    return Objects.equals(thisEnd, otherEnd);
   }
 
   protected boolean canEqual(final Object other) {
@@ -48,10 +48,10 @@ public class OffsetDateTimeRange {
   public int hashCode() {
     final int PRIME = 59;
     int result = 1;
-    final Object $start = this.getStart();
-    result = result * PRIME + ($start == null ? 43 : $start.hashCode());
-    final Object $end = this.getEnd();
-    result = result * PRIME + ($end == null ? 43 : $end.hashCode());
+    final Object thisStart = this.getStart();
+    result = result * PRIME + (thisStart == null ? 43 : thisStart.hashCode());
+    final Object thisEnd = this.getEnd();
+    result = result * PRIME + (thisEnd == null ? 43 : thisEnd.hashCode());
     return result;
   }
 }

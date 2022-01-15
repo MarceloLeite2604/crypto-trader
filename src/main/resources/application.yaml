@@ -17,12 +17,6 @@ crypto-trader:
     host: ${EMAIL_HOST}
     port: ${EMAIL_PORT}
     recipients: ${EMAIL_RECIPIENTS}
-  database:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-    connections: 4
   monitoring:
     actives:
       - BTC

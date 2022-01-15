@@ -94,7 +94,7 @@ public class CandleComparisonService {
       var index = ratio.divide(step, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
       if (index.intValue() >= CandleProportion.values().length) {
-        index = BigDecimal.valueOf(CandleProportion.values().length - 1);
+        index = BigDecimal.valueOf(CandleProportion.values().length - 1L);
       }
 
       final var bodyProportion = CandleProportion.values()[index.intValue()];

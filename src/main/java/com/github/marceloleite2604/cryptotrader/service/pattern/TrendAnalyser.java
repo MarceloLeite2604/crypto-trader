@@ -69,13 +69,6 @@ public class TrendAnalyser {
 
     final var comparisonResult = comparisonUtil.compareRatioUsingMargin(firstCloseDiff, closeStandardDeviation);
 
-    final var result = TrendType.findByComparisonResult(comparisonResult);
-    log.debug("{}: Close: {}, Diff: {}, Stdv: {}, Type: {}",
-      firstCandle.getTimestamp(),
-      firstClose,
-      firstCloseDiff,
-      closeStandardDeviation,
-      result);
-    return result;
+    return TrendType.findByComparisonResult(comparisonResult);
   }
 }

@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service;
 
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.account.Account;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.properties.MonitoringProperties;
@@ -21,12 +22,15 @@ public class AccountService {
   public Account retrieve() {
     final var account = mercadoBitcoinService.retrieveAccount();
 
-    final var actives = monitoringProperties.getActives();
+    final var actives = monitoringProperties.getActives()
+      .stream()
+      .map(Active::findByBase)
+      .toList();
 
     final var balances = actives.stream()
       .collect(Collectors.toMap(
         Function.identity(),
-        active -> mercadoBitcoinService.retrieveBalance(account.getId(), active.getSymbol())));
+        active -> mercadoBitcoinService.retrieveBalance(account.getId(), active)));
 
     final var orders = actives.stream()
       .collect(Collectors.toMap(

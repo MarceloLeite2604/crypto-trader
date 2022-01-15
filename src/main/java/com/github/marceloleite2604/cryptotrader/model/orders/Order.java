@@ -9,6 +9,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,6 +39,19 @@ public class Order implements Comparable<Order> {
   private final String type;
 
   private final OffsetDateTime updatedAt;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Order order = (Order) o;
+    return Objects.equals(createdAt, order.createdAt);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(createdAt);
+  }
 
   @Override
   public int compareTo(Order other) {

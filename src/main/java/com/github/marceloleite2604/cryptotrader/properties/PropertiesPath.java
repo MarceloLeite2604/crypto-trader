@@ -11,7 +11,5 @@ public class PropertiesPath {
 
   public static final String MAIL = BASE_PATH + ".mail";
 
-  public static final String DATABASE = BASE_PATH + ".database";
-
   public static final String MONITORING = BASE_PATH + ".monitoring";
 }

@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.service.actionexecutor.mail;
+package com.github.marceloleite2604.cryptotrader.service.actionexecutor;
 
 import com.github.marceloleite2604.cryptotrader.mapper.mail.MailToMimeMessageMapper;
 import com.github.marceloleite2604.cryptotrader.model.Action;
@@ -6,7 +6,6 @@ import com.github.marceloleite2604.cryptotrader.model.Mail;
 import com.github.marceloleite2604.cryptotrader.model.Side;
 import com.github.marceloleite2604.cryptotrader.properties.MailProperties;
 import com.github.marceloleite2604.cryptotrader.service.ActionService;
-import com.github.marceloleite2604.cryptotrader.service.actionexecutor.ActionExecutor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;

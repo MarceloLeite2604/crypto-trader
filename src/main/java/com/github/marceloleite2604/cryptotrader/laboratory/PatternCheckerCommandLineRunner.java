@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -43,7 +42,7 @@ public class PatternCheckerCommandLineRunner implements CommandLineRunner {
   @Override
   public void run(String... args) {
     final var listSize = 12;
-    final var active = Active.BITCOIN;
+    final var active = Active.findBySymbol("BTC");
     final var precision = CandlePrecision.ONE_DAY;
     final var duration = precision.getDuration();
     final var to = dateTimeUtil.truncateTo(
@@ -66,7 +65,7 @@ public class PatternCheckerCommandLineRunner implements CommandLineRunner {
       var selectedCandles = candles.subList(count - listSize, count);
       selectedCandles = candleComparisonService.compare(selectedCandles);
       selectedCandles.sort(Comparator.reverseOrder());
-      final var patternMatchesForSelectedCandles = patternService.check(active, selectedCandles);
+      final var patternMatchesForSelectedCandles = patternService.check(selectedCandles);
       patternMatches.addAll(patternMatchesForSelectedCandles);
     }
 

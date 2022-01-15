@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 @Builder
 @Getter
@@ -22,6 +23,19 @@ public class Trade implements Comparable<Trade> {
   private final long tid;
 
   private final String type;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Trade trade = (Trade) o;
+    return Objects.equals(date, trade.date);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(date);
+  }
 
   @Override
   public int compareTo(Trade other) {

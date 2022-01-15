@@ -4,7 +4,6 @@ import com.github.marceloleite2604.cryptotrader.dto.orders.OrderDto;
 import com.github.marceloleite2604.cryptotrader.dto.orders.PostOrderResponsePayload;
 import com.github.marceloleite2604.cryptotrader.mapper.OrderDtoMapper;
 import com.github.marceloleite2604.cryptotrader.mapper.PlaceOrderRequestToPostOrderRequestPayloadMapper;
-import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.orders.Order;
 import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
@@ -17,25 +16,22 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 class OrderService {
 
+  public static final String ACCOUNTS = "accounts";
+  public static final String ORDERS = "orders";
   private final WebClient mbAuthenticatedWebClient;
 
   private final ValidationUtil validationUtil;
@@ -65,7 +61,7 @@ class OrderService {
   }
 
   private String buildGetOrdersUri(RetrieveOrdersRequest retrieveOrdersRequest) {
-    final var uriBuilder = new URIBuilder().setPathSegments("accounts", retrieveOrdersRequest.getAccountId(), retrieveOrdersRequest.getSymbol(), "orders");
+    final var uriBuilder = new URIBuilder().setPathSegments(ACCOUNTS, retrieveOrdersRequest.getAccountId(), retrieveOrdersRequest.getSymbol(), ORDERS);
 
     if (retrieveOrdersRequest.getHasExecutions() != null) {
       uriBuilder.addParameter("has_executions", retrieveOrdersRequest.getHasExecutions()
@@ -129,7 +125,7 @@ class OrderService {
 
   private String buildGetOrderUri(String accountId, String symbol, String orderId) {
     try {
-      return new URIBuilder().setPathSegments("accounts", accountId, symbol, "orders", orderId)
+      return new URIBuilder().setPathSegments(ACCOUNTS, accountId, symbol, ORDERS, orderId)
         .build()
         .toString();
     } catch (URISyntaxException exception) {
@@ -165,7 +161,7 @@ class OrderService {
 
   private String buildPostUri(String accountId, String symbol) {
     try {
-      return new URIBuilder().setPathSegments("accounts", accountId, symbol, "orders")
+      return new URIBuilder().setPathSegments(ACCOUNTS, accountId, symbol, ORDERS)
         .build()
         .toString();
     } catch (URISyntaxException exception) {

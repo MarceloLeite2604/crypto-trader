@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
+import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -43,7 +44,7 @@ public class MailToMimeMessageMapper implements Mapper<Mail, MimeMessage> {
 
   @SneakyThrows
   private void addRecipient(MimeMessage mimeMessage, InternetAddress recipient) {
-    mimeMessage.addRecipient(MimeMessage.RecipientType.TO, recipient);
+    mimeMessage.addRecipient(Message.RecipientType.TO, recipient);
   }
 
   private Session getSession() {

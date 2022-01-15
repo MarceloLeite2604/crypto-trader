@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
+import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.Instrument;
 import com.github.marceloleite2604.cryptotrader.model.Ticker;
 import com.github.marceloleite2604.cryptotrader.model.account.Account;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,21 +53,24 @@ public class MercadoBitcoinService {
     return instrumentService.retrieveAll();
   }
 
-  public OrderBook retrieveOrderBook(String symbol) {
-    return retrieveOrderBook(symbol, null);
+  public OrderBook retrieveOrderBook(Active active) {
+    return retrieveOrderBook(active, null);
   }
 
-  public OrderBook retrieveOrderBook(String symbol, Integer limit) {
-    return orderBookService.retrieve(symbol, limit);
+  public OrderBook retrieveOrderBook(Active active, Integer limit) {
+    return orderBookService.retrieve(active.getSymbol(), limit);
   }
 
-  public Ticker retrieveTicker(String symbol) {
-    return tickersService.retrieve(symbol)
-      .get(symbol);
+  public Ticker retrieveTicker(Active active) {
+    return tickersService.retrieve(active.getSymbol())
+      .get(active.getSymbol());
   }
 
-  public Map<String, Ticker> retrieveTickers(String... symbols) {
-    return tickersService.retrieve(symbols);
+  public Map<String, Ticker> retrieveTickers(Active... actives) {
+    final var symbols = Arrays.stream(actives)
+      .map(Active::getSymbol)
+      .toList();
+    return tickersService.retrieve(symbols.toArray(String[]::new));
   }
 
   public List<Candle> retrieveCandles(CandlesRequest candlesRequest) {
@@ -82,40 +87,43 @@ public class MercadoBitcoinService {
   }
 
   public Account retrieveAccount() {
-    return accountsService.retrieve().get(0);
+    return accountsService.retrieve()
+      .get(0);
   }
 
-  public List<Balance> retrieveBalances(String accountId, String symbol) {
-    return balanceService.retrieve(accountId, symbol);
+  public List<Balance> retrieveBalances(String accountId, Active active) {
+    return balanceService.retrieve(accountId, active.getSymbol());
   }
 
-  public Balance retrieveBalance(String accountId, String symbol) {
-    return balanceService.retrieve(accountId, symbol)
+  public Balance retrieveBalance(String accountId, Active active) {
+
+    return balanceService.retrieve(accountId, active.getSymbol())
       .stream()
-      .filter(balance -> symbol.equals(balance.getSymbol()))
-      .findFirst().orElseThrow(() -> {
-        final var message = String.format("Could not find balance for %s symbol.", symbol);
+      .filter(balance -> active.equals(balance.getActive()))
+      .findFirst()
+      .orElseThrow(() -> {
+        final var message = String.format("Could not find balance for %s active.", active.getName());
         return new IllegalArgumentException(message);
       });
   }
 
-  public List<Position> retrievePositions(String accountId, String symbol) {
-    return positionService.retrieve(accountId, symbol);
+  public List<Position> retrievePositions(String accountId, Active active) {
+    return positionService.retrieve(accountId, active.getSymbol());
   }
 
   public List<Order> retrieveOrders(RetrieveOrdersRequest retrieveOrdersRequest) {
     return orderService.retrieve(retrieveOrdersRequest);
   }
 
-  public Order retrieveOrder(String accountId, String symbol, String orderId) {
-    return orderService.retrieveOrder(accountId, symbol, orderId);
+  public Order retrieveOrder(String accountId, Active active, String orderId) {
+    return orderService.retrieveOrder(accountId, active.getSymbol(), orderId);
   }
 
   public Optional<String> placeOrder(PlaceOrderRequest placeOrderRequest) {
     return orderService.placeOrder(placeOrderRequest);
   }
 
-  public boolean cancelOrder(String accountId, String symbol, String orderId) {
-    return orderService.cancelOrder(accountId, symbol, orderId);
+  public boolean cancelOrder(String accountId, Active active, String orderId) {
+    return orderService.cancelOrder(accountId, active.getSymbol(), orderId);
   }
 }

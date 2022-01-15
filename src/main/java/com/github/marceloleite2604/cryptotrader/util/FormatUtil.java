@@ -13,24 +13,22 @@ public class FormatUtil {
 
   private final NumberFormat percentageFormat;
 
-  private final BigDecimal HUNDRED = BigDecimal.valueOf(100);
-
   public FormatUtil() {
     this.brlNumberFormat = createBrlNumberFormat();
     this.percentageFormat = createPercentageFormat();
   }
 
   private NumberFormat createPercentageFormat() {
-    final var percentageFormat = NumberFormat.getPercentInstance();
-    percentageFormat.setMinimumFractionDigits(2);
-    return percentageFormat;
+    final var result = NumberFormat.getPercentInstance();
+    result.setMinimumFractionDigits(2);
+    return result;
   }
 
   private NumberFormat createBrlNumberFormat() {
-    NumberFormat brlNumberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
-    brlNumberFormat.setMinimumFractionDigits(2);
-    brlNumberFormat.setMaximumFractionDigits(2);
-    return brlNumberFormat;
+    NumberFormat result = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
+    result.setMinimumFractionDigits(2);
+    result.setMaximumFractionDigits(2);
+    return result;
   }
 
   public String toBrl(BigDecimal bigDecimal) {

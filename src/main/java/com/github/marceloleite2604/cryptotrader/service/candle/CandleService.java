@@ -226,7 +226,8 @@ public class CandleService {
     Candle previousCandle = null;
     for (Map.Entry<OffsetDateTimeRange, Optional<Candle>> entry : sortedEntries) {
       Candle candle;
-      if (entry.getValue().isEmpty()) {
+      if (entry.getValue()
+        .isEmpty()) {
         final var timestamp = entry.getKey()
           .getStart();
         if (previousCandle == null) {
@@ -245,7 +246,7 @@ public class CandleService {
           .build();
       } else {
         candle = entry.getValue()
-          .get();
+          .orElseThrow(() -> new IllegalStateException("Candle is empty"));
       }
 
       result.put(entry.getKey(), candle);

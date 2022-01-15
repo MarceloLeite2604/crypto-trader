@@ -6,8 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.stream.Stream;
-
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum PatternType {
@@ -26,16 +24,4 @@ public enum PatternType {
   private final Side side;
 
   private final TrendType trendType;
-
-  public static PatternType findByName(String name) {
-    if (name == null) {
-      return null;
-    }
-
-    return Stream.of(values())
-      .filter(active -> active.getName()
-        .equals(name))
-      .findFirst()
-      .orElseThrow(() -> new IllegalArgumentException(String.format("Could not find pattern type with name \"%s\".", name)));
-  }
 }

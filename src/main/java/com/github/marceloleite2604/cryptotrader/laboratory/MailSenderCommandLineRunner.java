@@ -3,14 +3,14 @@ package com.github.marceloleite2604.cryptotrader.laboratory;
 import com.github.marceloleite2604.cryptotrader.model.Action;
 import com.github.marceloleite2604.cryptotrader.model.Active;
 import com.github.marceloleite2604.cryptotrader.model.Side;
-import com.github.marceloleite2604.cryptotrader.service.actionexecutor.mail.MailService;
+import com.github.marceloleite2604.cryptotrader.service.actionexecutor.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class MailSenderCommandLineRunner implements CommandLineRunner {
 
@@ -19,7 +19,7 @@ public class MailSenderCommandLineRunner implements CommandLineRunner {
   @Override
   public void run(String... args) {
     final var sellEthAction = Action.builder()
-      .active(Active.ETHEREUM)
+      .active(Active.findBySymbol("ETC"))
       .side(Side.SELL)
       .reasons(List.of(
         "The bluetooth phone just disconnected.",
@@ -28,7 +28,7 @@ public class MailSenderCommandLineRunner implements CommandLineRunner {
       .build();
 
     final var sellBtcAction = Action.builder()
-      .active(Active.BITCOIN)
+      .active(Active.findBySymbol("BTC"))
       .side(Side.SELL)
       .reasons(List.of(
         "This empty bottle makes noise when I squeeze it with my hands.",
@@ -37,7 +37,7 @@ public class MailSenderCommandLineRunner implements CommandLineRunner {
       .build();
 
     final var buyLtcAction = Action.builder()
-      .active(Active.LITECOIN)
+      .active(Active.findBySymbol("LTC"))
       .side(Side.BUY)
       .reasons(List.of(
         "My notebook is always almost fully charged.",
@@ -46,7 +46,7 @@ public class MailSenderCommandLineRunner implements CommandLineRunner {
       .build();
 
     final var buyEthAction = Action.builder()
-      .active(Active.ETHEREUM)
+      .active(Active.findBySymbol("ETH"))
       .side(Side.BUY)
       .reasons(List.of(
         "This action is conflicting with sell Ethereum.",
