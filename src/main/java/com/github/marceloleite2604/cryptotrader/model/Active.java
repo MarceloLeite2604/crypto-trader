@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Slf4j
 public class Active {
 
   public static final Active BRL = Active.builder()
@@ -19,7 +21,13 @@ public class Active {
     .name("Brazilian Real")
     .build();
 
-  private static final List<Active> ACTIVES = new ArrayList<>(List.of(BRL));
+  public static final Active UNKNOWN = Active.builder()
+    .base("UNKNOWN")
+    .quote("UNKNOWN")
+    .name("Unknown active")
+    .build();
+
+  private static final List<Active> ACTIVES = new ArrayList<>(List.of(BRL, UNKNOWN));
 
   private final String base;
 
@@ -44,7 +52,10 @@ public class Active {
       .filter(active -> active.getSymbol()
         .equals(symbol))
       .findFirst()
-      .orElseThrow(() -> new IllegalArgumentException(String.format("Could not find active for symbol \"%s\".", symbol)));
+      .orElseGet(() -> {
+        log.warn("Could not find active for symbol \"{}}\".", symbol);
+        return UNKNOWN;
+      });
   }
 
   public static Active findByBase(String base) {
@@ -56,7 +67,10 @@ public class Active {
       .filter(active -> active.getBase()
         .equals(base))
       .findFirst()
-      .orElseThrow(() -> new IllegalArgumentException(String.format("Could not find active for base \"%s\".", base)));
+      .orElseGet(() -> {
+        log.warn("Could not find active for base \"{}\".", base);
+        return UNKNOWN;
+      });
   }
 
   public String getSymbol() {

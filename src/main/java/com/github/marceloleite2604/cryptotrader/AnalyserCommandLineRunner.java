@@ -6,11 +6,13 @@ import com.github.marceloleite2604.cryptotrader.service.AnalyserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Order(2)
 public class AnalyserCommandLineRunner implements CommandLineRunner {
 
   private final AccountService accountService;
