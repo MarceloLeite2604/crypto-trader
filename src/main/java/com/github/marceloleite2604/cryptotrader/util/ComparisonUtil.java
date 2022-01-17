@@ -14,9 +14,20 @@ public class ComparisonUtil {
 
   public int compareRatioUsingMargin(BigDecimal first, BigDecimal second, BigDecimal margin) {
 
-    final var ratio = second
+    var scaledFirst = first;
+    var scaledSecond = second;
+
+    if (scaledFirst.scale() < margin.scale()) {
+      scaledFirst = scaledFirst.setScale(margin.scale(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+    }
+
+    if (scaledSecond.scale() < margin.scale()) {
+      scaledSecond = scaledSecond.setScale(margin.scale(), GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+    }
+
+    final var ratio = scaledSecond
       .compareTo(BigDecimal.ZERO) == 0 ?
-      BigDecimal.ZERO : first.divide(second, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
+      BigDecimal.ZERO : scaledFirst.divide(scaledSecond, GeneralConfiguration.DEFAULT_ROUNDING_MODE);
 
     if (ratio.compareTo(margin) > 0) {
       return 1;
