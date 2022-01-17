@@ -1,1 +1,1 @@
-worker: java $JAVA_OPTIONS -jar target/crypto-trader-1.0.jar
+trader: java $JAVA_OPTIONS -jar target/crypto-trader-1.0.jar
