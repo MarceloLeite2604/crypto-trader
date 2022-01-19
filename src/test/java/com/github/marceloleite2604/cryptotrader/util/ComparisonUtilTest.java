@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.util;
 
+import com.github.marceloleite2604.cryptotrader.configuration.GeneralConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -49,6 +50,35 @@ class ComparisonUtilTest {
     );
   }
 
+  private static Stream<Arguments> provideValuesForTestUsingDefaultMargin() {
+    return Stream.of(
+      Arguments.of(
+        BigDecimal.valueOf(10)
+          .multiply(GeneralConfiguration.COMPARISON_THRESHOLD)
+          .add(BigDecimal.ONE),
+        BigDecimal.valueOf(10),
+        1),
+      Arguments.of(
+        BigDecimal.valueOf(10)
+          .multiply(GeneralConfiguration.COMPARISON_THRESHOLD),
+        BigDecimal.valueOf(10),
+        0),
+      Arguments.of(
+        BigDecimal.valueOf(10)
+          .multiply(GeneralConfiguration.COMPARISON_THRESHOLD)
+          .negate(),
+        BigDecimal.valueOf(10),
+        0),
+      Arguments.of(
+        BigDecimal.valueOf(10)
+          .multiply(GeneralConfiguration.COMPARISON_THRESHOLD)
+          .add(BigDecimal.ONE)
+          .negate(),
+        BigDecimal.valueOf(10),
+        -1)
+    );
+  }
+
   @BeforeEach
   public void setUp() {
     comparisonUtil = new ComparisonUtil();
@@ -58,6 +88,14 @@ class ComparisonUtilTest {
   @MethodSource("provideValuesForTest")
   void shouldReturnExpectedValue(BigDecimal first, BigDecimal second, BigDecimal margin, int expected) {
     final var actual = comparisonUtil.compareRatioUsingMargin(first, second, margin);
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideValuesForTestUsingDefaultMargin")
+  void shouldReturnExpectedValueUsingDefaultMargin(BigDecimal first, BigDecimal second, int expected) {
+    final var actual = comparisonUtil.compareRatioUsingMargin(first, second);
 
     assertThat(actual).isEqualTo(expected);
   }
