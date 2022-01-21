@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.test.util.fixture.orderbook;
+package com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.orderbook;
 
 import com.github.marceloleite2604.cryptotrader.dto.orderbook.GetOrderBookResponsePayload;
 import lombok.experimental.UtilityClass;

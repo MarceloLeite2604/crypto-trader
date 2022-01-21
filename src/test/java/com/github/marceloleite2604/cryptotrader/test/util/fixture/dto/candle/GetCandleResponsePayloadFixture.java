@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.test.util.fixture.candle;
+package com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.candle;
 
 import com.github.marceloleite2604.cryptotrader.dto.candle.GetCandleResponsePayload;
 import lombok.experimental.UtilityClass;

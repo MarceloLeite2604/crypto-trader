@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.test.util.fixture.authorize;
+package com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.authorize;
 
 import com.github.marceloleite2604.cryptotrader.dto.authorize.Authorization;
 import lombok.experimental.UtilityClass;

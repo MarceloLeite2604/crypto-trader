@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.test.util.fixture.account;
+package com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.account;
 
 import com.github.marceloleite2604.cryptotrader.dto.account.AccountDto;
 import lombok.experimental.UtilityClass;

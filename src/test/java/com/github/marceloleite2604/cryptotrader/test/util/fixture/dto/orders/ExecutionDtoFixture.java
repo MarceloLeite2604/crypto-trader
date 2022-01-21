@@ -1,4 +1,4 @@
-package com.github.marceloleite2604.cryptotrader.test.util.fixture.orders;
+package com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.orders;
 
 import com.github.marceloleite2604.cryptotrader.dto.orders.ExecutionDto;
 import lombok.experimental.UtilityClass;
