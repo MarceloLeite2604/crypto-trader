@@ -4,6 +4,8 @@ import com.github.marceloleite2604.cryptotrader.dto.account.AccountDto;
 import com.github.marceloleite2604.cryptotrader.model.account.Account;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+
 @Component
 public class AccountDtoMapper implements Mapper<AccountDto, Account> {
 
@@ -15,6 +17,8 @@ public class AccountDtoMapper implements Mapper<AccountDto, Account> {
       .id(accountDto.getId())
       .name(accountDto.getName())
       .type(accountDto.getType())
+      .balances(Collections.emptyMap())
+      .orders(Collections.emptyMap())
       .build();
   }
 }
