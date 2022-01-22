@@ -16,6 +16,7 @@ public class BalanceDtoMapper implements Mapper<BalanceDto, Balance> {
     final var available = BigDecimal.valueOf(balanceDto.getAvailable());
     final var total = BigDecimal.valueOf(balanceDto.getTotal());
 
+    /* API returns base on symbol property. */
     final var active = Active.findByBase(balanceDto.getSymbol());
 
     return Balance.builder()
