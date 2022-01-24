@@ -17,7 +17,7 @@ public class GetSymbolsResponsePayloadFixture {
   public static final long PRICE_SCALE_VALUE = 2364L;
   public static final String SESSION_REGULAR_VALUE = "sessionRegularValue";
   public static final String SYMBOL_VALUE = "symbolValue";
-  public static final String TIMEZONE_VALUE = "timezoneValue";
+  public static final String TIMEZONE_VALUE = "UTC";
   public static final String TYPE_VALUE = "typeValue";
 
   public static final List<String> BASE_CURRENCY = List.of(BASE_CURRENCY_VALUE);

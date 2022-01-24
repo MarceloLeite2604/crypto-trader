@@ -10,9 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.mail.Address;
 import javax.mail.Message;
+import javax.mail.internet.AddressException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,5 +60,14 @@ class MailToMimeMessageMapperTest {
 
   }
 
+  @Test
+  void shouldThrowIllegalStateExceptionWhenAnInvalidEmailAddressIsProvided() {
+    final var mail = MailFixture.create("invalid email value");
+
+    when(mailProperties.getHost()).thenReturn("hostValue");
+    when(mailProperties.getPort()).thenReturn("2367");
+
+    assertThrows(AddressException.class, () -> mailToMimeMessageMapper.mapTo(mail));
+  }
 
 }

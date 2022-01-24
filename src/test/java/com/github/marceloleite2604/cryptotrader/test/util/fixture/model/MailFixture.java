@@ -15,11 +15,15 @@ public class MailFixture {
   public static final List<String> RECIPIENTS = List.of(RECIPIENT);
 
   public static Mail create() {
+    return create(FROM);
+  }
+
+  public static Mail create(String from) {
     return Mail.builder()
       .text(TEXT)
       .subject(SUBJECT)
       .recipients(RECIPIENTS)
-      .from(FROM)
+      .from(from)
       .build();
   }
 }
