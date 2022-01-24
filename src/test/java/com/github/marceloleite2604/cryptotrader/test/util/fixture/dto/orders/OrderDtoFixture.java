@@ -11,7 +11,7 @@ public class OrderDtoFixture {
 
   public static final String ID = "OrderDtoIdValue";
   public static final List<ExecutionDto> EXECUTIONS = List.of(ExecutionDtoFixture.create());
-  public static final int CREATED_AT = 1642729418;
+  public static final long CREATED_AT = 1642729418L;
   public static final double AVG_PRICE = 213.7453d;
   public static final double FILLED_QTY = 236.25d;
   public static final String INSTRUMENT_VALUE = "instrumentValue";
@@ -20,7 +20,7 @@ public class OrderDtoFixture {
   public static final String SIDE = "sideValue";
   public static final String STATUS = "statusValue";
   public static final String TYPE = "typeValue";
-  public static final int UPDATED_AT = 1642729485;
+  public static final long UPDATED_AT = 1642729485L;
 
   public static OrderDto create() {
     return OrderDto.builder()

@@ -1,7 +1,8 @@
-package com.github.marceloleite2604.cryptotrader.test.util.fixture.model;
+package com.github.marceloleite2604.cryptotrader.test.util.fixture.model.account;
 
 import com.github.marceloleite2604.cryptotrader.model.account.Balance;
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.account.BalanceDtoFixture;
+import com.github.marceloleite2604.cryptotrader.test.util.fixture.model.ActiveFixture;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;

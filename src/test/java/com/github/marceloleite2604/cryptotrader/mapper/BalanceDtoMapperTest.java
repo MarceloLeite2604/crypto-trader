@@ -1,7 +1,7 @@
 package com.github.marceloleite2604.cryptotrader.mapper;
 
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.account.BalanceDtoFixture;
-import com.github.marceloleite2604.cryptotrader.test.util.fixture.model.BalanceFixture;
+import com.github.marceloleite2604.cryptotrader.test.util.fixture.model.account.BalanceFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
