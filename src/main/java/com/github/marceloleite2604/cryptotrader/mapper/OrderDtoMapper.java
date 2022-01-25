@@ -35,6 +35,9 @@ public class OrderDtoMapper implements Mapper<OrderDto, Order> {
 
     final var fee = BigDecimal.valueOf(orderDto.getFee());
 
+    final var triggerOrderId = orderDto.getTriggerOrderId();
+
+
     return Order.builder()
       .averagePrice(averagePrice)
       .createdAt(createdAt)
@@ -49,6 +52,7 @@ public class OrderDtoMapper implements Mapper<OrderDto, Order> {
       .type(orderDto.getType())
       .updatedAt(updatedAt)
       .fee(fee)
+      .triggerOrderId(triggerOrderId)
       .build();
 
   }

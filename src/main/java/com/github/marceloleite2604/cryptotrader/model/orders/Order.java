@@ -42,6 +42,8 @@ public class Order implements Comparable<Order> {
 
   private final BigDecimal fee;
 
+  private final String triggerOrderId;
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

@@ -46,6 +46,8 @@ public class OrderDto {
 
   private final double fee;
 
+  private final String triggerOrderId;
+
   private Map<String, String> additionalProperties;
 
   @JsonAnySetter
