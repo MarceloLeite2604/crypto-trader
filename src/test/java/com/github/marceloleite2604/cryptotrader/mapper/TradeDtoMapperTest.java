@@ -26,7 +26,7 @@ class TradeDtoMapperTest {
   void shouldReturnTrade() {
     final var expected = TradeFixture.create();
     when(dateTimeUtil.convertEpochToUtcOffsetDateTime(anyLong())).thenReturn(TradeFixture.DATE);
-    
+
     final var actual = tradeDtoMapper.mapTo(TradeDtoFixture.create());
 
 
