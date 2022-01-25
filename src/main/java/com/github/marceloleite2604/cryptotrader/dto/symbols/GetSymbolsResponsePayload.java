@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.dto.symbols;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -42,4 +45,14 @@ public class GetSymbolsResponsePayload {
   private final List<String> timezone;
 
   private final List<String> type;
+
+  private Map<String, String> additionalProperties;
+
+  @JsonAnySetter
+  public void add(String key, String value) {
+    if (additionalProperties == null) {
+      additionalProperties = new HashMap<>();
+    }
+    additionalProperties.put(key, value);
+  }
 }
