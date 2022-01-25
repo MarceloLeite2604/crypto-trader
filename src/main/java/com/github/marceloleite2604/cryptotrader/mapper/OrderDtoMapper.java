@@ -33,6 +33,8 @@ public class OrderDtoMapper implements Mapper<OrderDto, Order> {
 
     final var updatedAt = dateTimeUtil.convertEpochToUtcOffsetDateTime(orderDto.getUpdatedAt());
 
+    final var fee = BigDecimal.valueOf(orderDto.getFee());
+
     return Order.builder()
       .averagePrice(averagePrice)
       .createdAt(createdAt)
@@ -46,6 +48,7 @@ public class OrderDtoMapper implements Mapper<OrderDto, Order> {
       .status(orderDto.getStatus())
       .type(orderDto.getType())
       .updatedAt(updatedAt)
+      .fee(fee)
       .build();
 
   }

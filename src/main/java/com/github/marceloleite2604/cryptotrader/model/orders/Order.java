@@ -40,6 +40,8 @@ public class Order implements Comparable<Order> {
 
   private final OffsetDateTime updatedAt;
 
+  private final BigDecimal fee;
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

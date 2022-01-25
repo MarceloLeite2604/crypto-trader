@@ -40,4 +40,6 @@ public class OrderDto {
 
   @JsonProperty("updated_at")
   private final long updatedAt;
+
+  private final double fee;
 }
