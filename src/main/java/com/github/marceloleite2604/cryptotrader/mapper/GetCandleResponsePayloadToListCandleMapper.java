@@ -2,10 +2,7 @@ package com.github.marceloleite2604.cryptotrader.mapper;
 
 import com.github.marceloleite2604.cryptotrader.dto.candle.GetCandleResponsePayload;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
-import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -14,14 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Builder
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetCandleResponsePayloadToListCandleMapper
-  implements Mapper<GetCandleResponsePayload, List<Candle>> {
-
-  private final String symbol;
-
-  private final CandlePrecision precision;
+@RequiredArgsConstructor
+public class GetCandleResponsePayloadToListCandleMapper implements Mapper<GetCandleResponsePayload, List<Candle>> {
 
   private final DateTimeUtil dateTimeUtil;
 
@@ -60,8 +51,6 @@ public class GetCandleResponsePayloadToListCandleMapper
         .high(high)
         .low(low)
         .open(open)
-        .precision(precision)
-        .symbol(symbol)
         .timestamp(timestamp)
         .volume(volume)
         .build();

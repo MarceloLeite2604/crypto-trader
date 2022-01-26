@@ -21,6 +21,7 @@ public class OrderDtoFixture {
   public static final String STATUS = "statusValue";
   public static final String TYPE = "typeValue";
   public static final long UPDATED_AT = 1642729485L;
+  public static final double FEE = 592052.2051d;
 
   public static OrderDto create() {
     return OrderDto.builder()
@@ -36,6 +37,7 @@ public class OrderDtoFixture {
       .status(STATUS)
       .type(TYPE)
       .updatedAt(UPDATED_AT)
+      .fee(FEE)
       .build();
   }
 }

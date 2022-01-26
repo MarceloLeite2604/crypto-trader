@@ -5,6 +5,7 @@ import com.github.marceloleite2604.cryptotrader.model.candles.CandleDirection;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlePrecision;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandleType;
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.candle.GetCandleResponsePayloadFixture;
+import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.orders.GetSymbolsResponsePayloadFixture;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -33,7 +34,7 @@ public class CandleFixture {
   public static final BigDecimal BODY_AVERAGE = BigDecimal.valueOf(2134573.825007d);
   public static final CandleDirection DIRECTION = CandleDirection.DESCENDING;
   public static final CandleType COMMON = CandleType.COMMON;
-  public static final String SYMBOL = "symbolValue";
+  public static final String SYMBOL = GetSymbolsResponsePayloadFixture.BASE_CURRENCY_VALUE + "-" + GetSymbolsResponsePayloadFixture.CURRENCY_VALUE;
 
   public static Candle createAnalysedAndCompared() {
     return createRaw().toBuilder()

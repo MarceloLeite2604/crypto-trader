@@ -16,12 +16,17 @@ import java.util.List;
 public class OrderFixture {
 
   public static final BigDecimal AVERAGE_PRICE = BigDecimal.valueOf(OrderDtoFixture.AVG_PRICE);
-  public static final OffsetDateTime CREATED_AT = OffsetDateTime.of(LocalDateTime.of(2022, 1, 21, 1, 43, 38), ZoneOffset.UTC);
+  public static final OffsetDateTime CREATED_AT = OffsetDateTime.of(
+    LocalDateTime.of(2022, 1, 21, 1, 43, 38),
+    ZoneOffset.UTC);
   public static final List<Execution> EXECUTIONS = List.of(ExecutionFixture.create());
   public static final BigDecimal FILLED_QUANTITY = BigDecimal.valueOf(OrderDtoFixture.FILLED_QTY);
   public static final BigDecimal LIMIT_PRICE = BigDecimal.valueOf(OrderDtoFixture.LIMIT_PRICE);
   public static final BigDecimal QUANTITY = BigDecimal.valueOf(OrderDtoFixture.QTY);
-  public static final OffsetDateTime UPDATED_AT = OffsetDateTime.of(LocalDateTime.of(2022, 1, 21, 1, 44, 45), ZoneOffset.UTC);
+  public static final OffsetDateTime UPDATED_AT = OffsetDateTime.of(
+    LocalDateTime.of(2022, 1, 21, 1, 44, 45),
+    ZoneOffset.UTC);
+  public static final BigDecimal FEE = BigDecimal.valueOf(OrderDtoFixture.FEE);
 
   public static Order create() {
     return Order.builder()
@@ -37,6 +42,7 @@ public class OrderFixture {
       .status(OrderDtoFixture.STATUS)
       .type(OrderDtoFixture.TYPE)
       .updatedAt(UPDATED_AT)
+      .fee(FEE)
       .build();
   }
 }

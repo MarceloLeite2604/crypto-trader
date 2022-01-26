@@ -4,17 +4,17 @@ import com.github.marceloleite2604.cryptotrader.dto.candle.GetCandleResponsePayl
 import com.github.marceloleite2604.cryptotrader.mapper.GetCandleResponsePayloadToListCandleMapper;
 import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.model.candles.CandlesRequest;
-import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -22,9 +22,9 @@ class CandlesService {
 
   private final WebClient mbAuthenticatedWebClient;
 
-  private final DateTimeUtil dateTimeUtil;
-
   private final ValidationUtil validationUtil;
+
+  private final GetCandleResponsePayloadToListCandleMapper getCandleResponsePayloadToListCandleMapper;
 
   public List<Candle> retrieve(CandlesRequest candlesRequest) {
 
@@ -32,13 +32,6 @@ class CandlesService {
     validationUtil.throwIllegalArgumentExceptionIfNotValid(candlesRequest, "Candles request is invalid.");
 
     final var retrieveCandlesUri = buildRetrieveUri(candlesRequest);
-
-    final var getCandleResponsePayloadToListCandleMapper = GetCandleResponsePayloadToListCandleMapper.builder()
-      .dateTimeUtil(dateTimeUtil)
-      .precision(candlesRequest.getResolution())
-      .symbol(candlesRequest.getActive()
-        .getSymbol())
-      .build();
 
     final var getCandleResponsePayload = mbAuthenticatedWebClient.get()
       .uri(retrieveCandlesUri)
@@ -50,11 +43,18 @@ class CandlesService {
         return new IllegalStateException(message);
       });
 
-    final var candles = getCandleResponsePayloadToListCandleMapper.mapTo(getCandleResponsePayload);
-    Collections.sort(candles);
-    return candles;
+    return getCandleResponsePayloadToListCandleMapper.mapTo(getCandleResponsePayload)
+      .stream()
+      .map(Candle::toBuilder)
+      .map(builder -> builder.precision(candlesRequest.getResolution())
+        .symbol(candlesRequest.getActive()
+          .getSymbol())
+        .build())
+      .sorted()
+      .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  @SneakyThrows
   private String buildRetrieveUri(CandlesRequest candlesRequest) {
 
     final var uriBuilder = new URIBuilder().setPathSegments("candles")
@@ -73,12 +73,8 @@ class CandlesService {
         .toEpochSecond()));
     }
 
-    try {
-      return uriBuilder
-        .build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building candles URI.", exception);
-    }
+    return uriBuilder
+      .build()
+      .toString();
   }
 }
