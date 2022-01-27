@@ -5,12 +5,14 @@ import com.github.marceloleite2604.cryptotrader.model.candles.Candle;
 import com.github.marceloleite2604.cryptotrader.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Component
 @RequiredArgsConstructor
 public class GetCandleResponsePayloadToListCandleMapper implements Mapper<GetCandleResponsePayload, List<Candle>> {
 
