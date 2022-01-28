@@ -60,7 +60,7 @@ class CandlesServiceTest extends MockedWebClientTests {
       .when(HttpMethod.GET, uri)
       .thenReturn(HttpStatus.OK, getCandleResponsePayload);
 
-    final ArgumentCaptor<GetCandleResponsePayload> getCandleResponsePayloadArgumentCaptor = ArgumentCaptor.forClass(GetCandleResponsePayload.class);
+    final var getCandleResponsePayloadArgumentCaptor = ArgumentCaptor.forClass(GetCandleResponsePayload.class);
 
     when(getCandleResponsePayloadToListCandleMapper.mapTo(getCandleResponsePayloadArgumentCaptor.capture())).thenReturn(expected);
 

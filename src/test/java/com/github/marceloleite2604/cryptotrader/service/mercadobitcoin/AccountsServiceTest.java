@@ -30,12 +30,12 @@ class AccountsServiceTest extends MockedWebClientTests {
   private AccountDtoMapper accountDtoMapper;
 
   @Test
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings({"unchecked"})
   void shouldReturnAccountsList() {
     final var accountDtos = List.of(AccountDtoFixture.create());
     final var account = AccountFixture.create();
 
-    final ArgumentCaptor<List<AccountDto>> accountDtosArgumentCaptor = ArgumentCaptor.forClass((Class) List.class);
+    final ArgumentCaptor<List<AccountDto>> accountDtosArgumentCaptor = ArgumentCaptor.forClass(List.class);
 
     MockWebServerUtil.using(mockWebServer)
       .when(HttpMethod.GET, "accounts")

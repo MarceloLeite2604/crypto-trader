@@ -8,7 +8,7 @@ public class PostOrderResponsePayloadFixture {
 
   public static PostOrderResponsePayload create() {
     return PostOrderResponsePayload.builder()
-      .orderId("orderIdValue")
+      .orderId(OrderDtoFixture.ID)
       .build();
   }
 }

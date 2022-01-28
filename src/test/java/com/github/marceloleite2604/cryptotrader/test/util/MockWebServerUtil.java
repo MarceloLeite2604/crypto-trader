@@ -111,7 +111,7 @@ public class MockWebServerUtil {
     @SneakyThrows
     public StubRequest when(HttpMethod httpMethod, String path) {
       final var uri = String.format("http://localhost:%d/%s", context.mockWebServer.getPort(), path);
-      return when(httpMethod, new URI(uri), null, null);
+      return when(httpMethod, new URI(uri).normalize(), null, null);
     }
   }
 

@@ -110,7 +110,7 @@ class OrderService {
 
     final var getOrdersUri = buildGetOrderUri(accountId, symbol, orderId);
 
-    final var orderDtos = mbAuthenticatedWebClient.get()
+    final var orderDto = mbAuthenticatedWebClient.get()
       .uri(getOrdersUri)
       .retrieve()
       .bodyToMono(OrderDto.class)
@@ -120,7 +120,7 @@ class OrderService {
         return new IllegalStateException(message);
       });
 
-    return orderDtoMapper.mapTo(orderDtos);
+    return orderDtoMapper.mapTo(orderDto);
   }
 
   private String buildGetOrderUri(String accountId, String symbol, String orderId) {
