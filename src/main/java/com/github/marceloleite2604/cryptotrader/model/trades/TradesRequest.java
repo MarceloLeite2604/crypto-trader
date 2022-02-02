@@ -23,7 +23,7 @@ public class TradesRequest {
 
   private final OffsetDateTime to;
 
-  @AssertTrue(message = "Must both \"from\" and \"to\" parameters.")
+  @AssertTrue(message = "Must have both \"from\" and \"to\" parameters.")
   private boolean isValid() {
     return (to == null && from == null) ||
       (to != null && from != null);

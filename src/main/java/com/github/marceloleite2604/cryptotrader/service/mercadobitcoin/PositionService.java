@@ -40,7 +40,8 @@ class PositionService {
     Assert.isTrue(StringUtils.isNotBlank(accountId), "Account ID cannot be blank.");
     Assert.isTrue(StringUtils.isNotBlank(symbol), "Symbol cannot be blank.");
 
-    final var getBalanceUriBuilder = new URIBuilder().setPathSegments("accounts", accountId, "positions")
+    final var getBalanceUriBuilder = new URIBuilder()
+      .setPathSegments("accounts", accountId, "positions")
       .addParameter("symbol", symbol);
 
     try {

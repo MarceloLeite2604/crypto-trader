@@ -232,4 +232,40 @@ class OrderServiceTest extends MockedWebClientTests {
       .toASCIIString();
   }
 
+  @Test
+  void shouldReturnTrueWhenOrderIsCancelled() throws Exception {
+    final var expected = true;
+
+    final var uri = buildGetOrderUri();
+
+    MockWebServerUtil.using(mockWebServer)
+      .when(HttpMethod.DELETE, uri)
+      .thenReturn(HttpStatus.OK, null);
+
+    final var actual = orderService.cancelOrder(
+      AccountDtoFixture.ID,
+      GetSymbolsResponsePayloadFixture.SYMBOL_VALUE,
+      OrderDtoFixture.ID);
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void shouldReturnFalseWhenAnExceptionOccursWhileCancelingOrder() throws Exception {
+    final var expected = false;
+
+    final var uri = buildGetOrderUri();
+
+    MockWebServerUtil.using(mockWebServer)
+      .when(HttpMethod.DELETE, uri)
+      .thenReturn(HttpStatus.INTERNAL_SERVER_ERROR, null);
+
+    final var actual = orderService.cancelOrder(
+      AccountDtoFixture.ID,
+      GetSymbolsResponsePayloadFixture.SYMBOL_VALUE,
+      OrderDtoFixture.ID);
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
 }

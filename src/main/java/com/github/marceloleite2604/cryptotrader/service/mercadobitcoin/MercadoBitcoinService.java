@@ -69,8 +69,9 @@ public class MercadoBitcoinService {
   public Map<String, Ticker> retrieveTickers(Active... actives) {
     final var symbols = Arrays.stream(actives)
       .map(Active::getSymbol)
-      .toList();
-    return tickersService.retrieve(symbols.toArray(String[]::new));
+      .toList()
+      .toArray(String[]::new);
+    return tickersService.retrieve(symbols);
   }
 
   public List<Candle> retrieveCandles(CandlesRequest candlesRequest) {
@@ -87,8 +88,7 @@ public class MercadoBitcoinService {
   }
 
   public Account retrieveAccount() {
-    return accountsService.retrieve()
-      .get(0);
+    return retrieveAccounts().get(0);
   }
 
   public List<Balance> retrieveBalances(String accountId, Active active) {
