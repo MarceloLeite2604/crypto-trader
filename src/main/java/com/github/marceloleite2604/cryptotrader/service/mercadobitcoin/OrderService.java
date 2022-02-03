@@ -9,6 +9,7 @@ import com.github.marceloleite2604.cryptotrader.model.orders.PlaceOrderRequest;
 import com.github.marceloleite2604.cryptotrader.model.orders.RetrieveOrdersRequest;
 import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.Asserts;
@@ -21,7 +22,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +60,7 @@ class OrderService {
     return orderDtoMapper.mapAllTo(orderDtos);
   }
 
+  @SneakyThrows
   private String buildGetOrdersUri(RetrieveOrdersRequest retrieveOrdersRequest) {
     final var uriBuilder = new URIBuilder().setPathSegments(ACCOUNTS, retrieveOrdersRequest.getAccountId(), retrieveOrdersRequest.getSymbol(), ORDERS);
 
@@ -94,13 +95,9 @@ class OrderService {
         .toEpochSecond()));
     }
 
-    try {
-      return uriBuilder
-        .build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building list orders URI.", exception);
-    }
+    return uriBuilder
+      .build()
+      .toString();
   }
 
   public Order retrieveOrder(String accountId, String symbol, String orderId) {
@@ -123,14 +120,11 @@ class OrderService {
     return orderDtoMapper.mapTo(orderDto);
   }
 
+  @SneakyThrows
   private String buildGetOrderUri(String accountId, String symbol, String orderId) {
-    try {
-      return new URIBuilder().setPathSegments(ACCOUNTS, accountId, symbol, ORDERS, orderId)
-        .build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building get order URI.", exception);
-    }
+    return new URIBuilder().setPathSegments(ACCOUNTS, accountId, symbol, ORDERS, orderId)
+      .build()
+      .toString();
   }
 
   public Optional<String> placeOrder(PlaceOrderRequest placeOrderRequest) {
@@ -159,14 +153,12 @@ class OrderService {
       .map(PostOrderResponsePayload::getOrderId);
   }
 
+  @SneakyThrows
   private String buildPostUri(String accountId, String symbol) {
-    try {
-      return new URIBuilder().setPathSegments(ACCOUNTS, accountId, symbol, ORDERS)
-        .build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building post order URI.", exception);
-    }
+    return new URIBuilder().setPathSegments(ACCOUNTS, accountId, symbol, ORDERS)
+      .build()
+      .toString();
+
   }
 
   public boolean cancelOrder(String accountId, String symbol, String orderId) {

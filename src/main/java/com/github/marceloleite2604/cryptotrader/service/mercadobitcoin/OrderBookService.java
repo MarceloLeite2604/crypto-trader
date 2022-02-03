@@ -4,11 +4,10 @@ import com.github.marceloleite2604.cryptotrader.dto.orderbook.GetOrderBookRespon
 import com.github.marceloleite2604.cryptotrader.mapper.GetOrderBookResponsePayloadToOrderBookMapper;
 import com.github.marceloleite2604.cryptotrader.model.orderbook.OrderBook;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.net.URISyntaxException;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +33,7 @@ class OrderBookService {
     return getOrderBookResponsePayloadToOrderBookMapper.mapTo(orderBookResponsePayload);
   }
 
+  @SneakyThrows
   private String buildOrderBookUri(String symbol, Integer limit) {
     final var orderBookUriBuilder = new URIBuilder().setPathSegments(symbol, "orderbook");
 
@@ -41,11 +41,7 @@ class OrderBookService {
       orderBookUriBuilder.addParameter("limit", limit.toString());
     }
 
-    try {
-      return orderBookUriBuilder.build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building order book URI.", exception);
-    }
+    return orderBookUriBuilder.build()
+      .toString();
   }
 }

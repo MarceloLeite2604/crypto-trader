@@ -62,8 +62,7 @@ public class MercadoBitcoinService {
   }
 
   public Ticker retrieveTicker(Active active) {
-    return tickersService.retrieve(active.getSymbol())
-      .get(active.getSymbol());
+    return retrieveTickers(active).get(active.getSymbol());
   }
 
   public Map<String, Ticker> retrieveTickers(Active... actives) {
@@ -97,13 +96,13 @@ public class MercadoBitcoinService {
 
   public Balance retrieveBalance(String accountId, Active active) {
 
-    return balanceService.retrieve(accountId, active.getSymbol())
+    return retrieveBalances(accountId, active)
       .stream()
       .filter(balance -> active.equals(balance.getActive()))
       .findFirst()
       .orElseThrow(() -> {
         final var message = String.format("Could not find balance for %s active.", active.getName());
-        return new IllegalArgumentException(message);
+        return new IllegalStateException(message);
       });
   }
 

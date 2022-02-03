@@ -1,5 +1,6 @@
 package com.github.marceloleite2604.cryptotrader.service.mercadobitcoin;
 
+import com.github.marceloleite2604.cryptotrader.model.account.Balance;
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.account.AccountDtoFixture;
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.orders.OrderDtoFixture;
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.model.ActiveFixture;
@@ -22,12 +23,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,7 +92,7 @@ class MercadoBitcoinServiceTest {
   }
 
   @Test
-  void shouldReturnTicker() {
+  void shouldRetrieveTicker() {
     final var expected = TickerFixture.create();
     final var active = ActiveFixture.retrieve();
     final var tickersMap = Map.of(active.getSymbol(), expected);
@@ -103,7 +106,7 @@ class MercadoBitcoinServiceTest {
   }
 
   @Test
-  void shouldReturnCandles() {
+  void shouldRetrieveCandles() {
     final var candlesRequest = CandlesRequestFixture.createWithTime();
     final var expected = List.of(CandleFixture.createRaw());
 
@@ -116,7 +119,7 @@ class MercadoBitcoinServiceTest {
   }
 
   @Test
-  void shouldReturnTrades() {
+  void shouldRetrieveTrades() {
     final var tradesRequest = TradesRequestFixture.create();
     final var expected = List.of(TradeFixture.create());
 
@@ -156,6 +159,16 @@ class MercadoBitcoinServiceTest {
   }
 
   @Test
+  void shouldThrowIllegalStateExceptionWhenBalanceIsNotFound() {
+
+    final var active = ActiveFixture.retrieve();
+    final List<Balance> balances = Collections.emptyList();
+    when(balanceService.retrieve(AccountDtoFixture.ID, active.getSymbol())).thenReturn(balances);
+
+    assertThrows(IllegalStateException.class, () -> mercadoBitcoinService.retrieveBalance(AccountDtoFixture.ID, active));
+  }
+
+  @Test
   void shouldRetrievePositions() {
 
     final var active = ActiveFixture.retrieve();
@@ -184,6 +197,21 @@ class MercadoBitcoinServiceTest {
   }
 
   @Test
+  void shouldRetrieveOrder() {
+
+    final var expected = OrderFixture.create();
+    final var accountId = AccountDtoFixture.ID;
+    final var active = ActiveFixture.retrieve();
+    final var orderId = OrderDtoFixture.ID;
+
+    when(orderService.retrieveOrder(accountId, active.getSymbol(), orderId)).thenReturn(expected);
+
+    final var actual = mercadoBitcoinService.retrieveOrder(accountId, active, orderId);
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
   void shouldPlaceOrder() {
 
     final var expected = Optional.of(OrderDtoFixture.ID);
@@ -192,6 +220,21 @@ class MercadoBitcoinServiceTest {
     when(orderService.placeOrder(placeOrderRequest)).thenReturn(expected);
 
     final var actual = mercadoBitcoinService.placeOrder(placeOrderRequest);
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void shouldCancelOrder() {
+
+    final var expected = true;
+    final var active = ActiveFixture.retrieve();
+    final var accountId = AccountDtoFixture.ID;
+    final var orderId = OrderDtoFixture.ID;
+
+    when(orderService.cancelOrder(accountId, active.getSymbol(), orderId)).thenReturn(true);
+
+    final var actual = mercadoBitcoinService.cancelOrder(accountId, active, orderId);
 
     assertThat(actual).isEqualTo(expected);
   }

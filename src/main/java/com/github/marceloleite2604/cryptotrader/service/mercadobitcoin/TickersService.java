@@ -4,6 +4,7 @@ import com.github.marceloleite2604.cryptotrader.dto.tickers.TickerDto;
 import com.github.marceloleite2604.cryptotrader.mapper.ListTickersDtoToMapTickersMapper;
 import com.github.marceloleite2604.cryptotrader.model.Ticker;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -12,7 +13,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -41,6 +41,7 @@ class TickersService {
     return listTickersDtoToMapTickersMapper.mapTo(tickerDtos);
   }
 
+  @SneakyThrows
   private String buildTickersUri(String... symbols) {
     if (ArrayUtils.isEmpty(symbols)) {
       throw new IllegalArgumentException("Must inform a symbol to retrieve its tickers.");
@@ -50,13 +51,9 @@ class TickersService {
       .map(symbol -> (NameValuePair) new BasicNameValuePair("symbols", symbol))
       .toList();
 
-    try {
-      return new URIBuilder().setPathSegments("tickers")
-        .addParameters(queryParameterSymbolsNameValuePair)
-        .build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building tickers URI.", exception);
-    }
+    return new URIBuilder().setPathSegments("tickers")
+      .addParameters(queryParameterSymbolsNameValuePair)
+      .build()
+      .toString();
   }
 }

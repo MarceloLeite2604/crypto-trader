@@ -68,6 +68,18 @@ class TickerServiceTest extends MockedWebClientTests {
   }
 
   @Test
+  void shouldThrowIllegalStateExceptionWhenNoTickerIsReturned() {
+
+    final var uri = buildTickersUri();
+
+    MockWebServerUtil.using(mockWebServer)
+      .when(HttpMethod.GET, uri)
+      .thenReturn(HttpStatus.OK, null);
+
+    assertThrows(IllegalStateException.class, () -> tickersService.retrieve(GetSymbolsResponsePayloadFixture.SYMBOL_VALUE));
+  }
+
+  @Test
   void shouldThrowIllegalArgumentExceptionIfNoSymbolIsProvided() {
     assertThrows(IllegalArgumentException.class, () -> tickersService.retrieve());
   }

@@ -6,13 +6,13 @@ import com.github.marceloleite2604.cryptotrader.model.trades.Trade;
 import com.github.marceloleite2604.cryptotrader.model.trades.TradesRequest;
 import com.github.marceloleite2604.cryptotrader.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Component
@@ -45,6 +45,7 @@ class TradesService {
     return tradeDtoMapper.mapAllTo(tradeDtos);
   }
 
+  @SneakyThrows
   private String buildRetrieveUri(TradesRequest tradesRequest) {
 
     final var uriBuilder = new URIBuilder().setPathSegments(tradesRequest.getSymbol(), "trades");
@@ -67,12 +68,8 @@ class TradesService {
         .toEpochSecond() - 1));
     }
 
-    try {
-      return uriBuilder
-        .build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building trades URI.", exception);
-    }
+    return uriBuilder
+      .build()
+      .toString();
   }
 }

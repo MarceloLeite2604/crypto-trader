@@ -4,6 +4,7 @@ import com.github.marceloleite2604.cryptotrader.dto.account.BalanceDto;
 import com.github.marceloleite2604.cryptotrader.mapper.BalanceDtoMapper;
 import com.github.marceloleite2604.cryptotrader.model.account.Balance;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Component
@@ -36,18 +36,14 @@ class BalanceService {
     return balanceDtoMapper.mapAllTo(balanceDtos);
   }
 
+  @SneakyThrows
   private String buildGetBalancesUri(String accountId, String symbol) {
     Assert.isTrue(StringUtils.isNotBlank(accountId), "Account ID cannot be blank.");
     Assert.isTrue(StringUtils.isNotBlank(symbol), "Symbol cannot be blank.");
 
-    final var getBalanceUriBuilder = new URIBuilder().setPathSegments("accounts", accountId, "balances")
-      .addParameter("symbol", symbol);
-
-    try {
-      return getBalanceUriBuilder.build()
-        .toString();
-    } catch (URISyntaxException exception) {
-      throw new IllegalStateException("Exception thrown while building account balances URI.", exception);
-    }
+    return new URIBuilder().setPathSegments("accounts", accountId, "balances")
+      .addParameter("symbol", symbol)
+      .build()
+      .toString();
   }
 }
