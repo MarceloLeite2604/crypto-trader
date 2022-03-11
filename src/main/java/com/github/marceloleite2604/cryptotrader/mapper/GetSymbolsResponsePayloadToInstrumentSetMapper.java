@@ -5,6 +5,7 @@ import com.github.marceloleite2604.cryptotrader.model.Instrument;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,8 +48,8 @@ public class GetSymbolsResponsePayloadToInstrumentSetMapper
       .get(count);
     final var exchangeTraded = getSymbolsResponsePayload.getExchangeTraded()
       .get(count);
-    final var minMovement = getSymbolsResponsePayload.getMinMovement()
-      .get(count);
+    final var minMovement = BigDecimal.valueOf(getSymbolsResponsePayload.getMinMovement()
+      .get(count));
     final var priceScale = getSymbolsResponsePayload.getPriceScale()
       .get(count);
     final var sessionRegular = getSymbolsResponsePayload.getSessionRegular()

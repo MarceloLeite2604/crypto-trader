@@ -4,12 +4,14 @@ import com.github.marceloleite2604.cryptotrader.model.Instrument;
 import com.github.marceloleite2604.cryptotrader.test.util.fixture.dto.orders.GetSymbolsResponsePayloadFixture;
 import lombok.experimental.UtilityClass;
 
+import java.math.BigDecimal;
 import java.util.TimeZone;
 
 @UtilityClass
 public class InstrumentFixture {
 
   public static final TimeZone TIMEZONE = TimeZone.getTimeZone(GetSymbolsResponsePayloadFixture.TIMEZONE_VALUE);
+  public static final BigDecimal MIN_MOVEMENT = BigDecimal.valueOf(GetSymbolsResponsePayloadFixture.MIN_MOVEMENT_VALUE);
 
   public static Instrument create() {
     return Instrument.builder()
@@ -17,7 +19,7 @@ public class InstrumentFixture {
       .symbol(GetSymbolsResponsePayloadFixture.SYMBOL_VALUE)
       .sessionRegular(GetSymbolsResponsePayloadFixture.SESSION_REGULAR_VALUE)
       .priceScale(GetSymbolsResponsePayloadFixture.PRICE_SCALE_VALUE)
-      .minMovement(GetSymbolsResponsePayloadFixture.MIN_MOVEMENT_VALUE)
+      .minMovement(MIN_MOVEMENT)
       .exchangeListed(GetSymbolsResponsePayloadFixture.EXCHANGE_LISTED_VALUE)
       .baseCurrency(GetSymbolsResponsePayloadFixture.BASE_CURRENCY_VALUE)
       .currency(GetSymbolsResponsePayloadFixture.CURRENCY_VALUE)

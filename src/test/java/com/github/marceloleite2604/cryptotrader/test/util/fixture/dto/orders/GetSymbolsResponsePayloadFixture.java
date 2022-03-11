@@ -13,7 +13,7 @@ public class GetSymbolsResponsePayloadFixture {
   public static final String DESCRIPTION_VALUE = "descriptionValue";
   public static final boolean EXCHANGE_LISTED_VALUE = false;
   public static final boolean EXCHANGE_TRADED_VALUE = true;
-  public static final long MIN_MOVEMENT_VALUE = 34987512L;
+  public static final double MIN_MOVEMENT_VALUE = 34987512.737;
   public static final long PRICE_SCALE_VALUE = 2364L;
   public static final String SESSION_REGULAR_VALUE = "sessionRegularValue";
   public static final String SYMBOL_VALUE = "symbolValue";
@@ -25,7 +25,7 @@ public class GetSymbolsResponsePayloadFixture {
   public static final List<String> DESCRIPTION = List.of(DESCRIPTION_VALUE);
   public static final List<Boolean> EXCHANGE_LISTED = List.of(EXCHANGE_LISTED_VALUE);
   public static final List<Boolean> EXCHANGE_TRADED = List.of(EXCHANGE_TRADED_VALUE);
-  public static final List<Long> MIN_MOVEMENT = List.of(MIN_MOVEMENT_VALUE);
+  public static final List<Double> MIN_MOVEMENT = List.of(MIN_MOVEMENT_VALUE);
   public static final List<Long> PRICE_SCALE = List.of(PRICE_SCALE_VALUE);
   public static final List<String> SESSION_REGULAR = List.of(SESSION_REGULAR_VALUE);
   public static final List<String> SYMBOL = List.of(SYMBOL_VALUE);

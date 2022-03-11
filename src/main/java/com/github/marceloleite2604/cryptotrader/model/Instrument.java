@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.TimeZone;
 
 @Builder
@@ -26,7 +27,7 @@ public class Instrument {
 
   private final boolean exchangeTraded;
 
-  private final long minMovement;
+  private final BigDecimal minMovement;
 
   private final long priceScale;
 

@@ -32,7 +32,7 @@ public class GetSymbolsResponsePayload {
   private final List<Boolean> exchangeTraded;
 
   @JsonProperty("minmovement")
-  private final List<Long> minMovement;
+  private final List<Double> minMovement;
 
   @JsonProperty("pricescale")
   private final List<Long> priceScale;
