@@ -46,6 +46,8 @@ public class GetSymbolsResponsePayload {
 
   private final List<String> type;
 
+  private final List<String> withdrawalFee;
+
   private Map<String, String> additionalProperties;
 
   @JsonAnySetter
