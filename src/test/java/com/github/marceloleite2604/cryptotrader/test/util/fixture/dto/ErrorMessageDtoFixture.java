@@ -10,7 +10,7 @@ public class ErrorMessageDtoFixture {
 
   public static final String CODE = "codeValue";
   public static final String MESSAGE = "messageValue";
-  public static final Map<String, String> ADDITIONAL_PROPERTIES = Map.of("additionalPropertyKey", "additionalPropertyValue");
+  public static final Map<String, Object> ADDITIONAL_PROPERTIES = Map.of("additionalPropertyKey", "additionalPropertyValue");
 
   public static ErrorMessageDto create() {
     return ErrorMessageDto.builder()
