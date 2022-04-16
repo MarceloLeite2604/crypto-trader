@@ -20,10 +20,10 @@ public class ErrorMessageDto {
 
   private final String message;
 
-  private Map<String, String> additionalProperties;
+  private Map<String, Object> additionalProperties;
 
   @JsonAnySetter
-  public void add(String key, String value) {
+  public void add(String key, Object value) {
     if (additionalProperties == null) {
       additionalProperties = new HashMap<>();
     }

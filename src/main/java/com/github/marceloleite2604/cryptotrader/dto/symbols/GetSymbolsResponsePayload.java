@@ -46,13 +46,10 @@ public class GetSymbolsResponsePayload {
 
   private final List<String> type;
 
-  @JsonProperty("withdrawal-fee")
-  private final List<String> withdrawalFee;
-
-  private Map<String, String> additionalProperties;
+  private Map<String, Object> additionalProperties;
 
   @JsonAnySetter
-  public void add(String key, String value) {
+  public void add(String key, Object value) {
     if (additionalProperties == null) {
       additionalProperties = new HashMap<>();
     }
