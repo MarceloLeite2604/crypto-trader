@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -48,8 +49,12 @@ public class GetSymbolsResponsePayloadToInstrumentSetMapper
       .get(count);
     final var exchangeTraded = getSymbolsResponsePayload.getExchangeTraded()
       .get(count);
-    final var minMovement = BigDecimal.valueOf(getSymbolsResponsePayload.getMinMovement()
-      .get(count));
+
+
+    final var minMovement = Optional.ofNullable(getSymbolsResponsePayload.getMinMovement()
+        .get(count))
+      .map(BigDecimal::valueOf)
+      .orElse(null);
     final var priceScale = getSymbolsResponsePayload.getPriceScale()
       .get(count);
     final var sessionRegular = getSymbolsResponsePayload.getSessionRegular()
